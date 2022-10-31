@@ -14,14 +14,17 @@ plt.close('all')
 plot_series=1
 plot_map   =1
 
+#Variables
+vari='sit'
+
 #Runs
 run='data_southern'
 
 #Time
 start_month=1
-start_year =2018
-end_month  =2
-end_year   =2018
+start_year =2019
+end_month  =12
+end_year   =2019
 #trick to cover all months in runs longer than a year
 end_month=end_month+1
 ym_start= 12*start_year + start_month - 1
@@ -61,18 +64,33 @@ datac.data_vars
 if plot_series==1:
   # Plotting time series
   fig, ax = plt.subplots(1, 1, figsize = (15,5))
-  sit_output = datac.sit.to_masked_array() # Extract a given variable
-  time = datac.time.indexes['time']
-  time_series(time, sit_output, mask, 'test', 'Sea ice thickness time serie')
-  plt.xlabel('Time')
-  plt.ylabel('SIT (m)')
-  plt.title('Domain average sea ice thickness (SIT)')
-  plt.savefig(path_fig+run+'/domain_average_sit_'start_year+'-'+start_month+'_'+end_year+'-'end_month'.png')
-  plt.show()
+
+  if  vname=='mean_sit':
+    #sit_output = datac.sit.to_masked_array() # Extract a given variable
+    sit = datac.sit.to_masked_array() # Extract a given variable
+    sic = datac.sic.to_masked_array() # Extract a given variable
+    T = np.shape(sit)[0]
+    mean = np.zeros(T)
+    std = np.zeros(T)
+    for t in range(T):
+        #mean[t] = np.mean(variable[t][variable[t].mask == False])
+        mean[t] = np.mean((sit[t]*sic[t])/sic[t])
+
+  #time_series(time, sit_output, mask, 'test', 'Sea ice thickness time serie')
+plt.plot(time, mean, 'b')    
+time = datac.time.indexes['time']
+plt.xlabel('Time')
+plt.ylabel('SIT (m)')
+plt.title('Domain average sea ice thickness (SIT)')
+figname=path_fig+run+'/domain_average_sit_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
+plt.savefig(figname)
+plt.show()
 
 
 ### Make animation of sea-ice thickness
 if plot_map==1:
+
+
 
   plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
   sit_output = datac.sit.to_masked_array() # Extract a given variable
