@@ -7,7 +7,7 @@ import cmocean
 from matplotlib.animation import FuncAnimation
 from matplotlib import animation, rc
 
-def make_animation(time,mask,variable,
+def make_animation_util(time,mask,variable,
                            interval=10):
     '''
     Animation of nextsim simulation outputs for one variable

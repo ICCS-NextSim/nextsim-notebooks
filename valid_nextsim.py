@@ -5,6 +5,8 @@ import numpy.ma as ma
 import cmocean
 from matplotlib.animation import FuncAnimation
 from matplotlib import animation, rc
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+
 from Utils import * #make_animation, time_series_plot, time_series_plot2
 from sys import exit
 plt.ion()
@@ -12,23 +14,25 @@ plt.close('all')
 
 # Plot types
 plot_series=1
-plot_map   =1
+plot_map   =0
+plot_anim  =0
 
 #Variables
-vari='sit'
+vname='mean_sit'
 
 #Runs
 run='data_southern'
 
 #Time
 start_month=1
-start_year =2019
+start_year =2018
 end_month  =12
 end_year   =2019
 #trick to cover all months in runs longer than a year
 end_month=end_month+1
 ym_start= 12*start_year + start_month - 1
 ym_end  = 12*end_year + end_month - 1
+end_month=end_month-1
 
 #Colors
 
@@ -62,6 +66,7 @@ for ym in range( ym_start, ym_end ):
 datac.data_vars
 
 if plot_series==1:
+  plt.rcParams.update({'font.size': 22})
   # Plotting time series
   fig, ax = plt.subplots(1, 1, figsize = (15,5))
 
@@ -77,27 +82,76 @@ if plot_series==1:
         mean[t] = np.mean((sit[t]*sic[t])/sic[t])
 
   #time_series(time, sit_output, mask, 'test', 'Sea ice thickness time serie')
-plt.plot(time, mean, 'b')    
-time = datac.time.indexes['time']
-plt.xlabel('Time')
-plt.ylabel('SIT (m)')
-plt.title('Domain average sea ice thickness (SIT)')
-figname=path_fig+run+'/domain_average_sit_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
-plt.savefig(figname)
-plt.show()
-
+  time = datac.time.indexes['time']
+  plt.plot(time, mean, 'b')    
+  plt.xlabel('Time')
+  plt.ylabel('SIT (m)')
+  plt.title('Domain average sea ice thickness (SIT)')
+  figname=path_fig+run+'/domain_average_sit_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
+  plt.savefig(figname)
+  plt.show()
 
 ### Make animation of sea-ice thickness
-if plot_map==1:
-
-
+if plot_anim==1:
 
   plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
   sit_output = datac.sit.to_masked_array() # Extract a given variable
   time = datac.time.indexes['time']
-  anim=make_animation(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
+
+  time=time; mask =1- mask; variable = sit_output;
+  anim=make_animation_util(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
+
   FFwriter = animation.FFMpegWriter( fps = 24)
   ##Save animation 
-  anim.save(path_fig+run+'/sic_'+start_year+'-'+start_month+'_'+end_year+'-'end_month'.mp4', writer=FFwriter, dpi = 150)
+  figname=path_fig+run+'/sit_'+start_year+'-'+start_month+'_'+end_year+'-'+end_month+'.mp4'
+  anim.save(figname, writer=FFwriter, dpi = 150)
+
+
+#fig=plt.subplots(); plt.pcolormesh(datac.sit[0,:,:]); plt.colorbar(); plt.title(time[0]); plt.show()
+### Make animation of sea-ice thickness
+if plot_map==1:
+
+  plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
+  sit_output = datac.sit.to_masked_array() # Extract a given variable
+  time = datac.time.indexes['time']
+
+  time=time; mask =1- mask; 
+  variable = sit_output;
+  interval=10 #len(time))
+  #anim=make_animation(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
+  #def make_animation(time,mask,variable,interval=10):
+
+  fig, ax1 = plt.subplots(1, 1 ,figsize=(8,8))
+  ax1.set_title('neXtSIM',loc='right')
+  ax1.set_title('Date : {} '.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
+  ax1.set_facecolor('xkcd:putty')
+
+  # including colorbar
+  divider = make_axes_locatable(ax1)
+  cax = divider.append_axes('right', size='5%', pad=0.05)
+
+  cmap = cmocean.cm.ice
+  #im1=plt.pcolormesh(variable[0],cmap=cmap,animated=True,vmax = 2.5); 
+  #plt.colorbar(); 
+  im1 = ax1.imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmax = 3.5)
+  #plt.colorbar()
+  fig.colorbar(im1, cax=cax, orientation='vertical')
+  #exit()
+
+  def animate(i):
+      im1.set_array(variable[i])
+      ax1.set_title('Date :{} '.format(time[i].strftime('%Y.%m.%d')), loc = 'left')
+      return [im1]
+
+  Nt = np.shape(variable)[0]
+  anim = animation.FuncAnimation(fig, animate, frames=len(time),
+                                 interval=interval, blit=True)
+  #plt.show()
+  #return anim
+
+  FFwriter = animation.FFMpegWriter( fps = 24)
+  ##Save animation 
+  figname=path_fig+run+'/sit_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.mp4'
+  anim.save(figname, writer=FFwriter, dpi = 150)
 
 
