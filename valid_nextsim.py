@@ -6,41 +6,59 @@ import cmocean
 from matplotlib.animation import FuncAnimation
 from matplotlib import animation, rc
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-
 from Utils import * #make_animation, time_series_plot, time_series_plot2
 from sys import exit
 plt.ion()
 plt.close('all')
+
+#Time
+start_month=1
+start_year =2019
+end_month  =12
+end_year   =2019
+
+#Runs
+runs=[0,1]
+
+run='data_southern'
 
 # Plot types
 plot_series=1
 plot_map   =0
 plot_anim  =0
 
+#Colors
+colors={'r','b','k'}
+
+# series
+params=[9,14];
+# maps
+paramm=[15];  
+# profiles
+parampr=[1, 2]; 
+# time depth
+paramtd=[9, 10, 11, 12]; 
+# eddy stats
+parame=[3, 4, 2, 5, 6, 8]; 
+
+####################################################################
+expts={'data_glorys','data'}
+
+
 #Variables
+varim='sit'
 vname='mean_sit'
 
-#Runs
-run='data_southern'
 
-#Time
-start_month=1
-start_year =2018
-end_month  =12
-end_year   =2019
 #trick to cover all months in runs longer than a year
 end_month=end_month+1
 ym_start= 12*start_year + start_month - 1
 ym_end  = 12*end_year + end_month - 1
 end_month=end_month-1
 
-#Colors
-
-
-####################################################################
 #paths
 path_runs='~/'
-path_fig='/Users/rsan613/Library/CloudStorage/OneDrive-TheUniversityofAuckland/001_WORK/nextsim/southern/figures/'
+path_fig ='/Users/rsan613/Library/CloudStorage/OneDrive-TheUniversityofAuckland/001_WORK/nextsim/southern/figures/'
 
 #Grid information
 data = xr.open_dataset(path_runs+run+'/output/Moorings_2018m01.nc')
@@ -129,8 +147,10 @@ if plot_map==1:
   # including colorbar
   divider = make_axes_locatable(ax1)
   cax = divider.append_axes('right', size='5%', pad=0.05)
-
-  cmap = cmocean.cm.ice
+  if varim=='sic':
+    cmap = cmocean.cm.ice
+  elif varim=='sit':
+    cmap = cmocean.cm.dense_r
   #im1=plt.pcolormesh(variable[0],cmap=cmap,animated=True,vmax = 2.5); 
   #plt.colorbar(); 
   im1 = ax1.imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmax = 3.5)
