@@ -27,7 +27,7 @@ MYUSER=rafacsantana@gmail.com
 PASS=rafacsantana@gmail.com
 
 PATH_OUT=/Users/rsan613/n/southern/data/sic_nsidc/
-PATH_OUT=/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sic_nsidc/
+#PATH_OUT=/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sic_nsidc/
 #PATH_OUT=/Volumes/LaCie/mahuika/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sic_nsidc/
 
 while [ ${current} -le ${limite} ]; do
@@ -42,7 +42,7 @@ while [ ${current} -le ${limite} ]; do
   #SOURCE=ftp://ftp.remss.com/ccmp/v02.0/Y${YEAR}/M${MONTH}/${PREFIX}_${current}"_V02.0_L3.0_RSS.nc"
   #SOURCE=ftp://ftp.sltac.cls.fr/Core/SEALEVEL_GLO_PHY_L4_NRT_OBSERVATIONS_008_046/dataset-duacs-nrt-global-merged-allsat-phy-l4-v3/${PREFIX}_${current}*
 
-  SOURCE=ftp://sidads.colorado.edu/DATASETS/NOAA/G02202_V4/south/daily/${YEAR}/${PREFIX}_${current}"_f17_v04r00.nc"
+  SOURCE=ftp://sidads.colorado.edu/DATASETS/NOAA/G02202_V4/south/daily/${YEAR}/${PREFIX}${current}"_f17_v04r00.nc"
 
   echo "${SOURCE}"
   #OUTPUT="${PREFIX}_${current}.nc.gz"
