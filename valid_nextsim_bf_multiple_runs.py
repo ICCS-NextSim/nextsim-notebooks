@@ -15,8 +15,8 @@ plt.close('all')
 #Time
 start_month=1
 start_year =2018
-end_month  =12 
-end_year   =2021
+end_month  =1 
+end_year   =2018
 
 #Runs (names) or experiments (numbers)
 expt=[1]
@@ -24,7 +24,7 @@ expt=[1]
 # Plot types
 plot_series=1
 plot_map   =0
-plot_video =0
+plot_video =1
 plot_anim  =0
 save_fig   =1
 
@@ -86,15 +86,9 @@ for ex in expt:
     print(filename)
     data = xr.open_dataset(filename)
     if k==1:
-      #datac = data.variable[vname]
-      timec = data.variables['time']
-      sicc = data.variables['sic']
-      vdatac = data.variables[vname]
+      datac = data
     else:
-      #datac = xr.concat([datac,data],'time')
-      time = data.variables['time'];   timec = xr.Variable.concat([timec,time],'time')
-      sic = data.variables['sic'];   sicc = xr.Variable.concat([sicc,sic],'time')
-      vdata = data.variables[vname]; vdatac = xr.Variable.concat([vdatac,vdata],'time')
+      datac = xr.concat([datac,data],'time')
   
   #datac.data_vars
   
@@ -105,10 +99,9 @@ for ex in expt:
       fig, ax = plt.subplots(1, 1, figsize = (16,8)) # landscape
   
     if vname=='sit':
-      sit = vdatac #_output = datac.sit.to_masked_array() # Extract a given variable
-      sic = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
-      #sit = sit.to_masked_array() # Extract a given variable
-      #sic = sic.to_masked_array() # Extract a given variable
+      #sit_output = datac.sit.to_masked_array() # Extract a given variable
+      sit = datac.sit.to_masked_array() # Extract a given variable
+      sic = datac.sic.to_masked_array() # Extract a given variable
       T = np.shape(sit)[0]
       mean = np.zeros(T)
       std = np.zeros(T)
@@ -117,7 +110,7 @@ for ex in expt:
           mean[t] = np.mean((sit[t]*sic[t])/sic[t])
   
     #time_series(time, sit_output, mask, 'test', 'Sea ice thickness time serie')
-    time = timec #datac.time.indexes['time']
+    time = datac.time.indexes['time']
     plt.plot(time, mean, colors[ke-1])   
     plt.xlabel('Time')
     plt.ylabel('SIT (m)')
