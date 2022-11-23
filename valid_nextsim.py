@@ -1,20 +1,26 @@
 import xarray as xr
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import numpy.ma as ma
 import cmocean
 from matplotlib.animation import FuncAnimation
 from matplotlib import animation, rc
+from matplotlib import dates
+import datetime
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from Utils import * #make_animation, time_series_plot, time_series_plot2
 from sys import exit
 import os
+import socket
 plt.ion()
 plt.close('all')
 
 #Time
+start_day  =1
 start_month=1
 start_year =2018
+end_day    =30
 end_month  =12 
 end_year   =2021
 
@@ -26,7 +32,7 @@ plot_series=1
 plot_map   =0
 plot_video =0
 plot_anim  =0
-save_fig   =1
+save_fig   =0
 
 #Colors
 colors=['r','b','k']
@@ -48,9 +54,8 @@ runs=['50km_ocean_wind','50km_bsose_20180102']
 
 
 #Variables
-varim='sit'
-vname='sit'
-
+vname='sic' # timeseires
+varim='sit' # video
 
 #trick to cover all months in runs longer than a year
 end_month=end_month+1
@@ -59,14 +64,31 @@ ym_end  = 12*end_year + end_month - 1
 end_month=end_month-1
 
 #paths
-path_runs='/Users/rsan613/n/southern/runs/' # ''~/'
-path_fig ='/Users/rsan613/Library/CloudStorage/OneDrive-TheUniversityofAuckland/001_WORK/nextsim/southern/figures/'
-
+ 
+if socket.gethostname()=='SC442555':
+  path_runs='/Users/rsan613/n/southern/runs/' # ''~/'
+  path_fig ='/Users/rsan613/Library/CloudStorage/OneDrive-TheUniversityofAuckland/001_WORK/nextsim/southern/figures/'
+  path_sic ='/Users/rsan613/n/southern/data/sic_nsidc'
+else:
+  print('Unrecgonised host')
+  exit()
+  
 #Grid information
 run=runs[expts[0]] # 'data_glorys'
 data = xr.open_dataset(path_runs+run+'/output/Moorings_2018m01.nc')
 sit_output = data.sit.to_masked_array() # Extract a given variable
 mask = ma.getmaskarray(sit_output[0]) #Get mask
+
+# time_obs
+time_ini = dates.date2num(datetime.datetime(start_year,start_month,start_day))
+time_fin = dates.date2num(datetime.datetime(end_year,end_month,end_day)) 
+freqobs  = 1; # daily data
+times=pd.date_range(dates.num2date(time_ini), periods=int(time_fin-time_ini)*freqobs, freq=('%dD' % int(1/freqobs)))
+time_obsn=dates.date2num(times)
+time_obs=dates.num2date(time_obsn)
+
+#sic 
+prefix_sic='seaice_conc_daily_sh__'; sufix_sic='_f17_v04r00.nc'
 
 # Loop in the experiments
 ke=0
@@ -103,28 +125,55 @@ for ex in expt:
     # Plotting time series
     if ke==1:
       fig, ax = plt.subplots(1, 1, figsize = (16,8)) # landscape
-  
+
+      # plot obs
+      if vname=='sic': # sea ice extent
+        # loop in time to read obs
+        k=0
+        for t in time_obs:
+          k+=1; file=path_sic+'/'+t.strftime("%Y")+'/'+prefix_sic+t.strftime("%Y%m%d")+sufix_sic
+          print(file)
+          data = xr.open_dataset(file)
+          if k==1:
+            sicc_obs = data.variables['nsidc_bt_seaice_conc']
+          else:
+            sic_obs = data.variables['nsidc_bt_seaice_conc'];   sicc_obs = xr.Variable.concat([sicc_obs,sic_obs] ,'tdim' )
+        mean = np.zeros(np.shape(sicc_obs)[0])
+        for t in range(np.shape(sicc_obs)[0]):
+          mean[t] = np.sum(sicc_obs[t]*25)
+        plt.plot(time_obs, mean, color='g')   
+
+        #expt=np.sum(expt,1)
+ 
     if vname=='sit':
-      sit = vdatac #_output = datac.sit.to_masked_array() # Extract a given variable
+      sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
       sic = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
-      #sit = sit.to_masked_array() # Extract a given variable
-      #sic = sic.to_masked_array() # Extract a given variable
       T = np.shape(sit)[0]
       mean = np.zeros(T)
       std = np.zeros(T)
       for t in range(T):
           #mean[t] = np.mean(variable[t][variable[t].mask == False])
           mean[t] = np.mean((sit[t]*sic[t])/sic[t])
+      plt.ylabel('SIT (m)'); plt.title('Domain average sea ice thickness (SIT)')
+      figname=path_fig+run+'/domain_average_sit_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
+    elif vname=='sic':
+      sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
+      sic = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
+      T = np.shape(sit)[0]
+      mean = np.zeros(T)
+      std = np.zeros(T)
+      for t in range(T):
+          mean[t] = np.sum(sic[t]*50)
+          #mean[t] = np.mean((sit[t]*sic[t])/sic[t])
+      plt.ylabel('Sea ice total area (km\^2)'); plt.title('Sea ice total area (or extent) (sum of [grid size * SIC])')
+      figname=path_fig+run+'/domain_average_sit_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
   
     #time_series(time, sit_output, mask, 'test', 'Sea ice thickness time serie')
     time = timec #datac.time.indexes['time']
     plt.plot(time, mean, colors[ke-1])   
-    plt.xlabel('Time')
-    plt.ylabel('SIT (m)')
-    plt.title('Domain average sea ice thickness (SIT)')
-    ll = [runs[i] for i in expts]
+    #plt.xlabel('Time'); 
+    ll = [runs[i] for i in expt]
     plt.legend(ll)
-    figname=path_fig+run+'/domain_average_sit_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
     if save_fig==1:
       if os.path.exists(path_fig+run)==False:
         os.mkdir(path_fig+run)
