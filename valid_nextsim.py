@@ -22,7 +22,7 @@ start_month=1
 start_year =2018
 end_day    =30
 end_month  =12 
-end_year   =2018
+end_year   =2021
 
 #Runs (names) or experiments (numbers)
 expt=[1]
@@ -135,17 +135,20 @@ for ex in expt:
           print(file)
           data = xr.open_dataset(file)
           if k==1:
-            sicc_obs = data.variables['nsidc_bt_seaice_conc']
+            sicc_obs = data.variables['nsidc_nt_seaice_conc']#['cdr_seaice_conc']
+            #exit()
           else:
-            sic_obs = data.variables['nsidc_bt_seaice_conc'];   sicc_obs = xr.Variable.concat([sicc_obs,sic_obs] ,'tdim' )
+            sic_obs = data.variables['nsidc_nt_seaice_conc']#['cdr_seaice_conc'];  
+            sicc_obs = xr.Variable.concat([sicc_obs,sic_obs] ,'tdim' )
         mean = np.zeros(np.shape(sicc_obs)[0])
         for t in range(np.shape(sicc_obs)[0]):
           #mean[t] = np.sum(sicc_obs[t]*25*25)
           sicct=sicc_obs[t]; 
           #exit() 
           iext=np.where(sicct>1)[0]; sicct[iext]=0;
-          iext=np.where(sicct<.15)[0]; sicct[iext]=1;
-          #mean[t] = np.sum(sicct*50*50)
+          #iext=np.where(sicct>=.15)[0]; sicct[iext]=1;
+          #iext=np.where(sicct<.15)[0]; sicct[iext]=0;
+          #mean[t] = np.sum(sicct*25*25)
           meant = np.multiply(sicct,25); meant = np.multiply(meant,25);
           mean[t] = np.sum(meant)
 
@@ -174,8 +177,9 @@ for ex in expt:
           #mean[t] = np.sum(sic[t]*50*50)
           sicct=sic[t];
           iext=np.where(sicct>1)[0]; sicct[iext]=0;
-          iext=np.where(sicct<.15)[0]; sicct[iext]=1;
-          meant = np.multiply(sicct,50); meant = np.multiply(meant,50);
+          #iext=np.where(sicct>.15)[0]; sicct[iext]=1;
+          #iext=np.where(sicct<.15)[0]; sicct[iext]=0;
+          meant = np.multiply(sicct,25); meant = np.multiply(meant,25);
           mean[t] = np.sum(meant)
       plt.ylabel('Sea ice total area (km\^2)'); plt.title('Sea ice total area (or extent) (sum of [grid size * SIC])')
       figname=path_fig+run+'/domain_average_sit_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
