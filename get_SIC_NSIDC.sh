@@ -27,7 +27,7 @@ MYUSER=rafacsantana@gmail.com
 PASS=rafacsantana@gmail.com
 
 PATH_OUT=/Users/rsan613/n/southern/data/sic_nsidc/
-#PATH_OUT=/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sic_nsidc/
+PATH_OUT=/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sic_nsidc/
 #PATH_OUT=/Volumes/LaCie/mahuika/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sic_nsidc/
 
 while [ ${current} -le ${limite} ]; do
