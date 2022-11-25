@@ -21,7 +21,7 @@ start_day  =1
 start_month=1
 start_year =2018
 end_day    =30
-end_month  =6 
+end_month  =1 
 end_year   =2018
 
 #Runs (names) or experiments (numbers)
@@ -145,7 +145,8 @@ for ex in expt:
               sicc_obs = xr.Variable.concat([sicc_obs,sic_obs] ,'tdim' )
 
           elif obs_source=='osisaf':
-            k+=1; file=path_data+'/sic_osisaf/'+t.strftime("%Y")+'/ice_conc_sh_polstere-100_multi_'+t.strftime("%Y%m%d")+'.nc'
+            #k+=1; file=path_data+'/sic_osisaf/'+t.strftime("%Y")+'/ice_conc_sh_polstere-100_multi_'+t.strftime("%Y%m%d")+'.nc'
+            k+=1; file=path_data+'/sic_osisaf/'+t.strftime("%Y")+'/ice_conc_sh_ease-125_multi_'+t.strftime("%Y%m%d")+'.nc'
             print(file)
             obs_grid_area=10
             data = xr.open_dataset(file)
@@ -208,6 +209,7 @@ for ex in expt:
     #plt.xlabel('Time'); 
     ll = [runs[i] for i in expt]
     plt.legend(ll)
+    plt.grid()
     if save_fig==1:
       if os.path.exists(path_fig+run)==False:
         os.mkdir(path_fig+run)
