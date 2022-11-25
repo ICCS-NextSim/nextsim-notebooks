@@ -20,14 +20,14 @@ plt.close('all')
 start_day  =1
 start_month=1
 start_year =2018
-end_day    =3
+end_day    =30
 end_month  =8
-end_year   =2018
+end_year   =2019
 #end_month  =1
 #end_year   =2018
 
 #Runs (names) or experiments (numbers)
-expt=[0]
+expt=[0,1]
 
 # Plot types
 plot_series=1
@@ -72,7 +72,7 @@ if socket.gethostname()=='SC442555':
   path_fig ='/Users/rsan613/Library/CloudStorage/OneDrive-TheUniversityofAuckland/001_WORK/nextsim/southern/figures/'
   path_data ='/Users/rsan613/n/southern/data/'
 else:
-  print('Unrecgonised host')
+  print("Your runs, figures etc paths haven't been set")
   exit()
   
 #Grid information
@@ -134,13 +134,13 @@ for ex in expt:
       if vname=='sic': # sea ice extent
         # loop in time to read obs
         kc=0; obs_colors=['g','y','orange']; ll=[]
-        for obs_source in ['NSIDC','OSISAF','OSISAF-ease']:
+        for obs_source in ['OSISAF-ease']: #['NSIDC','OSISAF','OSISAF-ease']:
           ll.append(['OBS-'+obs_source]); k=0; kc+=1
-          #if obs_source[0:11]=='OSISAF-ease':
-          #  file=path_data+'/sic_osisaf/2018'+'/ice_conc_sh_ease-125_multi_20180101'+'.nc';
-          #  data = xr.open_dataset(file)
-          #  xease = data.variables['xcice_conc']/100. #['cdr_seaice_conc']
-          #  xease=data
+          if obs_source[0:11]=='OSISAF-ease':
+            file=path_data+'/sic_osisaf/2018'+'/ice_conc_sh_ease-125_multi_20180101'+'.nc';
+            data = xr.open_dataset(file)
+            xobs = data.variables['xc']; yobs = data.variables['yc']
+            dx,dy=np.meshgrid(np.diff(xobs),np.diff(yobs)); dy=np.abs(dy); obs_grid_area=dx*dy
           for t in time_obs:
             k+=1
             if obs_source=='NSIDC':
@@ -160,8 +160,8 @@ for ex in expt:
                 file=path_data+'/sic_osisaf/'+t.strftime("%Y")+'/ice_conc_sh_ease-125_multi_'+t.strftime("%Y%m%d")+'.nc'; 
               else:
                 file=path_data+'/sic_osisaf/'+t.strftime("%Y")+'/ice_conc_sh_polstere-100_multi_'+t.strftime("%Y%m%d")+'.nc'
+                obs_grid_area=12.53377297 # 10 polstere
               print(file)
-              obs_grid_area=12.53377297 # 10 polstere
               data = xr.open_dataset(file)
               if k==1:
                 sicc_obs = data.variables['ice_conc']/100. #['cdr_seaice_conc']
@@ -182,7 +182,10 @@ for ex in expt:
             #iext=np.where(sicct>=.15)[0]; sicct[iext]=1;
             #iext=np.where(sicct<.15)[0]; sicct[iext]=0;
             #mean[t] = np.sum(sicct*25*25)
-            meant = np.multiply(sicct,obs_grid_area); meant = np.multiply(meant,obs_grid_area);
+            if obs_source[0:11]=='OSISAF-ease':
+              meant = np.multiply(sicct[0:-1,0:-1],obs_grid_area); # meant = np.multiply(meant,obs_grid_area);
+            else:
+              meant = np.multiply(sicct,obs_grid_area); meant = np.multiply(meant,obs_grid_area);
             mean[t] = np.sum(meant)
 
 
