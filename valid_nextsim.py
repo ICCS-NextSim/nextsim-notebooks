@@ -152,7 +152,7 @@ for ex in expt:
           meant = np.multiply(sicct,25); meant = np.multiply(meant,25);
           mean[t] = np.sum(meant)
 
-        plt.plot(time_obs, mean, color='g')   
+        #plt.plot(time_obs, mean, color='g')   
         #exit()
         #expt=np.sum(expt,1)
  
