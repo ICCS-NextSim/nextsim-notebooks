@@ -12,7 +12,7 @@ limite=$2  #{YYYYMMDD}
 #NAME=dt_upd_global_merged_msla_h_
 
 PREFIX="ice_conc_sh_polstere-100_multi_" # ice_conc_sh_polstere-100_multi_201901011200.nc
-OUT_PREFIX="ice_conc_sh_polstere-100_multi_" 
+PREFIX="ice_conc_sh_ease-125_multi_" # ice_conc_sh_polstere-100_multi_201901011200.nc
 
 ##############################################
 # WINDS FROM CMEMS
