@@ -20,12 +20,14 @@ plt.close('all')
 start_day  =1
 start_month=1
 start_year =2018
-end_day    =30
-end_month  =1 
+end_day    =3
+end_month  =8
 end_year   =2018
+#end_month  =1
+#end_year   =2018
 
 #Runs (names) or experiments (numbers)
-expt=[0,1]
+expt=[0]
 
 # Plot types
 plot_series=1
@@ -118,6 +120,8 @@ for ex in expt:
       sic = data.variables['sic'];   sicc = xr.Variable.concat([sicc,sic],'time')
       vdata = data.variables[vname]; vdatac = xr.Variable.concat([vdatac,vdata],'time')
       #exit() 
+    data.close()
+
   #datac.data_vars
   
   if plot_series==1:
@@ -129,51 +133,63 @@ for ex in expt:
       # plot obs
       if vname=='sic': # sea ice extent
         # loop in time to read obs
-        k=0
-        for t in time_obs:
-          obs_source='osisaf'
-          if obs_source=='nsidc':
-            k+=1; file=path_data+'/sic_nsidc/'+t.strftime("%Y")+'/'+prefix_sic+t.strftime("%Y%m%d")+sufix_sic
-            print(file)
-            obs_grid_area=25
-            data = xr.open_dataset(file)
-            if k==1:
-              sicc_obs = data.variables['nsidc_nt_seaice_conc']#['cdr_seaice_conc']
-              #exit()
-            else:
-              sic_obs = data.variables['nsidc_nt_seaice_conc']#['cdr_seaice_conc'];  
-              sicc_obs = xr.Variable.concat([sicc_obs,sic_obs] ,'tdim' )
+        kc=0; obs_colors=['g','y','orange']; ll=[]
+        for obs_source in ['NSIDC','OSISAF','OSISAF-ease']:
+          ll.append(['OBS-'+obs_source]); k=0; kc+=1
+          #if obs_source[0:11]=='OSISAF-ease':
+          #  file=path_data+'/sic_osisaf/2018'+'/ice_conc_sh_ease-125_multi_20180101'+'.nc';
+          #  data = xr.open_dataset(file)
+          #  xease = data.variables['xcice_conc']/100. #['cdr_seaice_conc']
+          #  xease=data
+          for t in time_obs:
+            k+=1
+            if obs_source=='NSIDC':
+              file=path_data+'/sic_nsidc/'+t.strftime("%Y")+'/'+prefix_sic+t.strftime("%Y%m%d")+sufix_sic
+              print(file)
+              obs_grid_area=25
+              data = xr.open_dataset(file)
+              if k==1:
+                sicc_obs = data.variables['nsidc_nt_seaice_conc']#['cdr_seaice_conc']
+                #exit()
+              else:
+                sic_obs = data.variables['nsidc_nt_seaice_conc']#['cdr_seaice_conc'];  
+                sicc_obs = xr.Variable.concat([sicc_obs,sic_obs] ,'tdim' )
 
-          elif obs_source=='osisaf':
-            #k+=1; file=path_data+'/sic_osisaf/'+t.strftime("%Y")+'/ice_conc_sh_polstere-100_multi_'+t.strftime("%Y%m%d")+'.nc'
-            k+=1; file=path_data+'/sic_osisaf/'+t.strftime("%Y")+'/ice_conc_sh_ease-125_multi_'+t.strftime("%Y%m%d")+'.nc'
-            print(file)
-            obs_grid_area=10
-            data = xr.open_dataset(file)
-            if k==1:
-              sicc_obs = data.variables['ice_conc']/100. #['cdr_seaice_conc']
-              #exit()
-            else:
-              sic_obs = data.variables['ice_conc']/100. #['cdr_seaice_conc'];  
-              sicc_obs = xr.Variable.concat([sicc_obs,sic_obs] ,'time' )
+            elif obs_source[0:6]=='OSISAF':
+              if obs_source[0:11]=='OSISAF-ease':
+                file=path_data+'/sic_osisaf/'+t.strftime("%Y")+'/ice_conc_sh_ease-125_multi_'+t.strftime("%Y%m%d")+'.nc'; 
+              else:
+                file=path_data+'/sic_osisaf/'+t.strftime("%Y")+'/ice_conc_sh_polstere-100_multi_'+t.strftime("%Y%m%d")+'.nc'
+              print(file)
+              obs_grid_area=12.53377297 # 10 polstere
+              data = xr.open_dataset(file)
+              if k==1:
+                sicc_obs = data.variables['ice_conc']/100. #['cdr_seaice_conc']
+                #exit()
+              else:
+                sic_obs = data.variables['ice_conc']/100. #['cdr_seaice_conc'];  
+                sicc_obs = xr.Variable.concat([sicc_obs,sic_obs] ,'time' )
 
-
-        mean = np.zeros(np.shape(sicc_obs)[0])
-        for t in range(np.shape(sicc_obs)[0]):
-          #mean[t] = np.sum(sicc_obs[t]*25*25)
-          sicct=sicc_obs[t]; 
-          #exit() 
-          iext=np.where(sicct>1)[0]; sicct[iext]=0;
-          #iext=np.where(sicct>=.15)[0]; sicct[iext]=1;
-          #iext=np.where(sicct<.15)[0]; sicct[iext]=0;
-          #mean[t] = np.sum(sicct*25*25)
-          meant = np.multiply(sicct,obs_grid_area); meant = np.multiply(meant,obs_grid_area);
-          mean[t] = np.sum(meant)
+            data.close()
 
 
-        plt.plot(time_obs, mean, color='g')   
-        #exit()
-        #expt=np.sum(expt,1)
+          mean = np.zeros(np.shape(sicc_obs)[0])
+          for t in range(np.shape(sicc_obs)[0]):
+            #mean[t] = np.sum(sicc_obs[t]*25*25)
+            sicct=sicc_obs[t]; 
+            #exit() 
+            iext=np.where(sicct>1)[0]; sicct[iext]=0;
+            #iext=np.where(sicct>=.15)[0]; sicct[iext]=1;
+            #iext=np.where(sicct<.15)[0]; sicct[iext]=0;
+            #mean[t] = np.sum(sicct*25*25)
+            meant = np.multiply(sicct,obs_grid_area); meant = np.multiply(meant,obs_grid_area);
+            mean[t] = np.sum(meant)
+
+
+          plt.plot(time_obs, mean, color=obs_colors[kc-1])   
+          plt.grid()
+          #exit()
+          #expt=np.sum(expt,1)
  
     if vname=='sit':
       sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
@@ -193,23 +209,28 @@ for ex in expt:
       mean = np.zeros(T)
       std = np.zeros(T)
       for t in range(T):
-          #mean[t] = np.sum(sic[t]*50*50)
-          sicct=sic[t];
-          iext=np.where(sicct>1)[0]; sicct[iext]=0;
-          #iext=np.where(sicct>.15)[0]; sicct[iext]=1;
-          #iext=np.where(sicct<.15)[0]; sicct[iext]=0;
-          meant = np.multiply(sicct,25); meant = np.multiply(meant,25);
-          mean[t] = np.sum(meant)
-      plt.ylabel('Sea ice total area (km\^2)'); plt.title('Sea ice total area (or extent) (sum of [grid size * SIC])')
+        #mean[t] = np.sum(sic[t]*50*50)
+        sicct=sic[t];
+        iext=np.where(sicct>1)[0]; sicct[iext]=0;
+        #iext=np.where(sicct>.15)[0]; sicct[iext]=1;
+        #iext=np.where(sicct<.15)[0]; sicct[iext]=0;
+        meant = np.multiply(sicct,25); meant = np.multiply(meant,25);
+        mean[t] = np.sum(meant)
+      plt.ylabel('Sea ice total area (km\^2)'); plt.title('Sea ice total area (sum of [grid area * SIC])')
       figname=path_fig+run+'/domain_average_sit_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
   
     #time_series(time, sit_output, mask, 'test', 'Sea ice thickness time serie')
     time = timec #datac.time.indexes['time']
     plt.plot(time, mean, colors[ke-1])   
     #plt.xlabel('Time'); 
-    ll = [runs[i] for i in expt]
+    #ll = [runs[i] for i in expt]
+    for i in expt:
+      ll.append(runs[i])
+
     plt.legend(ll)
-    plt.grid()
+    date_form = dates.DateFormatter("%b/%y")
+    ax.xaxis.set_major_formatter(date_form)
+    plt.tight_layout()
     if save_fig==1:
       if os.path.exists(path_fig+run)==False:
         os.mkdir(path_fig+run)
