@@ -21,8 +21,8 @@ start_day  =1
 start_month=1
 start_year =2018
 end_day    =30
-end_month  =12 
-end_year   =2019
+end_month  =6 
+end_year   =2018
 
 #Runs (names) or experiments (numbers)
 expt=[0,1]
@@ -68,7 +68,7 @@ end_month=end_month-1
 if socket.gethostname()=='SC442555':
   path_runs='/Users/rsan613/n/southern/runs/' # ''~/'
   path_fig ='/Users/rsan613/Library/CloudStorage/OneDrive-TheUniversityofAuckland/001_WORK/nextsim/southern/figures/'
-  path_sic ='/Users/rsan613/n/southern/data/sic_nsidc'
+  path_data ='/Users/rsan613/n/southern/data/'
 else:
   print('Unrecgonised host')
   exit()
@@ -131,15 +131,32 @@ for ex in expt:
         # loop in time to read obs
         k=0
         for t in time_obs:
-          k+=1; file=path_sic+'/'+t.strftime("%Y")+'/'+prefix_sic+t.strftime("%Y%m%d")+sufix_sic
-          print(file)
-          data = xr.open_dataset(file)
-          if k==1:
-            sicc_obs = data.variables['nsidc_nt_seaice_conc']#['cdr_seaice_conc']
-            #exit()
-          else:
-            sic_obs = data.variables['nsidc_nt_seaice_conc']#['cdr_seaice_conc'];  
-            sicc_obs = xr.Variable.concat([sicc_obs,sic_obs] ,'tdim' )
+          obs_source='osisaf'
+          if obs_source=='nsidc':
+            k+=1; file=path_data+'/sic_nsidc/'+t.strftime("%Y")+'/'+prefix_sic+t.strftime("%Y%m%d")+sufix_sic
+            print(file)
+            obs_grid_area=25
+            data = xr.open_dataset(file)
+            if k==1:
+              sicc_obs = data.variables['nsidc_nt_seaice_conc']#['cdr_seaice_conc']
+              #exit()
+            else:
+              sic_obs = data.variables['nsidc_nt_seaice_conc']#['cdr_seaice_conc'];  
+              sicc_obs = xr.Variable.concat([sicc_obs,sic_obs] ,'tdim' )
+
+          elif obs_source=='osisaf':
+            k+=1; file=path_data+'/sic_osisaf/'+t.strftime("%Y")+'/ice_conc_sh_polstere-100_multi_'+t.strftime("%Y%m%d")+'.nc'
+            print(file)
+            obs_grid_area=10
+            data = xr.open_dataset(file)
+            if k==1:
+              sicc_obs = data.variables['ice_conc']/100. #['cdr_seaice_conc']
+              #exit()
+            else:
+              sic_obs = data.variables['ice_conc']/100. #['cdr_seaice_conc'];  
+              sicc_obs = xr.Variable.concat([sicc_obs,sic_obs] ,'time' )
+
+
         mean = np.zeros(np.shape(sicc_obs)[0])
         for t in range(np.shape(sicc_obs)[0]):
           #mean[t] = np.sum(sicc_obs[t]*25*25)
@@ -149,10 +166,11 @@ for ex in expt:
           #iext=np.where(sicct>=.15)[0]; sicct[iext]=1;
           #iext=np.where(sicct<.15)[0]; sicct[iext]=0;
           #mean[t] = np.sum(sicct*25*25)
-          meant = np.multiply(sicct,25); meant = np.multiply(meant,25);
+          meant = np.multiply(sicct,obs_grid_area); meant = np.multiply(meant,obs_grid_area);
           mean[t] = np.sum(meant)
 
-        #plt.plot(time_obs, mean, color='g')   
+
+        plt.plot(time_obs, mean, color='g')   
         #exit()
         #expt=np.sum(expt,1)
  
