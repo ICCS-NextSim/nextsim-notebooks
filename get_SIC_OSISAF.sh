@@ -28,7 +28,7 @@ MYUSER=rafacsantana@gmail.com
 PASS=rafacsantana@gmail.com
 
 PATH_OUT=/Users/rsan613/n/southern/data/sic_osisaf/
-PATH_OUT=/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sic_osisaf/
+#PATH_OUT=/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sic_osisaf/
 #PATH_OUT=/Volumes/LaCie/mahuika/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sic_osisaf/
 
 while [ ${current} -le ${limite} ]; do
@@ -43,7 +43,8 @@ while [ ${current} -le ${limite} ]; do
   #SOURCE=ftp://ftp.remss.com/ccmp/v02.0/Y${YEAR}/M${MONTH}/${PREFIX}_${current}"_V02.0_L3.0_RSS.nc"
   #SOURCE=ftp://ftp.sltac.cls.fr/Core/SEALEVEL_GLO_PHY_L4_NRT_OBSERVATIONS_008_046/dataset-duacs-nrt-global-merged-allsat-phy-l4-v3/${PREFIX}_${current}*
 
-  SOURCE=ftp://osisaf.met.no/archive/ice/conc/${YEAR}/${MONTH}/${PREFIX}${current}"1200.nc"
+  #SOURCE=ftp://osisaf.met.no/archive/ice/conc/${YEAR}/${MONTH}/${PREFIX}${current}"1200.nc"
+  SOURCE=ftp://osisaf.met.no/reprocessed/ice/conc-cont-reproc/v2p0/${YEAR}/${MONTH}/${PREFIX}${current}"1200.nc"
 
   echo "${SOURCE}"
   #OUTPUT="${PREFIX}_${current}.nc.gz"
