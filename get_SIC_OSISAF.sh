@@ -13,6 +13,7 @@ limite=$2  #{YYYYMMDD}
 
 PREFIX="ice_conc_sh_polstere-100_multi_" # ice_conc_sh_polstere-100_multi_201901011200.nc
 PREFIX="ice_conc_sh_ease-125_multi_" # ice_conc_sh_polstere-100_multi_201901011200.nc
+PREFIX="ice_conc_sh_ease2-250_icdr-v2p0_" # 201801081200.nc
 
 ##############################################
 # WINDS FROM CMEMS

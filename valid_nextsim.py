@@ -21,13 +21,13 @@ start_day  =1
 start_month=1
 start_year =2018
 end_day    =30
-end_month  =8
-end_year   =2019
+end_month  =12
+end_year   =2021
 #end_month  =1
 #end_year   =2018
 
 #Runs (names) or experiments (numbers)
-expt=[0,1]
+expt=[1]
 
 # Plot types
 plot_series=1
@@ -65,9 +65,12 @@ ym_start= 12*start_year + start_month - 1
 ym_end  = 12*end_year + end_month - 1
 end_month=end_month-1
 
+#obs sources
+obs_sources=['OSISAF-ease'] #['NSIDC','OSISAF','OSISAF-ease']: 
+#obs_sources=['NSIDC','OSISAF','OSISAF-ease']
+
 #paths
- 
-if socket.gethostname()=='SC442555':
+if socket.gethostname()=='SC442555' or socket.gethostname()=='SC442555.local':
   path_runs='/Users/rsan613/n/southern/runs/' # ''~/'
   path_fig ='/Users/rsan613/Library/CloudStorage/OneDrive-TheUniversityofAuckland/001_WORK/nextsim/southern/figures/'
   path_data ='/Users/rsan613/n/southern/data/'
@@ -134,7 +137,7 @@ for ex in expt:
       if vname=='sic': # sea ice extent
         # loop in time to read obs
         kc=0; obs_colors=['g','y','orange']; ll=[]
-        for obs_source in ['OSISAF-ease']: #['NSIDC','OSISAF','OSISAF-ease']:
+        for obs_source in obs_sources: 
           ll.append(['OBS-'+obs_source]); k=0; kc+=1
           if obs_source[0:11]=='OSISAF-ease':
             file=path_data+'/sic_osisaf/2018'+'/ice_conc_sh_ease-125_multi_20180101'+'.nc';
