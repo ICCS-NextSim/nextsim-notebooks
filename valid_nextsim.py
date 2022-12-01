@@ -23,8 +23,8 @@ start_year =2018
 end_day    =30
 end_month  =12
 end_year   =2021
-#end_month  =1
-#end_year   =2018
+end_month  =12
+end_year   =2021
 
 #Runs (names) or experiments (numbers)
 expt=[1]
@@ -56,7 +56,7 @@ runs=['50km_ocean_wind','50km_bsose_20180102']
 
 
 #Variables
-vname='sic' # timeseires
+vname='sic' # timeseries
 varim='sit' # video
 
 #trick to cover all months in runs longer than a year
@@ -66,8 +66,7 @@ ym_end  = 12*end_year + end_month - 1
 end_month=end_month-1
 
 #obs sources
-obs_sources=['OSISAF-ease'] #['NSIDC','OSISAF','OSISAF-ease']: 
-#obs_sources=['NSIDC','OSISAF','OSISAF-ease']
+obs_sources=['OSISAFease2']#,'OSISAF-ease'] #['NSIDC','OSISAF','OSISAF-ease','OSISAFease2']: 
 
 #paths
 if socket.gethostname()=='SC442555' or socket.gethostname()=='SC442555.local':
@@ -125,6 +124,9 @@ for ex in expt:
       #exit() 
     data.close()
 
+    time_mod=dates.date2num(timec)
+    time_mods=dates.num2date(time_mod)
+
   #datac.data_vars
   
   if plot_series==1:
@@ -138,11 +140,15 @@ for ex in expt:
         # loop in time to read obs
         kc=0; obs_colors=['g','y','orange']; ll=[]
         for obs_source in obs_sources: 
-          ll.append(['OBS-'+obs_source]); k=0; kc+=1
-          if obs_source[0:11]=='OSISAF-ease':
-            file=path_data+'/sic_osisaf/2018'+'/ice_conc_sh_ease-125_multi_20180101'+'.nc';
+          ll.append('OBS-'+obs_source); k=0; kc+=1
+          if obs_source[0:11]=='OSISAF-ease' or obs_source[0:11]=='OSISAFease2':
+            if obs_source[0:11]=='OSISAF-ease':
+              file=path_data+'/sic_osisaf/2018'+'/ice_conc_sh_ease-125_multi_20180101'+'.nc';
+            elif obs_source[0:11]=='OSISAFease2':
+              file=path_data+'/sic_osisaf/2018'+'/ice_conc_sh_ease2-250_icdr-v2p0_20180101.nc';
             data = xr.open_dataset(file)
             xobs = data.variables['xc']; yobs = data.variables['yc']
+            data.close()
             dx,dy=np.meshgrid(np.diff(xobs),np.diff(yobs)); dy=np.abs(dy); obs_grid_area=dx*dy
           for t in time_obs:
             k+=1
@@ -161,6 +167,8 @@ for ex in expt:
             elif obs_source[0:6]=='OSISAF':
               if obs_source[0:11]=='OSISAF-ease':
                 file=path_data+'/sic_osisaf/'+t.strftime("%Y")+'/ice_conc_sh_ease-125_multi_'+t.strftime("%Y%m%d")+'.nc'; 
+              elif obs_source[0:11]=='OSISAFease2':
+                file=path_data+'/sic_osisaf/'+t.strftime("%Y")+'/ice_conc_sh_ease2-250_icdr-v2p0_'+t.strftime("%Y%m%d")+'.nc'; 
               else:
                 file=path_data+'/sic_osisaf/'+t.strftime("%Y")+'/ice_conc_sh_polstere-100_multi_'+t.strftime("%Y%m%d")+'.nc'
                 obs_grid_area=12.53377297 # 10 polstere
@@ -173,19 +181,23 @@ for ex in expt:
                 sic_obs = data.variables['ice_conc']/100. #['cdr_seaice_conc'];  
                 sicc_obs = xr.Variable.concat([sicc_obs,sic_obs] ,'time' )
 
+            #exit()
             data.close()
 
-
+          print('Processing SIC to get extent')
           mean = np.zeros(np.shape(sicc_obs)[0])
           for t in range(np.shape(sicc_obs)[0]):
+            print('Processing SIC to get extent time: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
             #mean[t] = np.sum(sicc_obs[t]*25*25)
             sicct=sicc_obs[t]; 
-            #exit() 
-            iext=np.where(sicct>1)[0]; sicct[iext]=0;
-            #iext=np.where(sicct>=.15)[0]; sicct[iext]=1;
-            #iext=np.where(sicct<.15)[0]; sicct[iext]=0;
+            #iext=np.where(sicct>1); sicct[iext]=0;
+            #iext=np.where(sicct>.15)[0]; sicct[iext]=1;
+            iext=np.where(sicct>.15); 
+            for i in range(np.shape(iext)[1]):
+              sicct[iext[0][i],iext[1][i]]=1.
+            #iext=np.where(sicct<=.15)[0]; sicct[iext]=0;
             #mean[t] = np.sum(sicct*25*25)
-            if obs_source[0:11]=='OSISAF-ease':
+            if obs_source[0:11]=='OSISAF-ease' or obs_source[0:11]=='OSISAFease2':
               meant = np.multiply(sicct[0:-1,0:-1],obs_grid_area); # meant = np.multiply(meant,obs_grid_area);
             else:
               meant = np.multiply(sicct,obs_grid_area); meant = np.multiply(meant,obs_grid_area);
@@ -193,7 +205,7 @@ for ex in expt:
 
 
           plt.plot(time_obs, mean, color=obs_colors[kc-1])   
-          plt.grid()
+          plt.grid('on')
           #exit()
           #expt=np.sum(expt,1)
  
@@ -215,11 +227,14 @@ for ex in expt:
       mean = np.zeros(T)
       std = np.zeros(T)
       for t in range(T):
+        print('Processing SIC to get extent time: '+time_mods[t].strftime("%Y%m%d%HH:%MM"))
         #mean[t] = np.sum(sic[t]*50*50)
         sicct=sic[t];
-        iext=np.where(sicct>1)[0]; sicct[iext]=0;
-        #iext=np.where(sicct>.15)[0]; sicct[iext]=1;
-        #iext=np.where(sicct<.15)[0]; sicct[iext]=0;
+        #iext=np.where(sicct>1)[0]; sicct[iext]=0;
+        iext=np.where(sicct>.15)#[0]; sicct[iext]=1;
+        for i in range(np.shape(iext)[1]):
+          sicct[iext[0][i],iext[1][i]]=1.
+        #iext=np.where(sicct<=.15)[0]; sicct[iext]=0;
         meant = np.multiply(sicct,25); meant = np.multiply(meant,25);
         mean[t] = np.sum(meant)
       plt.ylabel('Sea ice total area (km\^2)'); plt.title('Sea ice total area (sum of [grid area * SIC])')
