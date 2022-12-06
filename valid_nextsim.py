@@ -7,24 +7,24 @@ import cmocean
 from matplotlib.animation import FuncAnimation
 from matplotlib import animation, rc
 from matplotlib import dates
+import seapy
 import datetime
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from Utils import * #make_animation, time_series_plot, time_series_plot2
 from sys import exit
 import os
 import socket
+import time as tictoc
 plt.ion()
 plt.close('all')
 
 #Time
-start_day  =1
+start_day  =2
 start_month=1
-start_year =2018
-end_day    =30
+start_year =2019
+end_day    =31
 end_month  =12
-end_year   =2021
-end_month  =1
-end_year   =2018
+end_year   =2019
 
 #Runs (names) or experiments (numbers)
 expt=[1]
@@ -34,7 +34,7 @@ plot_series=0
 plot_map   =0
 plot_video =1     
 plot_anim  =0
-save_fig   =0
+save_fig   =1
 
 #Colors
 colors=['r','b','k']
@@ -80,7 +80,10 @@ else:
 #Grid information
 run=runs[expts[0]] # 'data_glorys'
 data = xr.open_dataset(path_runs+run+'/output/Moorings_2018m01.nc')
+lon_mod = data.longitude #sit.to_masked_array() # Extract a given variable
+lat_mod = data.latitude #sit.to_masked_array() # Extract a given variable
 sit_output = data.sit.to_masked_array() # Extract a given variable
+inan_mod=ma.getmaskarray(sit_output[0]); 
 mask = ma.getmaskarray(sit_output[0]) #Get mask
 
 # time_obs
@@ -126,7 +129,7 @@ for ex in expt:
 
     time_mod=dates.date2num(timec)
     time_mods=dates.num2date(time_mod)
-
+    time_modi=[int(time_mod[ii]) for ii in range(len(time_mod))] # integer time for daily search
   #datac.data_vars
   
   if plot_series==1:
@@ -186,17 +189,18 @@ for ex in expt:
             print('Processing SIC to get extent time: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
             #mean[t] = np.sum(sicc_obs[t]*25*25)
             sicct=sicc_obs[t]; 
+            siccz=np.zeros((np.shape(sicct)[0],np.shape(sicct)[1])) 
             #iext=np.where(sicct>1); sicct[iext]=0;
             #iext=np.where(sicct>.15)[0]; sicct[iext]=1;
             iext=np.where(sicct>.15); 
             for i in range(np.shape(iext)[1]):
-              sicct[iext[0][i],iext[1][i]]=1.
+              siccz[iext[0][i],iext[1][i]]=1.
             #iext=np.where(sicct<=.15)[0]; sicct[iext]=0;
             #mean[t] = np.sum(sicct*25*25)
             if obs_source[0:11]=='OSISAF-ease' or obs_source[0:11]=='OSISAFease2':
-              meant = np.multiply(sicct[0:-1,0:-1],obs_grid_area); # meant = np.multiply(meant,obs_grid_area);
+              meant = np.multiply(siccz[0:-1,0:-1],obs_grid_area); # meant = np.multiply(meant,obs_grid_area);
             else:
-              meant = np.multiply(sicct,obs_grid_area); meant = np.multiply(meant,obs_grid_area);
+              meant = np.multiply(siccz,obs_grid_area); meant = np.multiply(meant,obs_grid_area);
             mean[t] = np.sum(meant)
 
           plt.plot(time_obs, mean, color=obs_colors[kc-1])   
@@ -220,15 +224,16 @@ for ex in expt:
       mean = np.zeros(T)
       std = np.zeros(T)
       for t in range(T):
-        print('Processing SIC to get extent time: '+time_mods[t].strftime("%Y%m%d%HH:%MM"))
+        print('Processing model SIC to get extent time: '+time_mods[t].strftime("%Y%m%d%HH:%MM"))
         #mean[t] = np.sum(sic[t]*50*50)
         sicct=sic[t];
+        siccz=np.zeros((np.shape(sicct)[0],np.shape(sicct)[1])) 
         #iext=np.where(sicct>1)[0]; sicct[iext]=0;
         iext=np.where(sicct>.15)#[0]; sicct[iext]=1;
         for i in range(np.shape(iext)[1]):
-          sicct[iext[0][i],iext[1][i]]=1.
+          siccz[iext[0][i],iext[1][i]]=1.
         #iext=np.where(sicct<=.15)[0]; sicct[iext]=0;
-        meant = np.multiply(sicct,25); meant = np.multiply(meant,25);
+        meant = np.multiply(siccz,25); meant = np.multiply(meant,25);
         mean[t] = np.sum(meant)
       plt.ylabel('Sea ice extent (km\^2)'); plt.title('Sea ice extent [sum(area[sic>.15])]')
       figname=path_fig+run+'/sie_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
@@ -253,6 +258,7 @@ for ex in expt:
   
   ### Plot video 
   if plot_video==1:
+    plt.rcParams.update({'font.size': 12})
     if ke==1 and vname=='sie': # if first expt load obs
       fig, ax = plt.subplots(1,len(obs_sources)+len(expt)+len(expt), figsize = (16,8)) # landscape
       # plot obs
@@ -267,6 +273,7 @@ for ex in expt:
             elif obs_source[0:11]=='OSISAFease2':
               file=path_data+'/sic_osisaf/2018'+'/ice_conc_sh_ease2-250_icdr-v2p0_20180101.nc';
             data = xr.open_dataset(file)
+            lon_obs = data.variables['lon']; lat_obs = data.variables['lat']
             xobs = data.variables['xc']; yobs = data.variables['yc']
             data.close()
             dx,dy=np.meshgrid(np.diff(xobs),np.diff(yobs)); dy=np.abs(dy); obs_grid_area=dx*dy
@@ -295,123 +302,172 @@ for ex in expt:
               data = xr.open_dataset(file)
               if k==1:
                 sicc_obs = data.variables['ice_conc']/100. #['cdr_seaice_conc']
-                #exit()
               else:
                 sic_obs = data.variables['ice_conc']/100. #['cdr_seaice_conc'];  
                 sicc_obs = xr.Variable.concat([sicc_obs,sic_obs] ,'time' )
             data.close()
 
           print('Processing SIC to get extent')
-          mean = np.zeros(np.shape(sicc_obs)[0])
+          sic_obs = np.zeros([np.shape(sicc_obs)[0],np.shape(lon_mod)[0],np.shape(lon_mod)[1]])
           for t in range(np.shape(sicc_obs)[0]):
             print('Processing SIC to get extent time: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
             #mean[t] = np.sum(sicc_obs[t]*25*25)
             sicct=sicc_obs[t]; 
+            siccz=np.zeros((np.shape(sicct)[0],np.shape(sicct)[1])) 
             #iext=np.where(sicct>1); sicct[iext]=0;
             #iext=np.where(sicct>.15)[0]; sicct[iext]=1;
             iext=np.where(sicct>.15); 
-            for i in range(np.shape(iext)[1]):
-              sicct[iext[0][i],iext[1][i]]=1.
-            sicc_obs[t]=sicct
-            #if obs_source[0:11]=='OSISAF-ease' or obs_source[0:11]=='OSISAFease2':
-            #  meant = np.multiply(sicct[0:-1,0:-1],obs_grid_area); # meant = np.multiply(meant,obs_grid_area);
-            #else:
-            #  meant = np.multiply(sicct,obs_grid_area); meant = np.multiply(meant,obs_grid_area);
-            #mean[t] = np.sum(meant)
+            for ii in range(np.shape(iext)[1]):
+              siccz[iext[0][ii],iext[1][ii]]=1.
+            st = tictoc.time();   print('Interping obs to model grid ...'); # get the start time
+            sicobsi=seapy.oasurf(np.array(lon_obs),np.array(lat_obs),np.array(siccz),np.array(lon_mod),np.array(lat_mod))[0]
+            et = tictoc.time()-st; print('Execution time:', et, 'seconds')
+            sicobsi[inan_mod]=np.nan
+            sic_obs[t]=sicobsi
 
- 
+          sicc_obs=sic_obs
+
         plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
-        #sit_output = datac.sit.to_masked_array() # Extract a given variable
-        #time = datac.time.indexes['time']
   
         time=time_obs; mask=1-mask; 
         variable = sicc_obs;
         interval=10 #len(time))
-        #anim=make_animation(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
-        #def make_animation(time,mask,variable,interval=10):
   
         #fig, ax1 = plt.subplots(1, 1 ,figsize=(8,8))
-        ax[0].set_title(obs_source,loc='right')
-        ax[0].set_title('Date : {} '.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
-        ax[0].set_facecolor('xkcd:putty')
+        ax[ke-1].set_title(obs_source,loc='right')
+        ax[ke-1].set_title('Date : {} '.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
+        ax[ke-1].set_facecolor('xkcd:putty')
   
         # including colorbar
-        divider = make_axes_locatable(ax[0])
+        divider = make_axes_locatable(ax[ke-1])
         cax = divider.append_axes('right', size='5%', pad=0.05)
         cmap = cmocean.cm.ice
         if varim=='sic':
           cmap = cmocean.cm.ice
         elif varim=='sit':
           cmap = cmocean.cm.dense_r
-        #im1=plt.pcolormesh(variable[0],cmap=cmap,animated=True,vmax = 2.5); 
-        #plt.colorbar(); 
-        im1 = ax[0].imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmax = 3.5)
-        #plt.colorbar()
+        im1 = ax[ke-1].imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmax = 1.0)
         fig.colorbar(im1, cax=cax, orientation='vertical')
   
-        def animate(i):
-            im1.set_array(variable[i])
-            ax[0].set_title('Date :{} '.format(time[i].strftime('%Y.%m.%d')), loc = 'left')
-            return [im1]
+        #def animate(i):
+        #    im1.set_array(variable[i])
+        #    ax[ke-1].set_title('Date :{} '.format(time[i].strftime('%Y.%m.%d')), loc = 'left')
+        #    return [im1]
   
-        Nt = np.shape(variable)[0]
-        anim = animation.FuncAnimation(fig, animate, frames=len(time),
-                                       interval=interval, blit=True)
-        exit()
+        #Nt = np.shape(variable)[0]
+        #anim = animation.FuncAnimation(fig, animate, frames=len(time),
+        #                               interval=interval, blit=True)
 
-      #else: # plotting expts and diff mod-obs
-        exit() 
+    if ke>=1 and vname=='sie': # if first expt load obs
+      sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
+      sic_mod = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
+      sicc_mo=np.zeros((len(time_mod),np.shape(sic_mod)[1],np.shape(sic_mod)[2]))
+      for t in range(len(time_mod)): # (np.shape(sicc_mod)[0]):
+        print('Processing model SIC to get extent time: '+time_mods[t].strftime("%Y%m%d%HH:%MM"))
+        sicct=sic_mod[t];
+        iext=np.where(sicct>.15)#[0]; sicct[iext]=1;
+        for ii in range(np.shape(iext)[1]):
+          sicct[iext[0][ii],iext[1][ii]]=1.
+        sicc_mo[t]=sicct
+      # daily average
+      sicc_mod=np.zeros((len(time_obs),np.shape(sic_mod)[1],np.shape(sic_mod)[2]))
+      for t in range(len(time_obs)): # (np.shape(sicc_mod)[0]):
+        iday=np.where(time_obsn[t]==time_modi)[0]
+        sicc_mod[t]=np.nanmean(sicc_mo[iday,:,:],axis=0)
 
+      plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
+      #sit_output = datac.sit.to_masked_array() # Extract a given variable
+      #time = datac.time.indexes['time']
+  
+      time=time_mods; mask=1-mask; 
+      variable = sicc_mod;
+      interval=10 #len(time))
+  
+      #fig, ax1 = plt.subplots(1, 1 ,figsize=(8,8))
+      ax[ke].set_title(run,loc='right')
+      #ax[ke].set_title('Date : {} '.format(time_obs[0].strftime('%Y.%m.%d')), loc = 'left')
+      ax[ke].set_facecolor('xkcd:putty')
+      # including colorbar
+      divider = make_axes_locatable(ax[ke])
+      cax = divider.append_axes('right', size='5%', pad=0.05)
+      cmap = cmocean.cm.ice
+      im2 = ax[ke].imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmax = 1.0)
+      fig.colorbar(im2, cax=cax, orientation='vertical')
+  
+      #plotting the difference
+      sicc_diff=sicc_mod-sicc_obs
+      ax[ke+1].set_title('Mod-Obs',loc='right')
+      #ax[ke].set_title('Date : {} '.format(time_obs[0].strftime('%Y.%m.%d')), loc = 'left')
+      ax[ke+1].set_facecolor('xkcd:putty')
+      # including colorbar
+      divider = make_axes_locatable(ax[ke+1])
+      cax = divider.append_axes('right', size='5%', pad=0.05)
+      cmap = cmocean.cm.balance
+      im3 = ax[ke+1].imshow(sicc_diff[0],cmap=cmap,origin = 'lower',animated=True,vmin=-1.0,vmax=1.0)
+      fig.colorbar(im3, cax=cax, orientation='vertical')
 
-      elif varim=='sic' or varim=='sit':
+    elif varim=='sic' or varim=='sit':
 
-        plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
-        sit_output = datac.sit.to_masked_array() # Extract a given variable
-        time = datac.time.indexes['time']
+      plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
+      sit_output = datac.sit.to_masked_array() # Extract a given variable
+      time = datac.time.indexes['time']
   
-        time=time; mask =1- mask; 
-        variable = sit_output;
-        interval=10 #len(time))
-        #anim=make_animation(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
-        #def make_animation(time,mask,variable,interval=10):
+      time=time_mod; mask =1- mask; 
+      variable = sit_output;
+      interval=10 #len(time))
+      #anim=make_animation(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
+      #def make_animation(time,mask,variable,interval=10):
   
-        fig, ax1 = plt.subplots(1, 1 ,figsize=(8,8))
-        ax1.set_title('neXtSIM',loc='right')
-        ax1.set_title('Date : {} '.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
-        ax1.set_facecolor('xkcd:putty')
+      fig, ax1 = plt.subplots(1, 1 ,figsize=(8,8))
+      ax1.set_title('neXtSIM',loc='right')
+      ax1.set_title('Date : {} '.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
+      ax1.set_facecolor('xkcd:putty')
   
-        # including colorbar
-        divider = make_axes_locatable(ax1)
-        cax = divider.append_axes('right', size='5%', pad=0.05)
-        if varim=='sic':
-          cmap = cmocean.cm.ice
-        elif varim=='sit':
-          cmap = cmocean.cm.dense_r
-        #im1=plt.pcolormesh(variable[0],cmap=cmap,animated=True,vmax = 2.5); 
-        #plt.colorbar(); 
-        im1 = ax1.imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmax = 3.5)
-        #plt.colorbar()
-        fig.colorbar(im1, cax=cax, orientation='vertical')
-        #exit()
+      # including colorbar
+      divider = make_axes_locatable(ax1)
+      cax = divider.append_axes('right', size='5%', pad=0.05)
+      if varim=='sic':
+        cmap = cmocean.cm.ice
+      elif varim=='sit':
+        cmap = cmocean.cm.dense_r
+      #im1=plt.pcolormesh(variable[0],cmap=cmap,animated=True,vmax = 2.5); 
+      #plt.colorbar(); 
+      im1 = ax1.imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmax = 3.5)
+      #plt.colorbar()
+      fig.colorbar(im1, cax=cax, orientation='vertical')
+      #exit()
   
-        def animate(i):
-            im1.set_array(variable[i])
-            ax1.set_title('Date :{} '.format(time[i].strftime('%Y.%m.%d')), loc = 'left')
-            return [im1]
+      def animate(i):
+          im1.set_array(variable[i])
+          ax1.set_title('Date :{} '.format(time[i].strftime('%Y.%m.%d')), loc = 'left')
+          return [im1]
   
-        Nt = np.shape(variable)[0]
-        anim = animation.FuncAnimation(fig, animate, frames=len(time),
-                                       interval=interval, blit=True)
-        #plt.show()
-        #return anim
-  
-    FFwriter = animation.FFMpegWriter( fps = 24)
-    ##Save animation 
-    figname=path_fig+run+'/sit_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.mp4'
-    if save_fig==1:
-      if os.path.exists(path_fig+run)==False:
-        os.mkdir(path_fig+run)
-      anim.save(figname, writer=FFwriter, dpi = 150)
+      Nt = np.shape(variable)[0]
+      anim = animation.FuncAnimation(fig, animate, frames=len(time),
+                                     interval=interval, blit=True)
+      #plt.show()
+      #return anim
+
+  #exit()
+  def animates(i):
+    im1.set_array(sicc_obs[i])
+    ax[0].set_title('Date :{} '.format(time_obs[i].strftime('%Y.%m.%d')), loc = 'left')
+    im2.set_array(sicc_mod[i])
+    im3.set_array(sicc_diff[i])
+    return [im1,im2,im3]
+
+  time=time_obs
+  Nt = np.shape(variable)[0]
+  anim = animation.FuncAnimation(fig, animates, frames=len(time),
+                                     interval=interval, blit=True)
+  FFwriter = animation.FFMpegWriter( fps = 24)
+  ##Save animation 
+  figname=path_fig+run+'/'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.mp4'
+  if save_fig==1:
+    print('Saving: '+figname)
+    if os.path.exists(path_fig+run)==False:
+      os.mkdir(path_fig+run)
+    anim.save(figname, writer=FFwriter, dpi = 150)
 
 
   ### Make animation of sea-ice thickness
