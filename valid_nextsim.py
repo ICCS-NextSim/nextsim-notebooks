@@ -8,6 +8,7 @@ from matplotlib.animation import FuncAnimation
 from matplotlib import animation, rc
 from matplotlib import dates
 import seapy
+from scipy import interpolate
 import datetime
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from Utils import * #make_animation, time_series_plot, time_series_plot2
@@ -21,20 +22,21 @@ plt.close('all')
 #Time
 start_day  =2
 start_month=1
-start_year =2019
-end_day    =31
-end_month  =12
-end_year   =2019
+start_year =2018
+end_day    =30
+end_month  =8
+end_year   =2021
 
 #Runs (names) or experiments (numbers)
 expt=[1]
 
 # Plot types
-plot_series=0
-plot_map   =0
-plot_video =1     
-plot_anim  =0
-save_fig   =1
+plot_series =0
+plot_scatter=0
+plot_map    =0
+plot_video  =1     
+plot_anim   =0
+save_fig    =1
 
 #Colors
 colors=['r','b','k']
@@ -54,10 +56,10 @@ parame=[3, 4, 2, 5, 6, 8];
 expts=[0,1]
 runs=['50km_ocean_wind','50km_bsose_20180102']
 
-
 #Variables
-vname='sie' #'sit' # timeseries
-varim='sie' # 'sit' # video
+vname='sit' # 'sie' #'sit' # timeseries
+varim='sie' # 'sit' for model solo videos  # video
+varray='sit' # used in xarray
 
 #trick to cover all months in runs longer than a year
 end_month=end_month+1
@@ -95,7 +97,7 @@ time_obsn=dates.date2num(times)
 time_obs=dates.num2date(time_obsn)
 
 #sic 
-prefix_sic='seaice_conc_daily_sh__'; sufix_sic='_f17_v04r00.nc'
+#prefix_sic='seaice_conc_daily_sh__'; sufix_sic='_f17_v04r00.nc'
 
 # Loop in the experiments
 ke=0
@@ -116,19 +118,19 @@ for ex in expt:
     data = xr.open_dataset(filename)
     if k==1:
       #datac = data.variable[vname]
-      timec = data.variables['time']
-      sicc = data.variables['sic']
-      vdatac = data.variables['sit']
+      timec = data.variables['time']; sicc = data.variables['sic']; vdatac = data.variables[varray]#['sit']
     else:
       #datac = xr.concat([datac,data],'time')
       time = data.variables['time'];   timec = xr.Variable.concat([timec,time],'time')
       sic = data.variables['sic'];   sicc = xr.Variable.concat([sicc,sic],'time')
-      vdata = data.variables['sit']; vdatac = xr.Variable.concat([vdatac,vdata],'time')
+      vdata = data.variables[varray]# ['sit']; 
+      vdatac = xr.Variable.concat([vdatac,vdata],'time')
       #exit() 
     data.close()
 
     time_mod=dates.date2num(timec)
     time_mods=dates.num2date(time_mod)
+    time_modd=pd.DatetimeIndex(time_mods)
     time_modi=[int(time_mod[ii]) for ii in range(len(time_mod))] # integer time for daily search
   #datac.data_vars
   
@@ -342,23 +344,66 @@ for ex in expt:
         divider = make_axes_locatable(ax[ke-1])
         cax = divider.append_axes('right', size='5%', pad=0.05)
         cmap = cmocean.cm.ice
-        if varim=='sic':
+        if vname=='sic':
           cmap = cmocean.cm.ice
-        elif varim=='sit':
+        elif vname=='sit':
           cmap = cmocean.cm.dense_r
         im1 = ax[ke-1].imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmax = 1.0)
         fig.colorbar(im1, cax=cax, orientation='vertical')
   
-        #def animate(i):
-        #    im1.set_array(variable[i])
-        #    ax[ke-1].set_title('Date :{} '.format(time[i].strftime('%Y.%m.%d')), loc = 'left')
-        #    return [im1]
-  
-        #Nt = np.shape(variable)[0]
-        #anim = animation.FuncAnimation(fig, animate, frames=len(time),
-        #                               interval=interval, blit=True)
+    if ke==1 and vname=='sit': # if first expt load obs
+      fig, ax = plt.subplots(1,len(obs_sources)+len(expt)+len(expt), figsize = (16,8)) # landscape
+      # Loading data
+      k=0
+      fps=24
+      filename=path_data+'sit_cs2wfa/'+str(2020)+'/CS2WFA_25km_'+str(y)+'0'+str(1)+'.nc'
+      data = xr.open_dataset(filename)
+      lon_obs = data.variables['lon']; lat_obs = data.variables['lat']
+      lon_obs=np.where(lon_obs<180,lon_obs,lon_obs-360)
+      sitc_obs = np.zeros([ym_end-ym_start,np.shape(sicc)[1],np.shape(sicc)[2]])
+      for ym in range( ym_start, ym_end ):
+        k+=1
+        y, m = divmod( ym, 12 ); m+=1
+        if m<10:
+          filename=path_data+'sit_cs2wfa/'+str(y)+'/CS2WFA_25km_'+str(y)+'0'+str(m)+'.nc'
+        else:
+          filename=path_data+'sit_cs2wfa/'+str(y)+'/CS2WFA_25km_'+str(y)+str(m)+'.nc'
+        print(filename)
+        data = xr.open_dataset(filename,group='sea_ice_thickness')
+        if k==1:
+          #datac = data.variable[vname];    timec = data.variables['time']; 
+          sitc = data.variables['sea_ice_thickness']; #vdatac = data.variables[varray]#['sit']
+        else:
+          #datac = xr.concat([datac,data],'time'); time = data.variables['time'];   timec = xr.Variable.concat([timec,time],'time')
+          sit = data.variables['sea_ice_thickness'];  sitc = xr.Variable.concat([sitc,sit],'time')
+          #vdata = data.variables[varray]# ['sit']; 
+          #vdatac = xr.Variable.concat([vdatac,vdata],'time')
+          #exit() 
+        #sitc_obs[k-1]=seapy.oasurf(np.array(lon_obs),np.array(lat_obs),np.array(sit),np.array(lon_mod),np.array(lat_mod))[0] 
+        #exit()
+        data.close()
 
+      #plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
+
+      sicc_obs=sitc
+      time=time_obs; mask=1-mask; 
+      interval=10 #len(time))
+  
+      #fig, ax1 = plt.subplots(1, 1 ,figsize=(8,8))
+      ax[ke-1].set_title('CS2WFA',loc='right')
+      ax[ke-1].set_title('Date : {} '.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
+      ax[ke-1].set_facecolor('xkcd:putty')
+  
+      # including colorbar
+      divider = make_axes_locatable(ax[ke-1])
+      cax = divider.append_axes('right', size='5%', pad=0.05)
+      cmap = cmocean.cm.ice
+      cmap = cmocean.cm.dense_r
+      im1 = ax[ke-1].imshow(sicc_obs[0],cmap=cmap,origin = 'lower',animated=True,vmin=0,vmax = 3.5)
+      fig.colorbar(im1, cax=cax, orientation='vertical')
+      #exit()
     if ke>=1 and vname=='sie': # if first expt load obs
+      fps=24
       sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
       sic_mod = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
       sicc_mo=np.zeros((len(time_mod),np.shape(sic_mod)[1],np.shape(sic_mod)[2]))
@@ -406,8 +451,55 @@ for ex in expt:
       im3 = ax[ke+1].imshow(sicc_diff[0],cmap=cmap,origin = 'lower',animated=True,vmin=-1.0,vmax=1.0)
       fig.colorbar(im3, cax=cax, orientation='vertical')
 
-    elif varim=='sic' or varim=='sit':
+    if ke>=1 and vname=='sit': # if first expt load obs
+      fps=1
+      sit_mod = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
+      sic_mod = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
+      sicc_mod = np.zeros([ym_end-ym_start,np.shape(sicc_obs)[1],np.shape(sicc_obs)[2]])
+      km=-1; time=[]
+      for ym in range( ym_start, ym_end ):
+        km+=1; y, m = divmod( ym, 12 ); m+=1
+        iyear=np.where(time_modd.year==y)
+        imonth=np.where(time_modd[iyear].month==m)
+        sit_modm=np.nanmean(sit_mod[imonth],axis=0) # month average
+        st = tictoc.time();   print('Interping obs to model grid ...'); # get the start time
+        #exit()
+        sicc_mod[km]=seapy.oasurf(np.array(lon_mod),np.array(lat_mod),np.array(sit_modm),np.array(lon_obs),np.array(lat_obs))[0]
+        #f=interpolate.RectBivariateSpline(np.array(lon_mod),np.array(lat_mod),np.array(sit_modm))
+        #sicc_mod[km]=f(np.array(lon_obs),np.array(lat_obs))
+        et = tictoc.time()-st; print('Execution time:', et, 'seconds')
+        time.append(time_mods[imonth[0][0]])
 
+      #plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
+      time_modm=time; mask=1-mask; time_obs=time; 
+      variable = sicc_mod;
+      interval=10 #len(time))
+  
+      #fig, ax1 = plt.subplots(1, 1 ,figsize=(8,8))
+      ax[ke].set_title(run,loc='right')
+      #ax[ke].set_title('Date : {} '.format(time_obs[0].strftime('%Y.%m.%d')), loc = 'left')
+      ax[ke].set_facecolor('xkcd:putty')
+      # including colorbar
+      divider = make_axes_locatable(ax[ke])
+      cax = divider.append_axes('right', size='5%', pad=0.05)
+      cmap = cmocean.cm.ice
+      im2 = ax[ke].imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmin=0,vmax = 3.5)
+      fig.colorbar(im2, cax=cax, orientation='vertical')
+      
+      #plotting the difference
+      sicc_diff=sicc_mod-sicc_obs
+      ax[ke+1].set_title('Mod-Obs',loc='right')
+      #ax[ke].set_title('Date : {} '.format(time_obs[0].strftime('%Y.%m.%d')), loc = 'left')
+      ax[ke+1].set_facecolor('xkcd:putty')
+      # including colorbar
+      divider = make_axes_locatable(ax[ke+1])
+      cax = divider.append_axes('right', size='5%', pad=0.05)
+      cmap = cmocean.cm.balance
+      im3 = ax[ke+1].imshow(sicc_diff[0],cmap=cmap,origin = 'lower',animated=True,vmin=-1.0,vmax=1.0)
+      fig.colorbar(im3, cax=cax, orientation='vertical')
+
+    elif varim=='sic' or varim=='sit': # solo model maps
+      fps=24
       plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
       sit_output = datac.sit.to_masked_array() # Extract a given variable
       time = datac.time.indexes['time']
@@ -446,30 +538,45 @@ for ex in expt:
       anim = animation.FuncAnimation(fig, animate, frames=len(time),
                                      interval=interval, blit=True)
       #plt.show()
+      exit()
       #return anim
 
-  #exit()
-  def animates(i):
-    im1.set_array(sicc_obs[i])
-    ax[0].set_title('Date :{} '.format(time_obs[i].strftime('%Y.%m.%d')), loc = 'left')
-    im2.set_array(sicc_mod[i])
-    im3.set_array(sicc_diff[i])
-    return [im1,im2,im3]
+    #exit()
+    def animates(i):
+      im1.set_array(sicc_obs[i])
+      ax[0].set_title('Date :{} '.format(time_obs[i].strftime('%Y.%m.%d')), loc = 'left')
+      im2.set_array(sicc_mod[i])
+      im3.set_array(sicc_diff[i])
+      return [im1,im2,im3]
 
-  time=time_obs
-  Nt = np.shape(variable)[0]
-  anim = animation.FuncAnimation(fig, animates, frames=len(time),
-                                     interval=interval, blit=True)
-  FFwriter = animation.FFMpegWriter( fps = 24)
-  ##Save animation 
-  figname=path_fig+run+'/'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.mp4'
-  if save_fig==1:
-    print('Saving: '+figname)
-    if os.path.exists(path_fig+run)==False:
-      os.mkdir(path_fig+run)
-    anim.save(figname, writer=FFwriter, dpi = 150)
+    time=time_obs
+    #Nt = np.shape(variable)[0]
+    plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
+    anim = animation.FuncAnimation(fig, animates, frames=len(time),
+                                       interval=interval, blit=True)
+    FFwriter = animation.FFMpegWriter( fps = fps)
+    ##Save animation 
+    figname=path_fig+run+'/'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.mp4'
+    if save_fig==1:
+      print('Saving: '+figname)
+      if os.path.exists(path_fig+run)==False:
+        os.mkdir(path_fig+run)
+      anim.save(figname, writer=FFwriter, dpi = 150)
 
 
+  ### Plot scatter plot
+  if plot_scatter==1:
+    plt.rcParams.update({'font.size': 22})
+    fig, ax = plt.subplots(1, 1, figsize = (8,8))
+    if vname=='sst':
+      sst = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
+      sic = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
+      sic=sic.where(sic > .15 , np.nan)
+      plt.plot(sst[0],sic[0],'.b')
+      plt.xlabel('SST (oC)'); plt.ylabel('SIT (m)'); plt.title('SST x SIC (>.15)')
+      figname=path_fig+run+'/sst_x_sic_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
+  
+  
   ### Make animation of sea-ice thickness
   if plot_anim==1:
   
