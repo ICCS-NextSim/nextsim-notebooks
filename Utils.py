@@ -3,9 +3,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import numpy.ma as ma
 import cmocean
-
+import cartopy
+import cartopy.crs as ccrs
 from matplotlib.animation import FuncAnimation
 from matplotlib import animation, rc
+
+def format_map(ax):
+    ax.gridlines(zorder=2,linewidth=0.25,linestyle="--",color="darkgrey")
+    ax.set_extent([-360, 180, -54, -90], ccrs.PlateCarree())
+    ax.add_feature(cartopy.feature.LAND,zorder=1,alpha=0.7,facecolor="lightgreen")
+
 
 def make_animation_util(time,mask,variable,
                            interval=10):
