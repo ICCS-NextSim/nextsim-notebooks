@@ -36,19 +36,24 @@ end_month  =12
 end_year   =2019
 
 #Runs (names) or experiments (numbers)
-expt=[1,3,4,5]
-inc_obs=0
+expt=[0]#1,3,4,5]
+inc_obs=1
 
 # Plot types
-plot_series =1
+plot_series =0
 plot_scatter=0
 plot_map    =0
-plot_video  =0   
+plot_video  =1   
 plot_anim   =0
 save_fig    =1
 
+#Variables
+vname='sie' # 'sie' #'sit' # timeseries
+varim='sie' # 'sit' for model solo videos  # video
+varray='sic' # used in xarray
+
 #Colors
-colors=['r','b','k','g','orange','yellow','r','b','k']
+colors=['r','b','k','orange','yellow','g','r','b','k']
 obs_colors=['g','y','orange'];
 
 # series
@@ -63,14 +68,9 @@ paramtd=[9, 10, 11, 12];
 parame=[3, 4, 2, 5, 6, 8]; 
 
 ####################################################################
-runs=['50km_ocean_wind','50km_bsose_20180102','50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102','50km_20Clab_20180102']
-#expts=[0,1,2,3,4,5]
+runs=['50km_ocean_wind','50km_bsose_20180102','50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102','50km_20Clab_20180102','50km_P14C20_20180102']
 expts=range(len(runs)) #[0,1,2,3,4,5]
 
-#Variables
-vname='sit' # 'sie' #'sit' # timeseries
-varim='sie' # 'sit' for model solo videos  # video
-varray='sit' # used in xarray
 
 #trick to cover all months in runs longer than a year
 end_month=end_month+1
@@ -143,6 +143,7 @@ for ex in expt:
   #datac.data_vars
   
   if plot_series==1:
+    print('Ploting serie: '+vname+' '+run)
     plt.rcParams.update({'font.size': 22})
     # Plotting time series
     if ke==1:
@@ -150,7 +151,7 @@ for ex in expt:
       # plot obs
       if vname=='sie': # sea ice extent
         # loop in time to read obs
-        kc=0; obs_colors=['g','y','orange']; ll=[]
+        kc=0; ll=[]
         for obs_source in obs_sources: 
           ll.append('OBS-'+obs_source); k=0; kc+=1
           if obs_source[0:11]=='OSISAF-ease' or obs_source[0:11]=='OSISAFease2':
@@ -228,7 +229,7 @@ for ex in expt:
         for t in range(T):
             mean[t] = np.mean((sit[t]*sic[t])/sic[t])
         plt.ylabel('SIT (m)'); plt.title('Domain average sea ice thickness (SIT)')
-        figname=path_fig+run+'/domain_average_sit_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
+        figname=path_fig+run+'/serie_sit_domain_average_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
 
       elif inc_obs==1:
         if ke==1: # if first expt load obs
@@ -280,7 +281,7 @@ for ex in expt:
         mean=np.nanmean(sicc_diff,axis=1); mean=np.nanmean(mean,axis=1)
         timec=time; 
         plt.ylabel('Sea ice thickness (m)'); plt.title('Sea ice thickness [Model interp to Obs]')
-        figname=path_fig+run+'/sit_month_mean_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
+        figname=path_fig+run+'/serie_sit_month_mean_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
 
     elif vname=='sie':
       sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
@@ -301,7 +302,7 @@ for ex in expt:
         meant = np.multiply(siccz,25); meant = np.multiply(meant,25);
         mean[t] = np.sum(meant)
       plt.ylabel('Sea ice extent (km\^2)'); plt.title('Sea ice extent [sum(area[sic>.15])]')
-      figname=path_fig+run+'/sie_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
+      figname=path_fig+run+'/serie_sie_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
   
     #time_series(time, sit_output, mask, 'test', 'Sea ice thickness time serie')
     time = timec #datac.time.indexes['time']
@@ -323,13 +324,14 @@ for ex in expt:
   
   ### Plot video 
   if plot_video==1:
+    print('Ploting video: '+vname+' '+run)
     plt.rcParams.update({'font.size': 12})
     if ke==1 and vname=='sie': # if first expt load obs
       fig, ax = plt.subplots(1,len(obs_sources)+len(expt)+len(expt), figsize = (16,8)) # landscape
       # plot obs
       if vname=='sie': # sea ice extent
         # loop in time to read obs
-        kc=0; obs_colors=['g','y','orange']; ll=[]
+        kc=0; ll=[]
         for obs_source in obs_sources: 
           ll.append('OBS-'+obs_source); k=0; kc+=1
           if obs_source[0:11]=='OSISAF-ease' or obs_source[0:11]=='OSISAFease2':
@@ -630,7 +632,7 @@ for ex in expt:
                                        interval=interval, blit=True)
     FFwriter = animation.FFMpegWriter( fps = fps)
     ##Save animation 
-    figname=path_fig+run+'/'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.mp4'
+    figname=path_fig+run+'/video_map_mod_x_obs_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.mp4'
     if save_fig==1:
       print('Saving: '+figname)
       if os.path.exists(path_fig+run)==False:
@@ -640,6 +642,7 @@ for ex in expt:
 
   ### Plot scatter plot
   if plot_scatter==1:
+    print('Ploting scatter: '+vname+' '+run)
     plt.rcParams.update({'font.size': 22})
     fig, ax = plt.subplots(1, 1, figsize = (8,8))
     if vname=='sst':
@@ -653,6 +656,7 @@ for ex in expt:
   
   ### Make animation of sea-ice thickness
   if plot_anim==1:
+    print('Ploting anim: '+vname+' '+run)
   
     plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
     sit_output = datac.sit.to_masked_array() # Extract a given variable
@@ -663,7 +667,7 @@ for ex in expt:
   
     FFwriter = animation.FFMpegWriter( fps = 24)
     ##Save animation 
-    figname=path_fig+run+'/sit_'+start_year+'-'+start_month+'_'+end_year+'-'+end_month+'.mp4'
+    figname=path_fig+run+'/video_map_sit_'+start_year+'-'+start_month+'_'+end_year+'-'+end_month+'.mp4'
     if save_fig==1:
       if os.path.exists(path_fig+run)==False:
         os.mkdir(path_fig+run)
