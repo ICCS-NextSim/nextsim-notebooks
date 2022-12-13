@@ -6,7 +6,8 @@
 
 #Input
 #########################################################################
-file_type = '3m'  # file_type='3m' or '30m'
+file_type = '3m'  # file_type='3m' (SST, SSS, Ice etc) or '30m'
+land_temp = -2.0  # land temperature (normally 0oC) 
 ini_lat   = -81.00003 # initial glorys latitude
 #########################################################################
 
@@ -14,26 +15,38 @@ print('You need to close the ncfile "ncfile.close()" before opening it. ')
 
 import xarray as xr
 import numpy as np
-import matplotlib.pyplot as plt
 import numpy.ma as ma
-import cmocean
+import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib import animation, rc
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+import cmocean
 import netCDF4 as nc
 from netCDF4 import Dataset
 import datetime as dt
 from netCDF4 import date2num,num2date
 from sys import exit
+import socket
 plt.ion()
 plt.close('all')
 
 # reading sose lon,lat,time
-path='/Users/rsan613/Library/CloudStorage/OneDrive-TheUniversityofAuckland/001_WORK/nextsim/southern/BSOSE/'
+#paths
+if socket.gethostname()=='SC442555' or socket.gethostname()=='SC442555.local':
+  path='/Users/rsan613/Library/CloudStorage/OneDrive-TheUniversityofAuckland/001_WORK/nextsim/southern/BSOSE/'
+  path_out='/Users/rsan613/data/'
+elif socket.gethostname()=='mahuika01': 
+  path='/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/bsose/'
+  path_out=path
+else:
+  print("Your runs, figures etc paths haven't been set")
+  exit()
+
+
 ds=Dataset(path+'SSH_bsoseI139_2013to2021_5dy.nc','r')
 lon_sose=ds.variables['XC'][:] 
 lat_sose=ds.variables['YC'][:] 
-time_in=ds.variables['time'][:] 
+time_in=ds.variables['time'][:]-2.5 # making SOSE date centered as the 5-day average 
 ds.close()
 
 # making long=0:360 for nextsim
@@ -49,9 +62,8 @@ time_out=date2num(time_date,"hours since 1950-01-01 00:00:00")
 # opening/creating file for writing
 #if ncfile._isopen==1:
 #  ncfile.close()  # just to be safe, make sure dataset is not already open.
-path_out='/Users/rsan613/data/'
 #ncfile = Dataset(path+'BSOSE_I139_2013to2021_5d_'+file_type+'.nc',mode='w',format='NETCDF4_CLASSIC') 
-ncfile = Dataset(path_out+'GLORYS12V1_2018_'+file_type+'.nc',mode='w',format='NETCDF4_CLASSIC') 
+ncfile = Dataset(path_out+'BSOSE_I139_2013to2021_5dy_'+file_type+'_land'+str(land_temp)+'oC.nc',mode='w',format='NETCDF4_CLASSIC') 
 print(ncfile)
 lon_dim = ncfile.createDimension('longitude', len(lon_sose))    # longitude axis
 lat_dim = ncfile.createDimension('latitude', len(ilat_sose)+len(lat_sose))     # latitude axis
@@ -91,7 +103,7 @@ if file_type=='30m':
 
   # reading original bsose files
   # and writing new nc files based on GLORYS file format
-  files={'SSH_bsoseI139_2013to2021_5dy.nc','Uvel_bsoseI139_2013to2021_5dy.nc_26m','Vvel_bsoseI139_2013to2021_5dy.nc_26m'}
+  files=['SSH_bsoseI139_2013to2021_5dy.nc','Uvel_bsoseI139_2013to2021_5dy.nc_26m','Vvel_bsoseI139_2013to2021_5dy.nc_26m']
   # loop in the variables
   for f in files:
     print('') 
@@ -156,8 +168,8 @@ elif file_type=='3m':
 
   # reading original bsose files
   # and writing new nc files based on GLORYS file format
-  files={'Theta_bsoseI139_2013to2021_5dy.nc_2m','Salt_bsoseI139_2013to2021_5dy.nc_2m','MLD_bsoseI139_2013to2021_5dy.nc',
-         'SeaIceArea_bsoseI139_2013to2021_5dy.nc','SeaIceHeff_bsoseI139_2013to2021_5dy.nc'}
+  files=['Theta_bsoseI139_2013to2021_5dy.nc_2m','Salt_bsoseI139_2013to2021_5dy.nc_2m','MLD_bsoseI139_2013to2021_5dy.nc',
+         'SeaIceArea_bsoseI139_2013to2021_5dy.nc','SeaIceHeff_bsoseI139_2013to2021_5dy.nc']
   #files={'MLD_bsoseI139_2013to2021_5dy.nc'}
 
   # loop in the variables
@@ -171,7 +183,10 @@ elif file_type=='3m':
       depth[:]=np.abs(sose)
       sose=ds.variables['THETA'][:,:,:,:]
       im=ma.getmaskarray(sose)
-      im=sose==0.; sose[im]=0. 
+      fig=plt.subplots(); plt.pcolormesh(sose[0,0,:,:]); plt.colorbar(); plt.show()
+      exit()
+      sose[im]=land_temp 
+      im=sose==0.; sose[im]=land_temp 
       im=sose<=-5.; sose[im]=-5.
       # Define a 3D variable to hold the data
       thetao = ncfile.createVariable('thetao',np.float64,('time','depth','latitude','longitude')) # note: unlimited dimension is leftmost
@@ -179,7 +194,7 @@ elif file_type=='3m':
       thetao.long_name = 'Temperature' 
       print(thetao)
       #thetao[:,:,:,:]=sose
-      thetao[:,:,0:li,:]=0.
+      thetao[:,:,0:li,:]=land_temp
       thetao[:,:,li:ll,:]=sose
       ds.close()
     elif f=='Salt_bsoseI139_2013to2021_5dy.nc_2m':
