@@ -36,21 +36,31 @@ end_month  =12
 end_year   =2019
 
 #Runs (names) or experiments (numbers)
+<<<<<<< HEAD
 expt=[2,7,8]
 inc_obs=1
+=======
+expt=[2]#,7,8]
+inc_obs=0
+>>>>>>> 4025f9ec79fc8c031056f3c89226cd732612a55b
 
 # Plot types
 plot_series =1
 plot_scatter=0
 plot_map    =0
+<<<<<<< HEAD
 plot_video  =0   
 plot_anim   =0
+=======
+plot_video  =0
+plot_anim   =1
+>>>>>>> 4025f9ec79fc8c031056f3c89226cd732612a55b
 save_fig    =1
 
 #Variables
-vname ='sie' # 'sie' #'sit' # timeseries
-varim ='sie' # 'sit' for model solo videos  # video
-varray='sic' # used in xarray
+vname ='sit' # 'sie' #'sit' # timeseries
+varim ='sit' # 'sit' for model solo videos  # video
+varray='sit' # used in xarray
 
 #Colors
 colors=['r','b','k','orange','yellow','g','r','b','k']
@@ -664,20 +674,62 @@ for ex in expt:
   ### Make animation of sea-ice thickness
   if plot_anim==1:
     print('Ploting anim: '+vname+' '+run)
-  
+
+    fps=60
     plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
-    sit_output = datac.sit.to_masked_array() # Extract a given variable
-    time = datac.time.indexes['time']
+    sit_output = vdatac # .sit.to_masked_array() # Extract a given variable
+    time = time_modd # datac.time.indexes['time']
+    #sit_output = datac.sit.to_masked_array() # Extract a given variable
+    #time = datac.time.indexes['time']
   
-    time=time; mask =1- mask; variable = sit_output;
-    anim=make_animation_util(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
+    #time=time_mod; mask =1- mask; 
+    variable = sit_output;
+    interval=10 #len(time))
+    #anim=make_animation(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
+    #def make_animation(time,mask,variable,interval=10):
   
-    FFwriter = animation.FFMpegWriter( fps = 24)
+    fig, ax1 = plt.subplots(1, 1 ,figsize=(8,8))
+    ax1.set_title('neXtSIM',loc='right')
+    ax1.set_title('Date : {} '.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
+    ax1.set_facecolor('xkcd:putty')
+  
+    # including colorbar
+    divider = make_axes_locatable(ax1)
+    cax = divider.append_axes('right', size='5%', pad=0.05)
+    if varim=='sic':
+      cmap = cmocean.cm.ice
+    elif varim=='sit':
+      cmap = cmocean.cm.dense_r
+    #im1=plt.pcolormesh(variable[0],cmap=cmap,animated=True,vmax = 2.5); 
+    #plt.colorbar(); 
+    im1 = ax1.imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmax = 3.5)
+    #plt.colorbar()
+    fig.colorbar(im1, cax=cax, orientation='vertical')
+    #exit()
+  
+    def animate(i):
+        im1.set_array(variable[i])
+        ax1.set_title('Date :{} '.format(time[i].strftime('%Y.%m.%d')), loc = 'left')
+        return [im1]
+  
+    Nt = np.shape(variable)[0]
+    anim = animation.FuncAnimation(fig, animate, frames=len(time),
+                                     interval=interval, blit=True)
+  
+    #plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
+    #sit_output = vdatac # .sit.to_masked_array() # Extract a given variable
+    #time = time_modd # datac.time.indexes['time']
+  
+    #variable = sit_output;
+    #anim=make_animation_util(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
+  
+    FFwriter = animation.FFMpegWriter(fps=fps)
     ##Save animation 
-    figname=path_fig+run+'/video_map_sit_'+start_year+'-'+start_month+'_'+end_year+'-'+end_month+'.mp4'
+    figname=path_fig+run+'/video_model_map_'+varim+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.mp4'
     if save_fig==1:
       if os.path.exists(path_fig+run)==False:
         os.mkdir(path_fig+run)
+      print('Saving: '+figname)
       anim.save(figname, writer=FFwriter, dpi = 150)
   
   
