@@ -32,7 +32,7 @@ start_day  =1
 start_month=1
 start_year =2018
 end_day    =28
-end_month  =11
+end_month  =1
 end_year   =2018
 
 #Runs (names) or experiments (numbers)
