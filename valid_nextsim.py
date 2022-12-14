@@ -36,14 +36,14 @@ end_month  =1
 end_year   =2018
 
 #Runs (names) or experiments (numbers)
-expt=[2,7,8]
+expt=[8] # [2,7,8]
 inc_obs=1
 
 # Plot types
-plot_series =1
+plot_series =0
 plot_scatter=0
 plot_map    =0
-plot_video  =0   
+plot_video  =1   
 plot_anim   =0
 save_fig    =1
 
@@ -89,7 +89,7 @@ if socket.gethostname()=='SC442555' or socket.gethostname()=='SC442555.local':
   path_data ='/Users/rsan613/n/southern/data/'
 elif socket.gethostname()=='mahuika01' or socket.gethostname()=='mahuika':
   path_runs='/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/' # ''~/'
-  path_fig ='/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/figures' 
+  path_fig ='/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/figures/' 
   path_data ='/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/'
 else:
   print("Your runs, figures etc paths haven't been set")
