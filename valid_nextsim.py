@@ -32,24 +32,24 @@ start_day  =1
 start_month=1
 start_year =2018
 end_day    =28
-end_month  =12
-end_year   =2019
+end_month  =11
+end_year   =2018
 
 #Runs (names) or experiments (numbers)
-expt=[0]#1,3,4,5]
+expt=[2,7,8]
 inc_obs=1
 
 # Plot types
-plot_series =0
+plot_series =1
 plot_scatter=0
 plot_map    =0
-plot_video  =1   
+plot_video  =0   
 plot_anim   =0
 save_fig    =1
 
 #Variables
-vname='sie' # 'sie' #'sit' # timeseries
-varim='sie' # 'sit' for model solo videos  # video
+vname ='sie' # 'sie' #'sit' # timeseries
+varim ='sie' # 'sit' for model solo videos  # video
 varray='sic' # used in xarray
 
 #Colors
@@ -68,9 +68,10 @@ paramtd=[9, 10, 11, 12];
 parame=[3, 4, 2, 5, 6, 8]; 
 
 ####################################################################
-runs=['50km_ocean_wind','50km_bsose_20180102','50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102','50km_20Clab_20180102','50km_P14C20_20180102']
+runs=['50km_ocean_wind'     ,'50km_bsose_20180102' ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',
+      '50km_20Clab_20180102','50km_P14C20_20180102','50km_LandNeg2_20180102']
 expts=range(len(runs)) #[0,1,2,3,4,5]
-
+expt=np.array(expt)-1
 
 #trick to cover all months in runs longer than a year
 end_month=end_month+1
@@ -233,7 +234,7 @@ for ex in expt:
         for t in range(T):
             mean[t] = np.mean((sit[t]*sic[t])/sic[t])
         plt.ylabel('SIT (m)'); plt.title('Domain average sea ice thickness (SIT)')
-        figname=path_fig+run+'/serie_sit_domain_average_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
+        figname=path_fig+run+'/serie_sit_domain_average_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
 
       elif inc_obs==1:
         if ke==1: # if first expt load obs
@@ -323,6 +324,7 @@ for ex in expt:
     if save_fig==1:
       if os.path.exists(path_fig+run)==False:
         os.mkdir(path_fig+run)
+      print('Saving: '+figname)
       plt.savefig(figname)
     plt.show()
   
@@ -381,15 +383,16 @@ for ex in expt:
           print('Processing SIC to get extent')
           sic_obs = np.zeros([np.shape(sicc_obs)[0],np.shape(lon_mod)[0],np.shape(lon_mod)[1]])
           for t in range(np.shape(sicc_obs)[0]):
-            print('Processing SIC to get extent time: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
             #mean[t] = np.sum(sicc_obs[t]*25*25)
             sicct=sicc_obs[t]; 
             siccz=np.zeros((np.shape(sicct)[0],np.shape(sicct)[1])) 
             #iext=np.where(sicct>1); sicct[iext]=0;
             #iext=np.where(sicct>.15)[0]; sicct[iext]=1;
             iext=np.where(sicct>.15); 
+            st = tictoc.time(); print('Processing SIC to get extent time: '+time_obs[t].strftime("%Y%m%d%HH:%MM")) # get the start time
             for ii in range(np.shape(iext)[1]):
               siccz[iext[0][ii],iext[1][ii]]=1.
+            et = tictoc.time()-st; print('Execution time:', et, 'seconds')
             st = tictoc.time();   print('Interping obs to model grid ...'); # get the start time
             sicobsi=seapy.oasurf(np.array(lon_obs),np.array(lat_obs),np.array(siccz),np.array(lon_mod),np.array(lat_mod))[0]
             et = tictoc.time()-st; print('Execution time:', et, 'seconds')
