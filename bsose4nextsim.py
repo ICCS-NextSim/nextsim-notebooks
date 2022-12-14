@@ -183,11 +183,11 @@ elif file_type=='3m':
       depth[:]=np.abs(sose)
       sose=ds.variables['THETA'][:,:,:,:]
       im=ma.getmaskarray(sose)
-      fig=plt.subplots(); plt.pcolormesh(sose[0,0,:,:]); plt.colorbar(); plt.show()
-      exit()
+      #fig=plt.subplots(); plt.pcolormesh(sose[0,0,:,:]); plt.colorbar(); plt.show()
+      #exit()
       sose[im]=land_temp 
       im=sose==0.; sose[im]=land_temp 
-      im=sose<=-5.; sose[im]=-5.
+      #im=sose<=-5.; sose[im]=-5.
       # Define a 3D variable to hold the data
       thetao = ncfile.createVariable('thetao',np.float64,('time','depth','latitude','longitude')) # note: unlimited dimension is leftmost
       thetao.units = 'degrees_C' # degrees Kelvin
