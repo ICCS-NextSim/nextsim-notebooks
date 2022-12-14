@@ -307,7 +307,7 @@ for ex in expt:
         meant = np.multiply(siccz,25); meant = np.multiply(meant,25);
         mean[t] = np.sum(meant)
       plt.ylabel('Sea ice extent (km\^2)'); plt.title('Sea ice extent [sum(area[sic>.15])]')
-      figname=path_fig+run+'/serie_sie_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
+      figname=path_fig+run+'/serie_sie_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
   
     #time_series(time, sit_output, mask, 'test', 'Sea ice thickness time serie')
     time = timec #datac.time.indexes['time']
