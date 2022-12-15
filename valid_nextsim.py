@@ -21,7 +21,7 @@ import os
 import socket
 import time as tictoc
 import importlib
-#plt.ion()
+plt.ion()
 plt.close('all')
 importlib.reload(projection_info)
 proj_info = projection_info.ProjectionInfo.sp_laea()
@@ -36,7 +36,7 @@ end_month  =1
 end_year   =2018
 
 #Runs (names) or experiments (numbers)
-expt=[8] # 2,7,8]
+expt=[9] # 2,7,8]
 inc_obs=1
 
 # Plot types
@@ -58,6 +58,18 @@ varim ='sie' # 'sit' for model solo videos  # video
 colors=['r','b','k','orange','yellow','g','r','b','k']
 obs_colors=['g','y','orange'];
 
+####################################################################
+runs=['50km_ocean_wind'     ,'50km_bsose_20180102' ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',
+      '50km_20Clab_20180102','50km_P14C20_20180102','50km_LandNeg2_20180102','50km_bsose_20130102']
+expts=range(len(runs)) #[0,1,2,3,4,5]
+expt=np.array(expt)-1
+
+#trick to cover all months in runs longer than a year
+end_month=end_month+1
+ym_start= 12*start_year + start_month - 1
+ym_end  = 12*end_year + end_month - 1
+end_month=end_month-1
+
 # series
 params=[9,14];
 # maps
@@ -68,18 +80,6 @@ parampr=[1, 2];
 paramtd=[9, 10, 11, 12]; 
 # eddy stats
 parame=[3, 4, 2, 5, 6, 8]; 
-
-####################################################################
-runs=['50km_ocean_wind'     ,'50km_bsose_20180102' ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',
-      '50km_20Clab_20180102','50km_P14C20_20180102','50km_LandNeg2_20180102']
-expts=range(len(runs)) #[0,1,2,3,4,5]
-expt=np.array(expt)-1
-
-#trick to cover all months in runs longer than a year
-end_month=end_month+1
-ym_start= 12*start_year + start_month - 1
-ym_end  = 12*end_year + end_month - 1
-end_month=end_month-1
 
 #obs sources
 obs_sources=['OSISAFease2']#,'OSISAF-ease'] #['NSIDC','OSISAF','OSISAF-ease','OSISAFease2']: 
@@ -330,7 +330,6 @@ for ex in expt:
       plt.savefig(figname)
     if plt_show==1:
       plt.show()
-      plt.ion()
   
   ### Plot video 
   if plot_video==1:
@@ -644,7 +643,6 @@ for ex in expt:
     FFwriter = animation.FFMpegWriter( fps = fps)
     if plt_show==1:
       plt.show()
-      plt.ion()
     ##Save animation 
     figname=path_fig+run+'/video_map_mod_x_obs_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.mp4'
     if save_fig==1:

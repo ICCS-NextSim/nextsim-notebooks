@@ -11,9 +11,8 @@ limite=$2  #{YYYYMMDD}
 # prefixo do arquivo - delayed time or nrt
 #NAME=dt_upd_global_merged_msla_h_
 
-PREFIX="ice_conc_sh_polstere-100_multi_" # ice_conc_sh_polstere-100_multi_201901011200.nc
 PREFIX="ice_conc_sh_ease-125_multi_" # ice_conc_sh_polstere-100_multi_201901011200.nc
-PREFIX="ice_conc_sh_ease2-250_icdr-v2p0_" # 201801081200.nc
+
 
 ##############################################
 # WINDS FROM CMEMS
@@ -43,8 +42,13 @@ while [ ${current} -le ${limite} ]; do
   #SOURCE=ftp://ftp.remss.com/ccmp/v02.0/Y${YEAR}/M${MONTH}/${PREFIX}_${current}"_V02.0_L3.0_RSS.nc"
   #SOURCE=ftp://ftp.sltac.cls.fr/Core/SEALEVEL_GLO_PHY_L4_NRT_OBSERVATIONS_008_046/dataset-duacs-nrt-global-merged-allsat-phy-l4-v3/${PREFIX}_${current}*
 
-  #SOURCE=ftp://osisaf.met.no/archive/ice/conc/${YEAR}/${MONTH}/${PREFIX}${current}"1200.nc"
-  SOURCE=ftp://osisaf.met.no/reprocessed/ice/conc-cont-reproc/v2p0/${YEAR}/${MONTH}/${PREFIX}${current}"1200.nc"
+  if [ ${current} -le 20151231 ]; then
+    PREFIX="ice_conc_sh_polstere-100_multi_" # ice_conc_sh_polstere-100_multi_201901011200.nc
+    SOURCE=ftp://osisaf.met.no/archive/ice/conc/${YEAR}/${MONTH}/${PREFIX}${current}"1200.nc"
+  else
+    PREFIX="ice_conc_sh_ease2-250_icdr-v2p0_" # 201801081200.nc
+    SOURCE=ftp://osisaf.met.no/reprocessed/ice/conc-cont-reproc/v2p0/${YEAR}/${MONTH}/${PREFIX}${current}"1200.nc"
+  fi 
 
   echo "${SOURCE}"
   #OUTPUT="${PREFIX}_${current}.nc.gz"
