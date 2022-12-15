@@ -30,44 +30,33 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2013
+start_year =2018
 end_day    =28
-end_month  =12
-end_year   =2021
+end_month  =1
+end_year   =2018
 
 #Runs (names) or experiments (numbers)
 expt=[9] # 2,7,8]
 inc_obs=1
 
 # Plot types
-plot_series =1
+plot_series =0
 plot_scatter=0
 plot_map    =0
-plot_video  =0   
+plot_video  =1   
 plot_anim   =0
 save_fig    =1
 plt_show    =0
 
 #Variables
-vname ='sie' # 'sie' #'sit' # timeseries
-varray='sic' # used in xarray
+vname ='sit' # 'sie' #'sit' # timeseries
+varray='sit' # used in xarray
 # 'sit' for model solo videos  # video
 varim ='sie' # 'sit' for model solo videos  # video
 
 #Colors
 colors=['r','b','k','orange','yellow','g','r','b','k']
 obs_colors=['g','y','orange'];
-
-# series
-params=[9,14];
-# maps
-paramm=[15];  
-# profiles
-parampr=[1, 2]; 
-# time depth
-paramtd=[9, 10, 11, 12]; 
-# eddy stats
-parame=[3, 4, 2, 5, 6, 8]; 
 
 ####################################################################
 runs=['50km_ocean_wind'     ,'50km_bsose_20180102' ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',
@@ -80,6 +69,17 @@ end_month=end_month+1
 ym_start= 12*start_year + start_month - 1
 ym_end  = 12*end_year + end_month - 1
 end_month=end_month-1
+
+# series
+params=[9,14];
+# maps
+paramm=[15];  
+# profiles
+parampr=[1, 2]; 
+# time depth
+paramtd=[9, 10, 11, 12]; 
+# eddy stats
+parame=[3, 4, 2, 5, 6, 8]; 
 
 #obs sources
 obs_sources=['OSISAFease2']#,'OSISAF-ease'] #['NSIDC','OSISAF','OSISAF-ease','OSISAFease2']: 
