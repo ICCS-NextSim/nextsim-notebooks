@@ -21,7 +21,7 @@ import os
 import socket
 import time as tictoc
 import importlib
-plt.ion()
+#plt.ion()
 plt.close('all')
 importlib.reload(projection_info)
 proj_info = projection_info.ProjectionInfo.sp_laea()
@@ -32,8 +32,8 @@ start_day  =1
 start_month=1
 start_year =2018
 end_day    =28
-end_month  =12
-end_year   =2019
+end_month  =1
+end_year   =2018
 
 #Runs (names) or experiments (numbers)
 expt=[2]#,7,8]
@@ -43,8 +43,8 @@ inc_obs=0
 plot_series =0
 plot_scatter=0
 plot_map    =0
-plot_video  =0
-plot_anim   =1
+plot_video  =1
+plot_anim   =0
 save_fig    =1
 
 #Variables
