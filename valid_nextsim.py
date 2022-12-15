@@ -21,7 +21,7 @@ import os
 import socket
 import time as tictoc
 import importlib
-#plt.ion()
+plt.ion()
 plt.close('all')
 importlib.reload(projection_info)
 proj_info = projection_info.ProjectionInfo.sp_laea()
@@ -30,27 +30,27 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2018
+start_year =2013
 end_day    =28
-end_month  =1
-end_year   =2018
+end_month  =12
+end_year   =2021
 
 #Runs (names) or experiments (numbers)
-expt=[8] # 2,7,8]
+expt=[9] # 2,7,8]
 inc_obs=1
 
 # Plot types
-plot_series =0
+plot_series =1
 plot_scatter=0
 plot_map    =0
-plot_video  =1   
+plot_video  =0   
 plot_anim   =0
 save_fig    =1
 plt_show    =0
 
 #Variables
-vname ='sit' # 'sie' #'sit' # timeseries
-varray='sit' # used in xarray
+vname ='sie' # 'sie' #'sit' # timeseries
+varray='sic' # used in xarray
 # 'sit' for model solo videos  # video
 varim ='sie' # 'sit' for model solo videos  # video
 
@@ -71,7 +71,7 @@ parame=[3, 4, 2, 5, 6, 8];
 
 ####################################################################
 runs=['50km_ocean_wind'     ,'50km_bsose_20180102' ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',
-      '50km_20Clab_20180102','50km_P14C20_20180102','50km_LandNeg2_20180102']
+      '50km_20Clab_20180102','50km_P14C20_20180102','50km_LandNeg2_20180102','50km_bsose_20130102']
 expts=range(len(runs)) #[0,1,2,3,4,5]
 expt=np.array(expt)-1
 
@@ -330,7 +330,6 @@ for ex in expt:
       plt.savefig(figname)
     if plt_show==1:
       plt.show()
-      plt.ion()
   
   ### Plot video 
   if plot_video==1:
@@ -644,7 +643,6 @@ for ex in expt:
     FFwriter = animation.FFMpegWriter( fps = fps)
     if plt_show==1:
       plt.show()
-      plt.ion()
     ##Save animation 
     figname=path_fig+run+'/video_map_mod_x_obs_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.mp4'
     if save_fig==1:
