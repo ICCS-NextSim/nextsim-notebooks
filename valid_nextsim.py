@@ -36,21 +36,23 @@ end_month  =1
 end_year   =2018
 
 #Runs (names) or experiments (numbers)
-expt=[2]#,7,8]
-inc_obs=0
+expt=[8] # 2,7,8]
+inc_obs=1
 
 # Plot types
 plot_series =0
 plot_scatter=0
 plot_map    =0
-plot_video  =1
+plot_video  =1   
 plot_anim   =0
 save_fig    =1
+plt_show    =1
 
 #Variables
 vname ='sit' # 'sie' #'sit' # timeseries
-varim ='sit' # 'sit' for model solo videos  # video
 varray='sit' # used in xarray
+# 'sit' for model solo videos  # video
+varim ='sie' # 'sit' for model solo videos  # video
 
 #Colors
 colors=['r','b','k','orange','yellow','g','r','b','k']
@@ -326,7 +328,9 @@ for ex in expt:
         os.mkdir(path_fig+run)
       print('Saving: '+figname)
       plt.savefig(figname)
-    plt.show()
+    if plt_show==1:
+      plt.show()
+      plt.ion()
   
   ### Plot video 
   if plot_video==1:
@@ -462,7 +466,7 @@ for ex in expt:
       #ax[ke-1].set_title('Date : {} '.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
       ax[ke-1].set_title(''.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
       cmap = cmocean.cm.dense_r
-      m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='i',ax=ax[ke-1])
+      m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke-1])
       m.drawcoastlines()
       m.fillcontinents(color='grey',lake_color='aqua')
       lonp, latp = m(lon_obs,lat_obs)#,inverse=True)
@@ -558,7 +562,7 @@ for ex in expt:
 
       ax[ke].set_title(run,loc='right')
       cmap = cmocean.cm.dense_r
-      m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='i',ax=ax[ke])
+      m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke])
       lonp, latp = m(lon_obs,lat_obs)#,inverse=True)
       im2 = m.pcolormesh(lonp,latp,sicc_mod[0],cmap=cmap,vmin=0,vmax = 3.5)
       m.drawcoastlines()
@@ -571,7 +575,7 @@ for ex in expt:
       sicc_diff=sicc_mod-sicc_obs
       ax[ke+1].set_title('Mod-Obs',loc='right')
       cmap = cmocean.cm.balance
-      m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='i',ax=ax[ke+1])
+      m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke+1])
       lonp, latp = m(lon_obs,lat_obs)#,inverse=True)
       im3 = m.pcolormesh(lonp,latp,sicc_diff[0],cmap=cmap,vmin=-2,vmax=2)
       m.drawcoastlines()
@@ -638,6 +642,9 @@ for ex in expt:
     anim = animation.FuncAnimation(fig, animates, frames=len(time),
                                        interval=interval, blit=True)
     FFwriter = animation.FFMpegWriter( fps = fps)
+    if plt_show==1:
+      plt.show()
+      plt.ion()
     ##Save animation 
     figname=path_fig+run+'/video_map_mod_x_obs_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.mp4'
     if save_fig==1:
