@@ -36,7 +36,7 @@ end_month  =1
 end_year   =2018
 
 #Runs (names) or experiments (numbers)
-expt=[9] # 2,7,8]
+expt=[8] # 2,7,8]
 inc_obs=1
 
 # Plot types
