@@ -32,25 +32,25 @@ start_day  =1
 start_month=1
 start_year =2018
 end_day    =28
-end_month  =12
-end_year   =2019
+end_month  =1
+end_year   =2018
 
 #Runs (names) or experiments (numbers)
-expt=[9] # 2,7,8]
-inc_obs=1
+expt=[2,9] # 2,7,8]
+inc_obs=0
 
 # Plot types
-plot_series =1
+plot_series =0
 plot_scatter=0
 plot_map    =0
-plot_video  =0   
+plot_video  =1   
 plot_anim   =0
 save_fig    =1
 plt_show    =1
 
 #Variables
-vname ='sie' # processed variable e.g. 'sie' #'sit' # timeseries
-varray='sic' # raw variable used in xarray
+vname ='sit' # processed variable e.g. 'sie' #'sit' # timeseries
+varray='sit' # raw variable used in xarray
 # 'sit' for model solo videos  # video
 varim ='sie' # 'sit' for model solo videos  # video
 
