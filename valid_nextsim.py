@@ -36,7 +36,11 @@ end_month  =1
 end_year   =2018
 
 #Runs (names) or experiments (numbers)
+<<<<<<< HEAD
 expt=[2,9] # 2,7,8]
+=======
+expt=[10]#2,5,6,7,9]
+>>>>>>> c06c4df83b521ba0ccbccb38b6a1518a9040cffe
 inc_obs=0
 
 # Plot types
@@ -60,7 +64,7 @@ obs_colors=['g','y','orange'];
 
 ####################################################################
 runs=['50km_ocean_wind'     ,'50km_bsose_20180102' ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',
-      '50km_20Clab_20180102','50km_P14C20_20180102','50km_LandNeg2_20180102','50km_bsose_20130102']
+      '50km_20Clab_20180102','50km_P14C20_20180102','50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102']
 
 expts=range(len(runs)) #[0,1,2,3,4,5]
 expt=np.array(expt)-1
