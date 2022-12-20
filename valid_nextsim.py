@@ -36,11 +36,7 @@ end_month  =1
 end_year   =2018
 
 #Runs (names) or experiments (numbers)
-<<<<<<< HEAD
-expt=[2,9] # 2,7,8]
-=======
 expt=[10]#2,5,6,7,9]
->>>>>>> c06c4df83b521ba0ccbccb38b6a1518a9040cffe
 inc_obs=0
 
 # Plot types
