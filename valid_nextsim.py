@@ -30,14 +30,14 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2018
+start_year =2013
 end_day    =28
 end_month  =12
-end_year   =2019
+end_year   =2021
 
 #Runs (names) or experiments (numbers)
-expt=[2,5,7,10]
-inc_obs=1
+expt=[9]#2,5,7,10]
+inc_obs=0
 
 # Plot types
 plot_series =1
@@ -49,18 +49,19 @@ save_fig    =1
 plt_show    =1
 
 #Variables
-vname ='sie' # processed variable e.g. 'sie' #'sit' # timeseries
-varray='sic' # raw variable used in xarray
+vname ='siv' # processed variable e.g. 'sie' #'sit' # timeseries
+varray='sit' # raw variable used in xarray
 # 'sit' for model solo videos  # video
 varim ='sie' # 'sit' for model solo videos  # video
 
 #Colors
-colors=['r','b','k','orange','yellow','g','r','b','k']
+colors=['r','b','k','orange','pink','brown','yellow','g','r','b','k']
 obs_colors=['g','y','orange'];
 
 ####################################################################
 runs=['50km_ocean_wind'     ,'50km_bsose_20180102' ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',
-      '50km_20Clab_20180102','50km_P14C20_20180102','50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102']
+      '50km_20Clab_20180102','50km_P14C20_20180102','50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',
+      '50km_glorys_20180102']
 
 expts=range(len(runs)) #[0,1,2,3,4,5]
 expt=np.array(expt)-1
@@ -99,7 +100,7 @@ else:
   exit()
   
 #Grid information
-run=runs[expts[0]] # 'data_glorys'
+run=runs[expt[0]] # 'data_glorys'
 data = xr.open_dataset(path_runs+run+'/output/Moorings_2018m01.nc')
 lon_mod = data.longitude #sit.to_masked_array() # Extract a given variable
 lat_mod = data.latitude #sit.to_masked_array() # Extract a given variable
@@ -311,6 +312,23 @@ for ex in expt:
         mean[t] = np.sum(meant)
       plt.ylabel('Sea ice extent (km\^2)'); plt.title('Sea ice extent [sum(area[sic>.15])]')
       figname=path_fig+run+'/serie_sie_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+
+    elif vname=='siv':
+      if inc_obs==0:
+        if ke==1:
+          ll=[]
+        sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
+        siv = sit*25*25/1000;  #_output = datac.sit.to_masked_array() # Extract a given variable
+        #exit()
+        sic = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
+        T = np.shape(sit)[0]
+        mean = np.zeros(T)
+        std = np.zeros(T)
+        for t in range(T):
+            mean[t] = np.sum((siv[t]*sic[t])/sic[t])
+        plt.ylabel('SIV (km3)'); plt.title('Antarctic total sea ice volume (km3)')
+        figname=path_fig+run+'/serie_siv_total_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+
   
     #time_series(time, sit_output, mask, 'test', 'Sea ice thickness time serie')
     time = timec #datac.time.indexes['time']
