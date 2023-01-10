@@ -36,7 +36,7 @@ end_month  =12
 end_year   =2019
 
 #Runs (names) or experiments (numbers)
-expt=[2,5,7,10]
+expt=[11,2]#,5,7,10]
 inc_obs=1
 
 # Plot types
@@ -49,8 +49,8 @@ save_fig    =1
 plt_show    =1
 
 #Variables
-vname ='sie' # processed variable e.g. 'sie' #'sit' # timeseries
-varray='sic' # raw variable used in xarray
+vname ='sit' # processed variable e.g. 'sie' #'sit' # timeseries
+varray='sit' # raw variable used in xarray
 # 'sit' for model solo videos  # video
 varim ='sie' # 'sit' for model solo videos  # video
 
@@ -60,7 +60,8 @@ obs_colors=['g','y','orange'];
 
 ####################################################################
 runs=['50km_ocean_wind'     ,'50km_bsose_20180102' ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',
-      '50km_20Clab_20180102','50km_P14C20_20180102','50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102']
+      '50km_20Clab_20180102','50km_P14C20_20180102','50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',
+      '50km_glorys_20180102']
 
 expts=range(len(runs)) #[0,1,2,3,4,5]
 expt=np.array(expt)-1
@@ -99,7 +100,7 @@ else:
   exit()
   
 #Grid information
-run=runs[expts[0]] # 'data_glorys'
+run=runs[expt[0]] # 'data_glorys'
 data = xr.open_dataset(path_runs+run+'/output/Moorings_2018m01.nc')
 lon_mod = data.longitude #sit.to_masked_array() # Extract a given variable
 lat_mod = data.latitude #sit.to_masked_array() # Extract a given variable
