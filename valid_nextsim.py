@@ -30,27 +30,27 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2013
+start_year =2019
 end_day    =28
 end_month  =12
-end_year   =2021
+end_year   =2019
 
 #Runs (names) or experiments (numbers)
 expt=[9]#2,5,7,10]
-inc_obs=0
+inc_obs=1
 
 # Plot types
-plot_series =1
+plot_series =0
 plot_scatter=0
 plot_map    =0
-plot_video  =0   
+plot_video  =1   
 plot_anim   =0
 save_fig    =1
 plt_show    =1
 
 #Variables
-vname ='siv' # processed variable e.g. 'sie' #'sit' # timeseries
-varray='sit' # raw variable used in xarray
+vname ='sie' # processed variable e.g. 'sie' #'sit' # timeseries
+varray='sic' # raw variable used in xarray
 # 'sit' for model solo videos  # video
 varim ='sie' # 'sit' for model solo videos  # video
 
@@ -443,7 +443,7 @@ for ex in expt:
           cmap = cmocean.cm.ice
         elif vname=='sit':
           cmap = cmocean.cm.dense_r
-        im1 = ax[ke-1].imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmax = 1.0)
+        im1 = ax[ke-1].imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmin=0,vmax = 1.0)
         fig.colorbar(im1, cax=cax, orientation='vertical')
   
     if ke==1 and vname=='sit': # if first expt load obs
