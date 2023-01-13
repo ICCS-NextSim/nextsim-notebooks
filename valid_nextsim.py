@@ -30,13 +30,13 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2013
+start_year =2018
 end_day    =28
 end_month  =12
-end_year   =2021
+end_year   =2018
 
 #Runs (names) or experiments (numbers)
-expt=[9]#2,5,7,10]
+expt=[11,2]#,5,7,10]
 inc_obs=0
 
 # Plot types
