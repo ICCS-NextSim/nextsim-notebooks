@@ -30,10 +30,10 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2019
+start_year =2018
 end_day    =28
-end_month  =12
-end_year   =2019
+end_month  =1
+end_year   =2018
 
 #Runs (names) or experiments (numbers)
 expt=[9]#2,5,7,10]
@@ -49,8 +49,8 @@ save_fig    =1
 plt_show    =1
 
 #Variables
-vname ='sie' # processed variable e.g. 'sie' #'sit' # timeseries
-varray='sic' # raw variable used in xarray
+vname ='sie' # sie,sit,drift processed variable e.g. 'sie' #'sit' # timeseries
+varray='sic' # sic,sit,siv for velocity, raw variable used in xarray
 # 'sit' for model solo videos  # video
 varim ='sie' # 'sit' for model solo videos  # video
 
@@ -83,7 +83,7 @@ paramtd=[9, 10, 11, 12];
 # eddy stats
 parame=[3, 4, 2, 5, 6, 8]; 
 
-#obs sources
+# SIE obs sources
 obs_sources=['OSISAFease2']#,'OSISAF-ease'] #['NSIDC','OSISAF','OSISAF-ease','OSISAFease2']: 
 
 #paths
@@ -104,6 +104,9 @@ run=runs[expt[0]] # 'data_glorys'
 data = xr.open_dataset(path_runs+run+'/output/Moorings_2018m01.nc')
 lon_mod = data.longitude #sit.to_masked_array() # Extract a given variable
 lat_mod = data.latitude #sit.to_masked_array() # Extract a given variable
+v_spam=10
+lon_modv=lon_mod[::v_spam,::v_spam]
+lat_modv=lat_mod[::v_spam,::v_spam]
 sit_output = data.sit.to_masked_array() # Extract a given variable
 inan_mod=ma.getmaskarray(sit_output[0]); 
 mask = ma.getmaskarray(sit_output[0]) #Get mask
@@ -136,12 +139,17 @@ for ex in expt:
     if k==1:
       #datac = data.variable[vname]
       timec = data.variables['time']; sicc = data.variables['sic']; vdatac = data.variables[varray]#['sit']
+      if varray=='siv':
+        udatac = data.variables['siu']
     else:
       #datac = xr.concat([datac,data],'time')
       time = data.variables['time'];   timec = xr.Variable.concat([timec,time],'time')
       sic = data.variables['sic'];   sicc = xr.Variable.concat([sicc,sic],'time')
       vdata = data.variables[varray]# ['sit']; 
       vdatac = xr.Variable.concat([vdatac,vdata],'time')
+      if varray=='siv':
+        udata = data.variables['siu']; 
+        udatac = xr.Variable.concat([udatac,udata],'time')
       #exit() 
     data.close()
 
@@ -417,7 +425,9 @@ for ex in expt:
               siccz[iext[0][ii],iext[1][ii]]=1.
             et = tictoc.time()-st; print('Execution time:', et, 'seconds')
             st = tictoc.time();   print('Interping obs to model grid ...'); # get the start time
+            siccz=siccz*100.0
             sicobsi=seapy.oasurf(np.array(lon_obs),np.array(lat_obs),np.array(siccz),np.array(lon_mod),np.array(lat_mod))[0]
+            sicobsi=sicobsi/100.0
             et = tictoc.time()-st; print('Execution time:', et, 'seconds')
             sicobsi[inan_mod]=np.nan
             sic_obs[t]=sicobsi
@@ -446,55 +456,6 @@ for ex in expt:
         im1 = ax[ke-1].imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmin=0,vmax = 1.0)
         fig.colorbar(im1, cax=cax, orientation='vertical')
   
-    if ke==1 and vname=='sit': # if first expt load obs
-      fig, ax = plt.subplots(1,len(obs_sources)+len(expt)+len(expt), figsize = (16,8)) # landscape
-      #fig = plt.figure(figsize=(16,6),dpi=150)
-
-      # Loading data
-      k=0
-      fps=24
-      filename=path_data+'sit_cs2wfa/'+str(2020)+'/CS2WFA_25km_'+str(2020)+'0'+str(1)+'.nc'
-      data = xr.open_dataset(filename)
-      lon_obs = data.variables['lon']; lat_obs = data.variables['lat']
-      lon_obs=np.where(lon_obs<180,lon_obs,lon_obs-360)
-      sitc_obs = np.zeros([ym_end-ym_start,np.shape(sicc)[1],np.shape(sicc)[2]])
-      for ym in range( ym_start, ym_end ):
-        k+=1
-        y, m = divmod( ym, 12 ); m+=1
-        filename=path_data+'sit_cs2wfa/'+str(y)+'/CS2WFA_25km_'+str(y)+str(m).zfill(2)+'.nc'
-        print(filename)
-        data = xr.open_dataset(filename,group='sea_ice_thickness')
-        if k==1:
-          #datac = data.variable[vname];    timec = data.variables['time']; 
-          sitc = data.variables['sea_ice_thickness']; #vdatac = data.variables[varray]#['sit']
-        else:
-          #datac = xr.concat([datac,data],'time'); time = data.variables['time'];   timec = xr.Variable.concat([timec,time],'time')
-          sit = data.variables['sea_ice_thickness'];  sitc = xr.Variable.concat([sitc,sit],'time')
-          #vdata = data.variables[varray]# ['sit']; 
-          #vdatac = xr.Variable.concat([vdatac,vdata],'time')
-        data.close()
-
-      sicc_obs=sitc
-      time=time_obs; mask=1-mask; 
-      interval=10 #len(time))
- 
-      # no latlon 
-      #ax[ke-1]=fig.add_subplot(1,len(obs_sources)+len(expt)+len(expt), ke ,projection=proj_info.crs)
-      # guillaume ax=fig.add_subplot(1,len(obs_sources)+len(expt)+len(expt), ke ,projection=proj_info.crs)
-      ax[ke-1].set_title('CS2WFA',loc='right')
-      #ax[ke-1].set_title('Date : {} '.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
-      ax[ke-1].set_title(''.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
-      cmap = cmocean.cm.dense_r
-      m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke-1])
-      m.drawcoastlines()
-      m.fillcontinents(color='grey',lake_color='aqua')
-      lonp, latp = m(lon_obs,lat_obs)#,inverse=True)
-      im1 = m.pcolormesh(lonp,latp,sicc_obs[0],cmap=cmap,vmin=0,vmax = 3.5)
-      #Madrid; x,y = m([-3.703889],[40.4125]); m.plot(x,y, marker="o", color="blue", label="Madrid", ls="")
-      # including colorbar
-      divider = make_axes_locatable(ax[ke-1])
-      cax = divider.append_axes('right', size='5%', pad=0.05)
-      fig.colorbar(im1, cax=cax, orientation='vertical')
     if ke>=1 and vname=='sie': # if first expt load obs
       fps=24
       sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
@@ -544,6 +505,56 @@ for ex in expt:
       im3 = ax[ke+1].imshow(sicc_diff[0],cmap=cmap,origin = 'lower',animated=True,vmin=-1.0,vmax=1.0)
       fig.colorbar(im3, cax=cax, orientation='vertical')
 
+    if ke==1 and vname=='sit': # if first expt load obs
+      fig, ax = plt.subplots(1,len(obs_sources)+len(expt)+len(expt), figsize = (16,8)) # landscape
+      #fig = plt.figure(figsize=(16,6),dpi=150)
+
+      # Loading data
+      k=0
+      fps=24
+      filename=path_data+'sit_cs2wfa/'+str(2020)+'/CS2WFA_25km_'+str(2020)+'0'+str(1)+'.nc'
+      data = xr.open_dataset(filename)
+      lon_obs = data.variables['lon']; lat_obs = data.variables['lat']
+      lon_obs=np.where(lon_obs<180,lon_obs,lon_obs-360)
+      sitc_obs = np.zeros([ym_end-ym_start,np.shape(sicc)[1],np.shape(sicc)[2]])
+      for ym in range( ym_start, ym_end ):
+        k+=1
+        y, m = divmod( ym, 12 ); m+=1
+        filename=path_data+'sit_cs2wfa/'+str(y)+'/CS2WFA_25km_'+str(y)+str(m).zfill(2)+'.nc'
+        print(filename)
+        data = xr.open_dataset(filename,group='sea_ice_thickness')
+        if k==1:
+          #datac = data.variable[vname];    timec = data.variables['time']; 
+          sitc = data.variables['sea_ice_thickness']; #vdatac = data.variables[varray]#['sit']
+        else:
+          #datac = xr.concat([datac,data],'time'); time = data.variables['time'];   timec = xr.Variable.concat([timec,time],'time')
+          sit = data.variables['sea_ice_thickness'];  sitc = xr.Variable.concat([sitc,sit],'time')
+          #vdata = data.variables[varray]# ['sit']; 
+          #vdatac = xr.Variable.concat([vdatac,vdata],'time')
+        data.close()
+
+      sicc_obs=sitc
+      time=time_obs; mask=1-mask; 
+      interval=10 #len(time))
+ 
+      # no latlon 
+      #ax[ke-1]=fig.add_subplot(1,len(obs_sources)+len(expt)+len(expt), ke ,projection=proj_info.crs)
+      # guillaume ax=fig.add_subplot(1,len(obs_sources)+len(expt)+len(expt), ke ,projection=proj_info.crs)
+      ax[ke-1].set_title('CS2WFA',loc='right')
+      #ax[ke-1].set_title('Date : {} '.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
+      ax[ke-1].set_title(''.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
+      cmap = cmocean.cm.dense_r
+      m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke-1])
+      m.drawcoastlines()
+      m.fillcontinents(color='grey',lake_color='aqua')
+      lonp, latp = m(lon_obs,lat_obs)#,inverse=True)
+      im1 = m.pcolormesh(lonp,latp,sicc_obs[0],cmap=cmap,vmin=0,vmax = 3.5)
+      #Madrid; x,y = m([-3.703889],[40.4125]); m.plot(x,y, marker="o", color="blue", label="Madrid", ls="")
+      # including colorbar
+      divider = make_axes_locatable(ax[ke-1])
+      cax = divider.append_axes('right', size='5%', pad=0.05)
+      fig.colorbar(im1, cax=cax, orientation='vertical')
+
     if ke>=1 and vname=='sit': # if first expt load obs
       fps=1
       sit_mod = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
@@ -579,6 +590,7 @@ for ex in expt:
       #im2 = ax[ke].imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmin=0,vmax = 3.5)
       #fig.colorbar(im2, cax=cax, orientation='vertical')
 
+      ax[ke].set_title('Date : {} '.format(time_obs[0].strftime('%Y.%m.%d')), loc = 'left')
       ax[ke].set_title(run,loc='right')
       cmap = cmocean.cm.dense_r
       m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke])
@@ -597,6 +609,109 @@ for ex in expt:
       m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke+1])
       lonp, latp = m(lon_obs,lat_obs)#,inverse=True)
       im3 = m.pcolormesh(lonp,latp,sicc_diff[0],cmap=cmap,vmin=-2,vmax=2)
+      m.drawcoastlines()
+      m.fillcontinents(color='grey',lake_color='aqua')
+      divider = make_axes_locatable(ax[ke+1])
+      cax = divider.append_axes('right', size='5%', pad=0.05)
+      fig.colorbar(im3, cax=cax, orientation='vertical')
+
+    # Ice drift
+    if ke==1 and vname=='drift': # if first expt load obs
+      fig, ax = plt.subplots(1,len(obs_sources)+len(expt)+len(expt), figsize = (16,8)) # landscape
+      k=0
+      for t in time_obs:
+        k+=1 # drift_osisaf_ease2
+        file=path_data+'/drift_osisaf_ease2/'+t.strftime("%Y")+'/ice_drift_sh_ease2-750_cdr-v1p0_24h-'+t.strftime("%Y%m%d")+'1200.nc'; 
+        print(file)
+        data = xr.open_dataset(file)
+        if k==1:
+          u_obs = data.variables['dX'] #['cdr_seaice_conc']
+          v_obs = data.variables['dY'] #['cdr_seaice_conc']
+          uc_obs = data.variables['dX'] #['cdr_seaice_conc']
+          vc_obs = data.variables['dY'] #['cdr_seaice_conc']
+          lon_obs = data.variables['lon']; lat_obs = data.variables['lat']
+          v_spao=2
+          lon_obsv=lon_obs[::v_spao,::v_spao]
+          lat_obsv=lat_obs[::v_spao,::v_spao]
+        else:
+          u_obs = data.variables['dX'] #['cdr_seaice_conc']
+          v_obs = data.variables['dY'] #['cdr_seaice_conc']
+          uc_obs = xr.Variable.concat([uc_obs,u_obs] ,'time' )
+          vc_obs = xr.Variable.concat([vc_obs,v_obs] ,'time' )
+        data.close()
+
+      magc_obs=np.sqrt(uc_obs**2+vc_obs**2)
+      uc_obs=uc_obs[:,::v_spao,::v_spao]
+      vc_obs=vc_obs[:,::v_spao,::v_spao]
+      time=time_obs; mask=1-mask; 
+      interval=10 #len(time))
+      fps=24
+ 
+      ax[ke-1].set_title('OSI-455',loc='right')
+      ax[ke-1].set_title(time[0].strftime('%Y.%m.%d'), loc = 'left')
+      cmap = cmocean.cm.tempo
+      m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke-1])
+      m.drawcoastlines()
+      m.fillcontinents(color='grey',lake_color='aqua')
+      lonop, latop = m(lon_obs,lat_obs)#,inverse=True)
+      lonov, latov = m(lon_obsv,lat_obsv)#,inverse=True)
+      im1 = m.pcolormesh(lonop,latop,magc_obs[0],cmap=cmap,vmin=0,vmax =80)
+      # including colorbar
+      divider = make_axes_locatable(ax[ke-1])
+      cax = divider.append_axes('right', size='5%', pad=0.05)
+      fig.colorbar(im1, cax=cax, orientation='vertical')
+      im11 = m.quiver(lonov, latov, uc_obs[0], vc_obs[0],color='black',width=0.002,scale=500.0) 
+      qk=plt.quiverkey(im11,.5,.5,10,'10 km/day',labelpos='S',fontproperties={'size':8})
+
+    if ke>=1 and vname=='drift': # if first expt load obs
+      u_mod = udatac*3.6*24;  v_mod = vdatac*3.6*24;
+      #u_mod=np.where(u_mod!=0.0,u_mod,np.nan)
+      #v_mod=np.where(v_mod!=0.0,v_mod,np.nan)
+      uc_mod = np.zeros([len(time_obs),np.shape(v_obs)[1],np.shape(v_obs)[2]]); uc_mod[:]=np.nan
+      vc_mod = np.zeros([len(time_obs),np.shape(v_obs)[1],np.shape(v_obs)[2]]); vc_mod[:]=np.nan
+      # daily average
+      for t in range(len(time_obs)): # (np.shape(sicc_mod)[0]):
+        print('Computing model drift daily mean: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
+        iday=np.where(time_obsn[t]==time_modi)[0]
+        ucmod=np.nanmean(u_mod[iday,:,:],axis=0)
+        vcmod=np.nanmean(v_mod[iday,:,:],axis=0)
+        st = tictoc.time();   print('Interping model siu and siv to obs grid ...'); # get the start time
+        uc_mod[t]=seapy.oasurf(np.array(lon_mod),np.array(lat_mod),np.array(ucmod),np.array(lon_obs),np.array(lat_obs))[0]
+        vc_mod[t]=seapy.oasurf(np.array(lon_mod),np.array(lat_mod),np.array(vcmod),np.array(lon_obs),np.array(lat_obs))[0]
+        et = tictoc.time()-st; print('Execution time:', et, 'seconds')
+
+      uc_mod=np.where(uc_mod!=0.0,uc_mod,np.nan)
+      vc_mod=np.where(vc_mod!=0.0,vc_mod,np.nan)
+      time=time_obs; 
+      magc_mod=np.sqrt(uc_mod**2+vc_mod**2)
+      magc_mod=np.where(magc_mod<=80.0,magc_mod,np.nan)
+      uc_mod=np.where(magc_mod<=80.0,uc_mod,np.nan)
+      vc_mod=np.where(magc_mod<=80.0,vc_mod,np.nan)
+      uc_mod=uc_mod[:,::v_spao,::v_spao]
+      vc_mod=vc_mod[:,::v_spao,::v_spao]
+      time=time_obs; mask=1-mask; 
+      interval=10 #len(time))
+      fps=6
+
+      ax[ke].set_title(run,loc='right')
+      cmap = cmocean.cm.tempo
+      m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke])
+      lonp, latp = m(lon_mod,lat_mod)#,inverse=True)
+      lonv, latv = m(lon_modv,lat_modv)#,inverse=True)
+      im2 = m.pcolormesh(lonop,latop,magc_mod[0],cmap=cmap,vmin=0,vmax=80)
+      divider = make_axes_locatable(ax[ke])
+      cax = divider.append_axes('right', size='5%', pad=0.05)
+      fig.colorbar(im2, cax=cax, orientation='vertical')
+      im22 = m.quiver(lonov, latov, uc_mod[0], vc_mod[0],color='black',width=0.002,scale=500.0) 
+      qk=plt.quiverkey(im22,.5,.5,10,'10 km/day',labelpos='S',fontproperties={'size':8})
+      m.drawcoastlines()
+      m.fillcontinents(color='grey',lake_color='aqua')
+
+      #plotting the difference
+      ax[ke+1].set_title('Mod-Obs',loc='right')
+      cmap = cmocean.cm.balance
+      m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke+1])
+      im3 = m.pcolormesh(lonop,latop,magc_mod[0]-magc_obs[0],cmap=cmap,vmin=-50,vmax=50)
       m.drawcoastlines()
       m.fillcontinents(color='grey',lake_color='aqua')
       divider = make_axes_locatable(ax[ke+1])
@@ -647,13 +762,25 @@ for ex in expt:
       #return anim
 
     #exit()
-    def animates(i):
-      im1.set_array(sicc_obs[i])
-      #plt.title('Date :{} '.format(time_obs[i].strftime('%Y.%m.%d')), loc = 'left')
-      ax[0].set_title('{}'.format(time_obs[i].strftime('%Y.%m.%d')), loc = 'left')
-      im2.set_array(sicc_mod[i])
-      im3.set_array(sicc_diff[i])
-      return [im1,im2,im3]
+    if vname=='drift':
+      def animates(i):
+        im1.set_array(magc_obs[i])
+        im11.set_UVC(uc_obs[i],vc_obs[i], C=None)
+        #plt.title('Date :{} '.format(time_obs[i].strftime('%Y.%m.%d')), loc = 'left')
+        ax[0].set_title('{}'.format(time_obs[i].strftime('%Y.%m.%d')), loc = 'left')
+        im2.set_array(magc_mod[i])
+        im22.set_UVC(uc_mod[i],vc_mod[i], C=None)
+        im3.set_array(magc_mod[i]-magc_obs[i])
+        return [im1,im11,im2,im22,im3]
+
+    else:
+      def animates(i):
+        im1.set_array(sicc_obs[i])
+        #plt.title('Date :{} '.format(time_obs[i].strftime('%Y.%m.%d')), loc = 'left')
+        ax[0].set_title('{}'.format(time_obs[i].strftime('%Y.%m.%d')), loc = 'left')
+        im2.set_array(sicc_mod[i])
+        im3.set_array(sicc_diff[i])
+        return [im1,im2,im3]
 
     time=time_obs
     #Nt = np.shape(variable)[0]
