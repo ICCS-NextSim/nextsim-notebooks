@@ -8,6 +8,68 @@ import cartopy.crs as ccrs
 from matplotlib.animation import FuncAnimation
 from matplotlib import animation, rc
 
+def veccor1(u1,v1,u2,v2):
+    ''' 
+    # [a,theta]=VECCOR1(u1,v1,u2,v2) computes the complex vector correlation
+    # coefficient following Kundu (1976), JPO, 6, 238-242. Input are the
+    # four time series vectors. Output is complex, with amplitude and
+    # rotation angle in degrees. A positive angle indicates that series 1
+    # is rotated positively (counterclockwise) from series 2.
+    #
+    ########################################################################
+    # ver. 1: 12/1/96 (R.Beardsley)
+    # ver. 2: allow for complex arguments, remove mean
+    # brought (as is) to atsee collection in August 1999 by JiM.
+    # Adpated from matlab to python by Rafa Santana, 30/01/2023
+    ''' 
+    import numpy as np
+    from sys import exit
+  
+    # converting the vectors to complex numbers
+    #  X=u1(:)+i*v1;
+    #u1=u1.flatten(); v1=v1.flatten()
+    #u2=u2.flatten(); v2=v2.flatten()
+    X=np.transpose([u1.flatten()]) + 1j*v1.flatten()
+    Y=np.transpose([u2.flatten()]) + 1j*v2.flatten()
+
+    X=np.complex64(X)
+    Y=np.complex64(Y)
+
+    ## work on the common good points only
+    #ii=find((isfinite(X+Y)));
+    ii=np.isfinite(X,Y)==1;
+
+    ## if no common good points, return NaNs
+    if(np.sum(ii)<1):
+      ac=np.NaN; theta=np.NaN; trans=np.NaN;
+      return ac,theta 
+      exit()
+
+    X=X[ii]; 
+    # there is seem to be some memory problem, in which "Y" gets 0 values
+    # computing "Y" again solves the problem
+    #Y=np.transpose([uc_mod[0,::v_spave,::v_spave].flatten()]) + 1j*vc_mod[0,::v_spave,::v_spave].flatten()
+    Y=np.transpose([u2.flatten()]) + 1j*v2.flatten()
+    Y=np.complex64(Y)
+    Y=Y[ii];
+    # if that doesnt work swap the input (e.g. model vs obs or obs vs model)
+    
+ 
+    ## remove mean
+    X=X-np.nanmean(X[:]); 
+    Y=Y-np.nanmean(Y[:]);
+    ## compute a, theta
+    #c=(rot90(X)*conj(Y))./(sqrt(rot90(X)*conj(X))*sqrt(rot90(Y)*conj(Y)));
+    #c = np.rot90([X],k=1,axes=(0,1)) * np.conj(Y)  / (np.sqrt(np.rot90([X],k=1,axes=(0,1))*np.conj(X))*np.sqrt(np.rot90([Y],k=1,axes=(0,1))*np.conj(Y)));
+    numera = np.matmul(np.rot90([X],k=1,axes=(1,0)).T , np.conj(Y)) 
+    denomi = (np.sqrt ( np.matmul(np.rot90([X],k=1,axes=(1,0)).T , np.conj(X)) ) * np.sqrt( np.matmul(np.rot90([Y],k=1,axes=(1,0)).T , np.conj(Y)) ) );
+
+    c=np.divide(numera,denomi);
+    ac=np.abs(c);
+    theta=180*np.angle(c)/np.pi;
+    
+    return ac,theta,X,Y 
+
 def format_map(ax):
     ax.gridlines(zorder=2,linewidth=0.25,linestyle="--",color="darkgrey")
     ax.set_extent([-360, 180, -54, -90], ccrs.PlateCarree())

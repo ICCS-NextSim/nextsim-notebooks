@@ -32,11 +32,11 @@ proj      = proj_info.pyproj
 
 #Time
 start_day  =1
-start_month=5
-start_year =2013
-end_day    =27
-end_month  =7
-end_year   =2013
+start_month=8
+start_year =2015
+end_day    =29
+end_month  =8
+end_year   =2015
 
 #Runs (names) or experiments (numbers)
 expt=[9]#2,5,7,10]
@@ -44,17 +44,17 @@ inc_obs=1
 interp_obs=1
 
 # Plot types
-plot_series =0
 plot_scatter=0
+plot_series =1
 plot_map    =0
-plot_video  =1   
+plot_video  =0   
 plot_anim   =0
 save_fig    =1
 plt_show    =1
 
 #Variables
-vname ='sit' # sie,sit,drift processed variable e.g. 'sie' #'sit' # timeseries
-varray='sit' # sic,sit,siv for velocity, raw variable used in xarray
+vname ='vcorr' # sie,sit,drift,vcorr processed variable e.g. 'sie' #'sit' # timeseries
+varray='siv' # sic,sit,siv for velocity, raw variable used in xarray
 # 'sit' for model solo videos  # video
 varim ='sie' # 'sit' for model solo videos  # video
 
@@ -109,8 +109,8 @@ run=runs[8]#expt[0]] # 'data_glorys'
 data = xr.open_dataset(path_runs+run+'/output/Moorings_2018m01.nc')
 lon_mod = data.longitude #sit.to_masked_array() # Extract a given variable
 lat_mod = data.latitude #sit.to_masked_array() # Extract a given variable
-lon_mod=np.where(lon_mod!=np.max(lon_mod),lon_mod,179.99999999999)#180.01)
-lon_mod=np.where(lon_mod!=np.min(lon_mod),lon_mod,-179.99999999999)#-180.01)
+#lon_mod=np.where(lon_mod!=np.max(lon_mod),lon_mod,179.99999999999)#180.01)
+#lon_mod=np.where(lon_mod!=np.min(lon_mod),lon_mod,-179.99999999999)#-180.01)
 lon_nex = lon_mod 
 lat_nex = lat_mod 
 v_spam=10
@@ -402,6 +402,61 @@ for ex in expt:
         plt.ylabel('SIV (km3)'); plt.title('Antarctic total sea ice volume (km3)')
         figname=path_fig+run+'/serie_siv_total_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
 
+    elif vname=='vcorr':
+      if ke==1:
+        ll=[]
+        k=0
+        for t in time_obs:
+          k+=1 # drift_osisaf_ease2
+          file=path_data+'/drift_osisaf_ease2/'+t.strftime("%Y")+'/ice_drift_sh_ease2-750_cdr-v1p0_24h-'+t.strftime("%Y%m%d")+'1200.nc'; 
+          print(file)
+          data = xr.open_dataset(file)
+          if k==1:
+            u_obs = data.variables['dX'] #['cdr_seaice_conc']
+            v_obs = data.variables['dY'] #['cdr_seaice_conc']
+            uc_obs = data.variables['dX'] #['cdr_seaice_conc']
+            vc_obs = data.variables['dY'] #['cdr_seaice_conc']
+            lon_obs = data.variables['lon']; lat_obs = data.variables['lat']
+            v_spao=2
+            lon_obsv=lon_obs[::v_spao,::v_spao]
+            lat_obsv=lat_obs[::v_spao,::v_spao]
+          else:
+            u_obs = data.variables['dX'] #['cdr_seaice_conc']
+            v_obs = data.variables['dY'] #['cdr_seaice_conc']
+            uc_obs = xr.Variable.concat([uc_obs,u_obs] ,'time' )
+            vc_obs = xr.Variable.concat([vc_obs,v_obs] ,'time' )
+          data.close()
+        uc_obs=np.array(uc_obs); vc_obs=np.array(vc_obs)
+        st = tictoc.time();   print('Creating weights to interp. model to obs grid ...'); # get the start time
+        func=myInterp.IrregularGridInterpolator(np.array(lon_mod),np.array(lat_mod),np.array(lon_obs),np.array(lat_obs))#[0]
+        et = tictoc.time()-st; print('Execution time:', et, 'seconds')
+
+      # model experiments
+      u_mod = udatac*3.6*24;  v_mod = vdatac*3.6*24;
+      uc_mod = np.zeros([len(time_obs),np.shape(v_obs)[1],np.shape(v_obs)[2]]); uc_mod[:]=np.nan
+      vc_mod = np.zeros([len(time_obs),np.shape(v_obs)[1],np.shape(v_obs)[2]]); vc_mod[:]=np.nan
+      mean = np.zeros([len(time_obs)]); mean[:]=np.nan
+      # daily average
+      for t in range(len(time_obs)): # (np.shape(sicc_mod)[0]):
+        print('Computing model and obs vector complex correlation on day: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
+        iday=np.where(time_obsn[t]==time_modi)[0]
+        ucmod=np.nanmean(u_mod[iday,:,:],axis=0)
+        vcmod=np.nanmean(v_mod[iday,:,:],axis=0)
+        #st = tictoc.time();   print('Interping model siu and siv to obs grid ...'); # get the start time
+        #uc_mod[t]=seapy.oasurf(np.array(lon_mod),np.array(lat_mod),np.array(ucmod),np.array(lon_obs),np.array(lat_obs))[0]
+        #vc_mod[t]=seapy.oasurf(np.array(lon_mod),np.array(lat_mod),np.array(vcmod),np.array(lon_obs),np.array(lat_obs))[0]
+        uc_mod[t]=func.interp_field(np.array(ucmod))
+        vc_mod[t]=func.interp_field(np.array(vcmod))
+        uc_mod[t]=np.where(uc_mod[t]!=0.0,uc_mod[t],np.nan)
+        vc_mod[t]=np.where(vc_mod[t]!=0.0,vc_mod[t],np.nan)
+        #et = tictoc.time()-st; print('Execution time:', et, 'seconds')
+        v_spave=3
+        [vcorr,angle,X,Y]=veccor1(uc_obs[t,::v_spave,::v_spave],vc_obs[t,::v_spave,::v_spave],uc_mod[t,::v_spave,::v_spave],vc_mod[t,::v_spave,::v_spave])
+        mean[t]=vcorr
+
+      time=time_obs
+      plt.ylabel('Complex correlation'); plt.title('Drift complex correlation between model and obs (OSI-455)')
+      figname=path_fig+run+'/serie_vector_complex_correlation_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
   
     #time_series(time, sit_output, mask, 'test', 'Sea ice thickness time serie')
     #time=timec[ifirst:ilast] 
@@ -447,6 +502,9 @@ for ex in expt:
             xobs = data.variables['xc']; yobs = data.variables['yc']
             data.close()
             dx,dy=np.meshgrid(np.diff(xobs),np.diff(yobs)); dy=np.abs(dy); obs_grid_area=dx*dy
+            st = tictoc.time();   print('Creating weights to interp. obs to model grid ...'); # get the start time
+            func=myInterp.IrregularGridInterpolator(np.array(lon_obs),np.array(lat_obs),np.array(lon_nex),np.array(lat_nex))#[0]
+            et = tictoc.time()-st; print('Execution time:', et, 'seconds')
           for t in time_obs:
             k+=1
             if obs_source=='NSIDC':
@@ -486,7 +544,11 @@ for ex in expt:
             sicct=sicc_obs[t]; 
             if interp_obs==1:
               st = tictoc.time();   print('Interping obs to model grid ...'); # get the start time
-              sicobsi=seapy.oasurf(np.array(lon_obs),np.array(lat_obs),np.array(sicct),np.array(lon_nex),np.array(lat_nex))[0]
+              sicobsi=func.interp_field(np.array(sicct))#[0]
+              # fixing gap due to interp method 
+              for tt in range(0,150): #226,np.shape(sicc_mod)[1]):  
+                sicobsi[tt][150]=sicobsi[tt][151] 
+              #sicobsi=seapy.oasurf(np.array(lon_obs),np.array(lat_obs),np.array(sicct),np.array(lon_nex),np.array(lat_nex))[0]
               et = tictoc.time()-st; print('Execution time:', et, 'seconds')
               sicct=sicobsi
 
@@ -497,7 +559,7 @@ for ex in expt:
             st = tictoc.time(); print('Processing obs SIC to get extent time: '+time_obs[t].strftime("%Y%m%d%HH:%MM")) # get the start time
             for ii in range(np.shape(iext)[1]):
               siccz[iext[0][ii],iext[1][ii]]=1.
-            et = tictoc.time()-st; print('Execution time:', et, 'seconds')
+            #et = tictoc.time()-st; print('Execution time:', et, 'seconds')
 
             siccz[inan_mod]=np.nan
             sic_obs[t]=siccz
@@ -538,18 +600,16 @@ for ex in expt:
       diff=np.abs(int(time_obsn[-1])-np.array(time_modi)); min_diff=np.min(diff)
       ilast=np.where(diff==min_diff)[-1][-1]+1
       sicc_mo=np.zeros((len(time_mod[ifirst:ilast])+1,np.shape(sic_mod)[1],np.shape(sic_mod)[2]))
+      #sicc_mo=sic_mod[ifirst:ilast+1][:][:] #,np.shape(sic_mod)[1],np.shape(sic_mod)[2]))
       k=-1
+      #Processing model SIC to get extent 
       for t in range(ifirst,ilast+1,1): # (np.shape(sicc_mod)[0]):
         k+=1
-      #ifirst=np.where(time_obsn[0]==time_modi)[0][0]
-      #ilast=np.where(time_obsn[-1]==time_modi)[0][-1]
-      #sicc_mo=np.zeros((len(time_mod[ifirst:ilast+1]),np.shape(sic_mod)[1],np.shape(sic_mod)[2]))
-      #for t in range(len(time_mod[ifirst:ilast+1])): # (np.shape(sicc_mod)[0]):
         print('Processing model SIC to get extent time: '+time_mods[t].strftime("%Y%m%d%HH:%MM"))
         sicct=sic_mod[t];
-        iext=np.where(sicct>.15)#[0]; sicct[iext]=1;
-        for ii in range(np.shape(iext)[1]):
-          sicct[iext[0][ii],iext[1][ii]]=1.
+        #iext=np.where(sicct>.15)#[0]; sicct[iext]=1;
+        #for ii in range(np.shape(iext)[1]):
+        #  sicct[iext[0][ii],iext[1][ii]]=1.
         sicc_mo[k]=sicct
 
       time_modi=time_modi[ifirst:ilast]
@@ -572,13 +632,27 @@ for ex in expt:
             et = tictoc.time()-st; print('Execution time:', et, 'seconds')
             siccz[inan_mod]=np.nan
             iday2=iday;
-          sicc_mod[t]=siccz # np.nanmean(sicc_mo[iday,:,:],axis=0)
+
+          print('Processing model SIC to get extent time: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
+          sicc_mo=np.zeros((np.shape(siccz)[0],np.shape(siccz)[1]))
+          iext=np.where(siccz>.15)#[0]; sicct[iext]=1;
+          for ii in range(np.shape(iext)[1]):
+            sicc_mo[iext[0][ii],iext[1][ii]]=1.
+          sicc_mod[t]=sicc_mo # np.nanmean(sicc_mo[iday,:,:],axis=0)
+
         else:  
           iday=np.where(time_obsn[t]==time_modi)[0]
           if interp_obs==1:
             siccz=np.nanmean(sicc_mo[iday,:,:],axis=0)
-            siccz[inan_mod]=np.nan
-            sicc_mod[t]=siccz # np.nanmean(sicc_mo[iday,:,:],axis=0)
+            #exit()
+            #sicc_mod[t]=siccz # np.nanmean(sicc_mo[iday,:,:],axis=0)
+            print('Processing model SIC to get extent time: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
+            sicct=np.zeros((np.shape(siccz)[0],np.shape(siccz)[1]))
+            iext=np.where(siccz>.15)#[0]; sicct[iext]=1;
+            for ii in range(np.shape(iext)[1]):
+              sicct[iext[0][ii],iext[1][ii]]=1.
+            sicct[inan_mod]=np.nan
+            sicc_mod[t]=sicct
           else:
             sicc_modm=np.nanmean(sicc_mo[iday,:,:],axis=0)
             st = tictoc.time(); print('Interp model SIC to obs grid: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
