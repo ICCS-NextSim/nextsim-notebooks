@@ -38,6 +38,17 @@ then
   curl -C - -O  http://sose.ucsd.edu/SO6/ITER139/Theta_bsoseI139_2013to2021_5dy.nc
   curl -C - -O  http://sose.ucsd.edu/SO6/ITER139/SSH_bsoseI139_2013to2021_5dy.nc
 
+elif [ $1 == 'udrift' ] 
+then
+  echo Downloading BSOSE ice drift between 2013 and 2021
+  curl -C - -O  http://sose.ucsd.edu/SO6/ITER139/SIuice_bsoseI139_2013to2021_5dy.nc
+
+elif [ $1 == 'vdrift' ] 
+then
+
+  echo Downloading BSOSE ice vdrift between 2013 and 2021
+  curl -C - -O  http://sose.ucsd.edu/SO6/ITER139/SIvice_bsoseI139_2013to2021_5dy.nc
+
 fi
 
 

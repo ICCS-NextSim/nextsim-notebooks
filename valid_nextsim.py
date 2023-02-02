@@ -32,10 +32,10 @@ proj      = proj_info.pyproj
 
 #Time
 start_day  =1
-start_month=8
+start_month=1
 start_year =2015
-end_day    =29
-end_month  =8
+end_day    =28
+end_month  =1
 end_year   =2015
 
 #Runs (names) or experiments (numbers)
@@ -45,8 +45,8 @@ interp_obs=1
 
 # Plot types
 plot_scatter=0
-plot_series =1
-plot_map    =0
+plot_series =0
+plot_map    =1
 plot_video  =0   
 plot_anim   =0
 save_fig    =1
@@ -127,6 +127,7 @@ freqobs  = 1; # daily data
 times=pd.date_range(dates.num2date(time_ini), periods=int(time_fin-time_ini)*freqobs, freq=('%dD' % int(1/freqobs)))
 time_obsn=dates.date2num(times)
 time_obs=dates.num2date(time_obsn)
+time_obsd=pd.DatetimeIndex(time_obs)
 
 # Loop in the experiments
 ke=0
@@ -145,7 +146,17 @@ for ex in expt:
       vdatac=sicc
       #data = xr.open_dataset(filename)
       #timec = data.variables['time']; sicc = data.variables['SIarea']; 
+    elif vname=='vcorr':
+      filename=path_bsose+'SIuice_bsoseI139_2013to2021_5dy.nc'
+      print(filename)
+      ds=xr.open_dataset(filename)
+      udatac=ds.variables['SIuice'][:] 
+      filename=path_bsose+'SIvice_bsoseI139_2013to2021_5dy.nc'
+      print(filename)
+      ds=xr.open_dataset(filename)
+      vdatac=ds.variables['SIvice'][:] 
 
+    filename=path_bsose+'SeaIceArea_bsoseI139_2013to2021_5dy.nc'; ds=xr.open_dataset(filename)
     lon_sose=ds.variables['XC'][:]
     lon_sose=np.where(lon_sose<180,lon_sose,lon_sose-360)
     lat_sose=ds.variables['YC'][:]
@@ -437,19 +448,27 @@ for ex in expt:
       vc_mod = np.zeros([len(time_obs),np.shape(v_obs)[1],np.shape(v_obs)[2]]); vc_mod[:]=np.nan
       mean = np.zeros([len(time_obs)]); mean[:]=np.nan
       # daily average
+      iday2=-9999
       for t in range(len(time_obs)): # (np.shape(sicc_mod)[0]):
         print('Computing model and obs vector complex correlation on day: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
-        iday=np.where(time_obsn[t]==time_modi)[0]
-        ucmod=np.nanmean(u_mod[iday,:,:],axis=0)
-        vcmod=np.nanmean(v_mod[iday,:,:],axis=0)
-        #st = tictoc.time();   print('Interping model siu and siv to obs grid ...'); # get the start time
-        #uc_mod[t]=seapy.oasurf(np.array(lon_mod),np.array(lat_mod),np.array(ucmod),np.array(lon_obs),np.array(lat_obs))[0]
-        #vc_mod[t]=seapy.oasurf(np.array(lon_mod),np.array(lat_mod),np.array(vcmod),np.array(lon_obs),np.array(lat_obs))[0]
-        uc_mod[t]=func.interp_field(np.array(ucmod))
-        vc_mod[t]=func.interp_field(np.array(vcmod))
-        uc_mod[t]=np.where(uc_mod[t]!=0.0,uc_mod[t],np.nan)
-        vc_mod[t]=np.where(vc_mod[t]!=0.0,vc_mod[t],np.nan)
-        #et = tictoc.time()-st; print('Execution time:', et, 'seconds')
+        if run=='BSOSE':
+          diff=np.abs(int(time_obsn[t])-np.array(time_modi)); min_diff=np.min(diff)
+          iday=np.where(diff==min_diff)[0][0];
+          print(iday)
+          if iday!=iday2:
+            uc_modi=func.interp_field(np.array(u_mod[iday]))
+            vc_modi=func.interp_field(np.array(v_mod[iday]))
+            iday2=iday;
+          uc_mod[t]=uc_modi
+          vc_mod[t]=vc_modi
+        else: # nextsim
+          iday=np.where(time_obsn[t]==time_modi)[0]
+          ucmod=np.nanmean(u_mod[iday,:,:],axis=0)
+          vcmod=np.nanmean(v_mod[iday,:,:],axis=0)
+          uc_mod[t]=func.interp_field(np.array(ucmod))
+          vc_mod[t]=func.interp_field(np.array(vcmod))
+          uc_mod[t]=np.where(uc_mod[t]!=0.0,uc_mod[t],np.nan)
+          vc_mod[t]=np.where(vc_mod[t]!=0.0,vc_mod[t],np.nan)
         v_spave=3
         [vcorr,angle,X,Y]=veccor1(uc_obs[t,::v_spave,::v_spave],vc_obs[t,::v_spave,::v_spave],uc_mod[t,::v_spave,::v_spave],vc_mod[t,::v_spave,::v_spave])
         mean[t]=vcorr
@@ -480,6 +499,113 @@ for ex in expt:
       if plt_show==1:
         plt.show()
   
+  ### Plot maps (seasonal) 
+  if plot_map==1:
+    print('Ploting map: '+vname+' '+run)
+    plt.rcParams.update({'font.size': 12})
+    fig=plt.figure(figsize = (9,8)) # landscape
+    if vname=='vcorr': 
+      if ke==1 : # if first expt load obs
+        ll=[]; k=0
+        for t in time_obs:
+          k+=1 # drift_osisaf_ease2
+          file=path_data+'/drift_osisaf_ease2/'+t.strftime("%Y")+'/ice_drift_sh_ease2-750_cdr-v1p0_24h-'+t.strftime("%Y%m%d")+'1200.nc'; 
+          print(file)
+          data = xr.open_dataset(file)
+          if k==1:
+            u_obs = data.variables['dX'] #['cdr_seaice_conc']
+            v_obs = data.variables['dY'] #['cdr_seaice_conc']
+            uc_obs = data.variables['dX'] #['cdr_seaice_conc']
+            vc_obs = data.variables['dY'] #['cdr_seaice_conc']
+            lon_obs = data.variables['lon']; lat_obs = data.variables['lat']
+            v_spao=2
+            lon_obsv=lon_obs[::v_spao,::v_spao]
+            lat_obsv=lat_obs[::v_spao,::v_spao]
+          else:
+            u_obs = data.variables['dX'] #['cdr_seaice_conc']
+            v_obs = data.variables['dY'] #['cdr_seaice_conc']
+            uc_obs = xr.Variable.concat([uc_obs,u_obs] ,'time' )
+            vc_obs = xr.Variable.concat([vc_obs,v_obs] ,'time' )
+          data.close()
+        uc_obs=np.array(uc_obs); vc_obs=np.array(vc_obs)
+        st = tictoc.time();   print('Creating weights to interp. model to obs grid ...'); # get the start time
+        func=myInterp.IrregularGridInterpolator(np.array(lon_mod),np.array(lat_mod),np.array(lon_obs),np.array(lat_obs))#[0]
+        et = tictoc.time()-st; print('Execution time:', et, 'seconds')
+
+      # model experiments
+      u_mod = udatac*3.6*24;  v_mod = vdatac*3.6*24;
+      uc_mod = np.zeros([len(time_obs),np.shape(v_obs)[1],np.shape(v_obs)[2]]); uc_mod[:]=np.nan
+      vc_mod = np.zeros([len(time_obs),np.shape(v_obs)[1],np.shape(v_obs)[2]]); vc_mod[:]=np.nan
+      mean = np.zeros([len(time_obs)]); mean[:]=np.nan
+      # daily average
+      for t in range(len(time_obs)): # (np.shape(sicc_mod)[0]):
+        print('Computing model and obs vector complex correlation on day: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
+        iday=np.where(time_obsn[t]==time_modi)[0]
+        ucmod=np.nanmean(u_mod[iday,:,:],axis=0)
+        vcmod=np.nanmean(v_mod[iday,:,:],axis=0)
+        uc_mod[t]=func.interp_field(np.array(ucmod))
+        vc_mod[t]=func.interp_field(np.array(vcmod))
+        uc_mod[t]=np.where(uc_mod[t]!=0.0,uc_mod[t],np.nan)
+        vc_mod[t]=np.where(vc_mod[t]!=0.0,vc_mod[t],np.nan)
+      # loop in the four seasons
+      km=-1; tseason=['JFM','AMJ','JAS','OND']
+      for m in [1,4,7,10]:
+        km+=1; 
+        print(run+': computing seasonal complex vector correlation starting in '+str(y)+'/'+str(m).zfill(2))
+        if m==1:
+          imonth1=time_obsd.month==1; imonth2=time_obsd.month==2; imonth3=time_obsd.month==3; 
+        if m==4: 
+          imonth1=time_obsd.month==4; imonth2=time_obsd.month==5; imonth3=time_obsd.month==6; 
+        if m==7: 
+          imonth1=time_obsd.month==7; imonth2=time_obsd.month==8; imonth3=time_obsd.month==9; 
+        if m==10: 
+          imonth1=time_obsd.month==10; imonth2=time_obsd.month==11; imonth3=time_obsd.month==12; 
+        umod=np.concatenate((uc_mod[imonth1],uc_mod[imonth2],uc_mod[imonth3]),0)
+        vmod=np.concatenate((vc_mod[imonth1],vc_mod[imonth2],vc_mod[imonth3]),0)
+        uobs=np.concatenate((uc_obs[imonth1],uc_obs[imonth2],uc_obs[imonth3]),0)
+        vobs=np.concatenate((vc_obs[imonth1],vc_obs[imonth2],vc_obs[imonth3]),0)
+
+        # loop for each grid point
+        mean = np.zeros([np.shape(uobs)[1],np.shape(uobs)[2]]); mean[:]=np.nan
+        for i in range(np.shape(uobs)[1]):
+          for ii in range(np.shape(uobs)[2]):
+           uc_mo=umod[::,i,ii]; vc_mo=vmod[::,i,ii]
+           uc_ob=uobs[::,i,ii]; vc_ob=vobs[::,i,ii]
+           if np.sum(np.isnan(uc_ob))+3<len(uc_ob) and np.sum(np.isnan(uc_mo))+3<len(uc_mo): 
+             exit()
+             vcorr,angle,X,Y=veccor1(uc_ob,vc_ob,uc_mo,vc_mo) 
+             mean[i][ii]=vcorr
+
+        ax=fig.add_subplot(2,2,km+1)
+        plt.title(tseason[km]+' '+run+' vel. corr.',loc='center')
+        cmap = cmocean.cm.amp
+        bm = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l')#,ax=ax[km])
+        bm.drawcoastlines()
+        bm.fillcontinents(color='grey',lake_color='aqua')
+        lonp, latp = bm(lon_obs,lat_obs)#,inverse=True)
+        im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=1)
+        # contour
+        ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
+        clevels=[.7,1.]# np.linspace(0,40,40,endpoint=False)
+        ic=bm.contour(lonp,latp,mean,clevels,colors=('k'),linewidths=(1.5,),origin='upper',linestyles='solid',extent=ext)
+        #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
+        # including colorbar
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes('right', size='5%', pad=0.05)
+        fig.colorbar(im1, cax=cax, orientation='vertical')
+
+    fig.tight_layout() 
+    figname=path_fig+run+'/map_vector_complex_correlation_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+    if ex==expt[-1]:
+      if save_fig==1:
+        if os.path.exists(path_fig+run)==False:
+          os.mkdir(path_fig+run)
+        print('Saving: '+figname)
+        plt.savefig(figname)
+      if plt_show==1:
+        plt.show()
+
+
   ### Plot video 
   if plot_video==1:
     print('Ploting video: '+vname+' '+run)
