@@ -37,7 +37,7 @@ def veccor1(u1,v1,u2,v2):
 
     ## work on the common good points only
     #ii=find((isfinite(X+Y)));
-    ii=np.isfinite(X,Y)==1;
+    ii=np.isfinite(X+Y)==1;
 
     ## if no common good points, return NaNs
     if(np.sum(ii)<1):
