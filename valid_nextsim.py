@@ -33,29 +33,29 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2016
+start_year =2013
 end_day    =28
-end_month  =12
-end_year   =2020
+end_month  =6
+end_year   =2013
 
 #Runs (names) or experiments (numbers)
-expt=[12,9]#2,5,7,10]
-#expt=[9]#2,5,7,10]
+expt=[9,13,14]#2,5,7,10]
+#expt=[13]#2,5,7,10]
 inc_obs=1
 interp_obs=1
 
 # Plot types
 plot_scatter=0
 plot_series =1
+plot_video  =0  
 plot_map    =0
-plot_video  =0   
 plot_anim   =0
 save_fig    =1
 plt_show    =1
 
 #Variables
-vname ='bsie' # sie,bsie,sit,drift,vcorr processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
-varray='sic' # sic,sit,siv for velocity, raw variable used in xarray
+vname ='sit' # sie,bsie,sit,siv,drift,vcorr processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
+varray='sit' # sic,sit,siv for velocity, raw variable used in xarray
 # 'sit' for model solo videos  # video
 varim ='sie' # 'sit' for model solo videos  # video
 
@@ -66,7 +66,7 @@ obs_colors=['g','y','orange'];
 ####################################################################
 runs=['50km_ocean_wind'     ,'50km_bsose_20180102' ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',
       '50km_20Clab_20180102','50km_P14C20_20180102','50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',
-      '50km_glorys_20180102','BSOSE']
+      '50km_glorys_20180102','BSOSE'               ,'50km_mevp_20130102'    ,'50km_lemieux_20130102']
 
 expts=range(len(runs)) #[0,1,2,3,4,5]
 expt=np.array(expt)-1
@@ -482,7 +482,6 @@ for ex in expt:
         et = tictoc.time()-st; print('Execution time:', et, 'seconds')
   
       if ke>=1: # if first expt load obs
-        #sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
         sic_mod = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
 
         diff=np.abs(int(time_obsn[0])-np.array(time_modi)); min_diff=np.min(diff)
@@ -567,24 +566,28 @@ for ex in expt:
       
 
     elif vname=='siv':
-      if inc_obs==0:
-        if ke==1:
-          ll=[]
-        sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
-        siv = sit*25*25/1000;  #_output = datac.sit.to_masked_array() # Extract a given variable
-        #exit()
-        sic = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
-        T = np.shape(sit)[0]
-        mean = np.zeros(T)
-        std = np.zeros(T)
-        for t in range(T):
-            mean[t] = np.sum((siv[t]*sic[t])/sic[t])
-        plt.ylabel('SIV (km3)'); plt.title('Antarctic total sea ice volume (km3)')
-        figname=path_fig+run+'/serie_siv_total_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
-
-    elif vname=='vcorr':
+      print('Plotting sea ice volume')
       if ke==1:
-        ll=[]; k=0
+        ll=[]
+      sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
+      siv = sit*25*25/1000;  #_output = datac.sit.to_masked_array() # Extract a given variable
+      #exit()
+      sic = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
+      T = np.shape(sit)[0]
+      mean = np.zeros(T)
+      time=time_mod
+      for t in range(T):
+          mean[t] = np.sum((siv[t]*sic[t])/sic[t])
+      plt.ylabel('SIV (km3)'); plt.title('Antarctic total sea ice volume (km3)')
+      figname=path_fig+run+'/serie_siv_total_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+
+    elif vname=='vcorr' or vname=='drift':
+      if ke==1:
+        if vname=='drift':
+          ll=['OSI-455']; 
+        else:
+          ll=[]; 
+        k=0
         for t in time_obs:
           k+=1 # drift_osisaf_ease2
           file=path_data+'/drift_osisaf_ease2/'+t.strftime("%Y")+'/ice_drift_sh_ease2-750_cdr-v1p0_24h-'+t.strftime("%Y%m%d")+'1200.nc'; 
@@ -606,7 +609,13 @@ for ex in expt:
             vc_obs = xr.Variable.concat([vc_obs,v_obs] ,'time' )
           data.close()
 
-      uc_obs=np.array(uc_obs); vc_obs=np.array(vc_obs)
+        uc_obs=np.array(uc_obs); vc_obs=np.array(vc_obs)
+        if vname=='drift':
+          magc_obs=np.sqrt(uc_obs**2+vc_obs**2)
+          mean=np.nanmean(magc_obs,1); mean=np.nanmean(mean,1)
+          time=time_obs
+          plt.plot(time, mean, obs_colors[ke-1])   
+
       st = tictoc.time();   print('Creating weights to interp. model to obs grid ...'); # get the start time
       func=myInterp.IrregularGridInterpolator(np.array(lon_mod),np.array(lat_mod),np.array(lon_obs),np.array(lat_obs))#[0]
       et = tictoc.time()-st; print('Execution time:', et, 'seconds')
@@ -638,14 +647,27 @@ for ex in expt:
           vc_mod[t]=func.interp_field(np.array(vcmod))
           uc_mod[t]=np.where(uc_mod[t]!=0.0,uc_mod[t],np.nan)
           vc_mod[t]=np.where(vc_mod[t]!=0.0,vc_mod[t],np.nan)
-        v_spave=3
-        [vcorr,angle,X,Y]=veccor1(uc_obs[t,::v_spave,::v_spave],vc_obs[t,::v_spave,::v_spave],uc_mod[t,::v_spave,::v_spave],vc_mod[t,::v_spave,::v_spave])
-        mean[t]=vcorr
+
+        if vname=='vcorr':
+          v_spave=3
+          x=np.isfinite(vc_obs[t,::v_spave,::v_spave]+uc_mod[t,::v_spave,::v_spave])==1; 
+          if np.sum(x==True)>1: 
+            [vcorr,angle,X,Y]=veccor1(uc_obs[t,::v_spave,::v_spave],vc_obs[t,::v_spave,::v_spave],uc_mod[t,::v_spave,::v_spave],vc_mod[t,::v_spave,::v_spave])
+            mean[t]=vcorr
+        elif vname=='drift':
+          magc_mod=np.sqrt(uc_mod[t]**2+vc_mod[t]**2)
+          #magc_mod=np.where(magc_mod<=80.0,magc_mod,np.nan)
+          mean[t]=np.nanmean(magc_mod)
+      if vname=='vcorr':
+        plt.ylabel('Complex correlation'); plt.title('Drift complex correlation between model and obs (OSI-455)')
+        plt.ylim([0,1]) 
+        figname=path_fig+run+'/serie_vector_complex_correlation_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+      elif vname=='drift':
+        plt.ylabel('Drift speed (km/day)'); plt.title('Antarctic average sea-ice drift speed (km/day)') 
+        #plt.ylim([0,1]) 
+        figname=path_fig+run+'/serie_velocity_speed_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
 
       time=time_obs
-      plt.ylabel('Complex correlation'); plt.title('Drift complex correlation between model and obs (OSI-455)')
-      plt.ylim([0,1]) 
-      figname=path_fig+run+'/serie_vector_complex_correlation_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
   
     plt.plot(time, mean, colors[ke-1])   
     if ex==expt[-1]:
