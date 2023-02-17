@@ -35,8 +35,8 @@ start_day  =1
 start_month=1
 start_year =2013
 end_day    =28
-end_month  =6
-end_year   =2013
+end_month  =4
+end_year   =2015
 
 #Runs (names) or experiments (numbers)
 expt=[9,13,14]#2,5,7,10]
@@ -92,7 +92,7 @@ parame=[3, 4, 2, 5, 6, 8];
 obs_sources=['OSISAFease2']#,'OSISAF-ease'] #['NSIDC','OSISAF','OSISAF-ease','OSISAFease2']: 
 
 #paths
-if socket.gethostname()=='SC442555' or socket.gethostname()=='SC442555.local':
+if socket.gethostname()=='SC442555' or socket.gethostname()=='SC442555.local' or socket.gethostname()=='wifi-staff-172-24-40-164.net.auckland.ac.nz':
   path_runs='/Users/rsan613/n/southern/runs/' # ''~/'
   path_fig ='/Users/rsan613/Library/CloudStorage/OneDrive-TheUniversityofAuckland/001_WORK/nextsim/southern/figures/'
   path_data ='/Users/rsan613/n/southern/data/'
