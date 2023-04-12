@@ -43,45 +43,47 @@ end_year   =2020
 exp=17
 exptc=[12,9,exp,15]#2,5,7,10]
 expt=exptc
-#expt=[exp]
+expt=[19,18]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1
-inc_obs=0
+inc_obs=1
 
 # Plot types
 plot_scatter=0
 plot_series =1
-plot_video  =0  
-plot_map    =0
-plot_anim   =0
+plot_video  =0
+plot_map    =0 # seasonal maps
+plot_maps   =0
+plot_anim   =0 # solo video
 save_fig    =1
 plt_show    =1
 interp_obs  =1 # only for SIE maps obs has 2x the model resolution
 
 #Variables
-vname ='siv' # sie,bsie,sit,siv,drift,vcorr processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
+vname ='sit_rmse' # sie,bsie,sit,siv,drift,vcorr processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
 
 ####################################################################
 # after BSOSE run (ocean boundary cond), runs are all mEVP
 runs=['50km_ocean_wind'     ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',
       '50km_20Clab_20180102','50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',
-      '50km_glorys_20180102','BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',
-      '50km_hyle_20130102'  ,'50km_ckFFalse_20130102']#,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102']
+      '50km_glorys_20180102','BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',           # 15
+      '50km_hyle_20130102'  ,'50km_ckFFalse_20130102','BBM'                   ,'mEVP'] # last two are links to the original expts
 
 #Colors
 colors=['r','b','k','orange','pink','brown','yellow','g','r','b','k']
 obs_colors=['g','y','orange'];
 
 # varrays according to vname
-if vname=='sie' or vname=='bsie':
+if vname=='sic' or vname=='sie' or vname=='bsie':
   varray='sic' 
-elif vname=='sit' or vname=='siv':
+elif vname=='sit' or vname=='siv' or vname=='sit_rmse':
   varray='sit' 
-elif vname=='drift' or vname=='vcorr':
+elif vname=='drift' or vname=='vcorr' or vname=='divergence':
   varray='siv' 
+elif vname=='newice' or vname=='newice_diff':
+  varray='newice' 
 
-varim ='sie' # 'sit' for model solo videos  # video
 
 #trick to cover all months in runs longer than a year
 end_month=end_month+1
@@ -135,6 +137,21 @@ sit_output = data.sit.to_masked_array() # Extract a given variable
 inan_mod=ma.getmaskarray(sit_output[0]); 
 mask = ma.getmaskarray(sit_output[0]) #Get mask
 
+#ETOPO
+filename=path_data+'etopo/ETOPO_Antarctic_10arcmin.nc'
+print('Reading: '+filename)
+ds=xr.open_dataset(filename)
+lon_etopo=ds.variables['lon'][:]
+lat_etopo=ds.variables['lat'][:]
+h_etopo=ds.variables['z'][:]
+ds.close()
+lon_etopo,lat_etopo=np.meshgrid(lon_etopo,lat_etopo)
+
+if plot_map==1 and vname=='newice': 
+  print('Interpolating etopo bathy to nextsim grid')
+  func=myInterp.IrregularGridInterpolator(np.array(lon_etopo),np.array(lat_etopo),np.array(lon_mod),np.array(lat_mod))
+  h_etopoi=func.interp_field(np.array(h_etopo))
+
 for serie_or_map in serie_or_maps:
   print(str(serie_or_map))
 
@@ -178,13 +195,18 @@ for serie_or_map in serie_or_maps:
         #1/2015-12/2021
   
     # time_obs
-    time_ini = dates.date2num(datetime.datetime(start_year,start_month,start_day))
-    time_fin = dates.date2num(datetime.datetime(end_year,end_month,end_day)) 
+    time_ini = dates.date2num(datetime.datetime(start_year,start_month,start_day,3,0,0))
+    time_fin = dates.date2num(datetime.datetime(end_year,end_month,end_day,3,0,0)) 
     freqobs  = 1; # daily data
     times=pd.date_range(dates.num2date(time_ini), periods=int(time_fin-time_ini)*freqobs, freq=('%dD' % int(1/freqobs)))
     time_obsn=dates.date2num(times)
     time_obs=dates.num2date(time_obsn)
     time_obsd=pd.DatetimeIndex(time_obs)
+
+    timesix=pd.date_range(dates.num2date(time_ini), periods=int(time_fin-time_ini)*24/6, freq=('%dH' % int(6)))
+    time_obsixn=dates.date2num(timesix)
+    time_obsix=dates.num2date(time_obsixn)
+    time_obsixd=pd.DatetimeIndex(time_obsix)
     
     # Loop in the experiments
     ke=0
@@ -359,7 +381,7 @@ for serie_or_map in serie_or_maps:
               plt.plot(time_obs, mean, color=obs_colors[kc-1])   
               plt.grid('on')
      
-        if vname=='sit':
+        if vname[0:3]=='sit':
           if inc_obs==0:
             if ke==1:
               ll=[]
@@ -385,7 +407,11 @@ for serie_or_map in serie_or_maps:
               lon_obs=np.where(lon_obs!=np.min(lon_obs),lon_obs,-180)
               sitc_obs = np.zeros([ym_end-ym_start,np.shape(sicc)[1],np.shape(sicc)[2]])
               timec=[]
-              k=0; ll=['CS2WFA']
+              if vname=='sit': 
+                ll=['CS2WFA']
+              else:
+                ll=[]
+              k=0; 
               for ym in range( ym_start, ym_end ):
                 k+=1; y, m = divmod( ym, 12 ); m+=1
                 filename=path_data+'sit_cs2wfa/'+str(y)+'/CS2WFA_25km_'+str(y)+str(m).zfill(2)+'.nc'
@@ -393,15 +419,18 @@ for serie_or_map in serie_or_maps:
                 data = xr.open_dataset(filename,group='sea_ice_thickness')
                 if k==1:
                   sitc = data.variables['sea_ice_thickness']; #vdatac = data.variables[varray]#['sit']
+                  sitc=np.where(sitc>0,sitc, np.nan)
+                  sitc=np.where(sitc<10,sitc, np.nan)
                 else:
-                  sit = data.variables['sea_ice_thickness'];  sitc = xr.Variable.concat([sitc,sit],'time')
+                  sit = data.variables['sea_ice_thickness']; sit=np.where(sit>0,sit, np.nan); sit=np.where(sit<10,sit, np.nan)
+                  sitc = np.concatenate([sitc,sit],0) # 'time')
                 timec.append(datetime.datetime(y,m,1))
                 data.close()
               sicc_obs=sitc
-              interval=10 #len(time))
-              mean=np.nanmean(sicc_obs,axis=1); mean=np.nanmean(mean,axis=1)
-              plt.plot(timec, mean, color=obs_colors[kc])   
-              plt.grid('on')
+              if vname=='sit': 
+                mean=np.nanmean(sicc_obs,axis=1); mean=np.nanmean(mean,axis=1)
+                plt.plot(timec, mean, color=obs_colors[kc])   
+                plt.grid('on')
     
             sit_mod = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
             sic_mod = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
@@ -417,21 +446,35 @@ for serie_or_map in serie_or_maps:
               imonth=time_modd.month==m; iym=np.where(iyear*imonth==True)
               time.append(time_mods[iym[0][0]])
               sit_modm=np.nanmean(sit_mod[iyear*imonth],axis=0) # month average
-              #st = tictoc.time();   print('Interping model to obs grid ...'); # get the start time
-              #sicc_mod[km]=seapy.oasurf(np.array(lon_mod),np.array(lat_mod),np.array(sit_modm),np.array(lon_obs),np.array(lat_obs))[0]
               sicc_mod[km]=func.interp_field(np.array(sit_modm))#[0]
-              #et = tictoc.time()-st; print('Execution time:', et, 'seconds')
-              #exit()
               sicc_mod[km]=np.where(sicc_mod[km]>0,sicc_mod[km] , np.nan)
               sicc_mod[km]=np.where(sicc_mod[km]<10,sicc_mod[km] , np.nan)
-              #f=interpolate.RectBivariateSpline(np.array(lon_mod),np.array(lat_mod),np.array(sit_modm))
-              #sicc_mod[km]=f(np.array(lon_obs),np.array(lat_obs))
+              # masking mod where there is no obs
+              #siccz=sicc_mod[km] 
+              #cond=np.isnan(sicc_obs[km]); iext=np.where(cond==True)
+              #for i in range(np.shape(iext)[1]):
+              #  siccz[iext[0][i],iext[1][i]]=np.nan
+              #sicc_mod[km]=siccz
     
-            sicc_diff=sicc_obs+(sicc_mod-sicc_obs)
-            mean=np.nanmean(sicc_diff,axis=1); mean=np.nanmean(mean,axis=1)
-            timec=time; 
-            plt.ylabel('Sea ice thickness (m)'); plt.title('Sea ice thickness [Model interp to Obs]')
-            figname=path_fig+run+'/serie_sit_month_mean_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+            if vname=='sit': 
+              # masking mod where there is no obs
+              sicc_diff=sicc_obs+(sicc_mod-sicc_obs)
+              #sicc_diff=sicc_mod
+              mean=np.nanmean(sicc_diff,axis=1); mean=np.nanmean(mean,axis=1)
+              timec=time; 
+              plt.ylabel('Sea ice thickness (m)'); plt.title('Sea ice thickness [Model interp to Obs]')
+            elif vname=='sit_rmse':
+              # masking mod where there is no obs
+              sicc_mod=sicc_obs+(sicc_mod-sicc_obs)
+              mean=np.zeros_like(time)
+              print('Computing monthly thickness rmse')
+              for t in range(0,len(time)):
+                mean[t]=np.sqrt(np.nanmean(np.square(np.subtract(sicc_obs[t],sicc_mod[t]))))
+                exit()
+              timec=time; 
+              plt.ylabel('Sea ice thickness rmse (m)'); plt.title('Sea ice thickness rmse [Model interp to Obs]')
+
+            figname=path_fig+run+'/serie_'+vname+'_month_mean_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
     
         elif vname=='sie':
           sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
@@ -861,6 +904,7 @@ for serie_or_map in serie_or_maps:
                  uc_ob=uc_ob[x]; vc_ob=vc_ob[x]; uc_mo=uc_mo[x]; vc_mo=vc_mo[x]
                  vcorr,angle,X,Y=veccor1(uc_ob,vc_ob,uc_mo,vc_mo) 
                  mean[i][ii]=vcorr
+
     
             ax=fig.add_subplot(2,2,km+1)
             plt.title(tseason[km]+' '+run+' vel. corr.',loc='center')
@@ -879,9 +923,72 @@ for serie_or_map in serie_or_maps:
             divider = make_axes_locatable(ax)
             cax = divider.append_axes('right', size='5%', pad=0.05)
             fig.colorbar(im1, cax=cax, orientation='vertical')
-    
+
+          figname=path_fig+run+'/map_vector_complex_correlation_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+
+        if vname[0:6]=='newice': 
+          # loop in the four seasons
+          km=-1; tseason=['JFM','AMJ','JAS','OND']
+          for m in [1,4,7,10]:
+            km+=1; 
+            print(run+': computing 3-month mean starting in month '+str(m).zfill(2))
+            if m==1:
+              imonth1=time_modd.month==1; imonth2=time_modd.month==2; imonth3=time_modd.month==3; 
+            if m==4: 
+              imonth1=time_modd.month==4; imonth2=time_modd.month==5; imonth3=time_modd.month==6; 
+            if m==7: 
+              imonth1=time_modd.month==7; imonth2=time_modd.month==8; imonth3=time_modd.month==9; 
+            if m==10: 
+              imonth1=time_modd.month==10; imonth2=time_modd.month==11; imonth3=time_modd.month==12; 
+
+            vdatas=np.concatenate((vdatac[imonth1],vdatac[imonth2],vdatac[imonth3]),0)
+            mean=np.nanmean(vdatas,0)
+            mean=np.where(mean!=0.0,mean,np.nan)
+            # computing difference between 2 expts
+            if vname=='newice_diff':
+              if ex==expt[-1]:
+                mean=(means[km,:,:]-mean)*90
+              else:
+                if km==0:
+                  means=np.zeros((4,np.shape(mean)[0],np.shape(mean)[1]))
+                means[km,:,:]=mean
+
+            if ex==expt[-1]:
+              ax=fig.add_subplot(2,2,km+1)
+              bm = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l')#,ax=ax[km])
+              #Weddel
+              for lsec in [-150,-60,-20,24,90,160]:
+                x,y = bm([lsec,lsec],[-90, -50]); bm.plot(x,y,'g',linewidth=1,) 
+
+              bm.drawcoastlines()
+              bm.fillcontinents(color='grey',lake_color='aqua')
+              #bm.drawparallels(np.arange(-90,-30,30))
+              #bm.drawmeridians(np.arange(0,360,30))
+              lonp, latp = bm(lon_mod,lat_mod)#,inverse=True)
+              if len(expt)==1:
+                plt.title(tseason[km]+' '+run+' newice',loc='center')
+                cmap = cmocean.cm.matter
+                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=.015)
+              else:
+                plt.title(tseason[km]+' '+runs[expt[0]][5:-9]+' - '+runs[expt[1]][5:-9],loc='center')
+                cmap = cmocean.cm.balance
+                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-.2,vmax=.2)
+              # contour
+              lone, late = bm(lon_etopo,lat_etopo)#,inverse=True)
+              ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
+              clevels=[-300]# np.linspace(0,40,40,endpoint=False)
+              ic=bm.contour(lonp,latp,h_etopoi,clevels,colors=('b'),linewidths=(1.5,),origin='upper',linestyles='solid',extent=ext)
+              #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
+              # computing stats per subregion
+              # including colorbar
+              divider = make_axes_locatable(ax)
+              cax = divider.append_axes('right', size='5%', pad=0.05)
+              fig.colorbar(im1, cax=cax, orientation='vertical')
+              exit()
+ 
+          figname=path_fig+run+'/map_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+
         fig.tight_layout() 
-        figname=path_fig+run+'/map_vector_complex_correlation_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
         if ex==expt[-1]:
           if save_fig==1:
             if os.path.exists(path_fig+run)==False:
@@ -896,10 +1003,10 @@ for serie_or_map in serie_or_maps:
       if plot_video==1:
         print('Ploting video: '+vname+' '+run)
         plt.rcParams.update({'font.size': 12})
-        if ke==1 and vname=='sie': # if first expt load obs
+        if ke==1 and (vname=='sie' or vname=='sic'): # if first expt load obs
           fig, ax = plt.subplots(1,len(obs_sources)+len(expt)+len(expt), figsize = (16,8)) # landscape
           # plot obs
-          if vname=='sie': # sea ice extent
+          if vname=='sie' or vname=='sic': # sea ice extent
             # loop in time to read obs
             kc=0; ll=[]
             for obs_source in obs_sources: 
@@ -963,18 +1070,22 @@ for serie_or_map in serie_or_maps:
                   #sicobsi=seapy.oasurf(np.array(lon_obs),np.array(lat_obs),np.array(sicct),np.array(lon_nex),np.array(lat_nex))[0]
                   et = tictoc.time()-st; print('Execution time:', et, 'seconds')
                   sicct=sicobsi
+
+                if vname=='sie':
+                  siccz=np.zeros((np.shape(sicct)[0],np.shape(sicct)[1])) 
+                  #iext=np.where(sicct>1); sicct[iext]=0;
+                  #iext=np.where(sicct>.15)[0]; sicct[iext]=1;
+                  iext=np.where(sicct>.15); 
+                  st = tictoc.time(); print('Processing obs SIC to get extent time: '+time_obs[t].strftime("%Y%m%d%HH:%MM")) # get the start time
+                  for ii in range(np.shape(iext)[1]):
+                    siccz[iext[0][ii],iext[1][ii]]=1.
+                  #et = tictoc.time()-st; print('Execution time:', et, 'seconds')
     
-                siccz=np.zeros((np.shape(sicct)[0],np.shape(sicct)[1])) 
-                #iext=np.where(sicct>1); sicct[iext]=0;
-                #iext=np.where(sicct>.15)[0]; sicct[iext]=1;
-                iext=np.where(sicct>.15); 
-                st = tictoc.time(); print('Processing obs SIC to get extent time: '+time_obs[t].strftime("%Y%m%d%HH:%MM")) # get the start time
-                for ii in range(np.shape(iext)[1]):
-                  siccz[iext[0][ii],iext[1][ii]]=1.
-                #et = tictoc.time()-st; print('Execution time:', et, 'seconds')
-    
-                siccz[inan_mod]=np.nan
-                sic_obs[t]=siccz
+                  siccz[inan_mod]=np.nan
+                  sic_obs[t]=siccz
+                else:
+                  sicct[inan_mod]=np.nan
+                  sic_obs[t]=sicct
     
               sicc_obs=sic_obs
     
@@ -1000,7 +1111,7 @@ for serie_or_map in serie_or_maps:
             im1 = ax[ke-1].imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmin=0,vmax = 1.0)
             fig.colorbar(im1, cax=cax, orientation='vertical')
       
-        if ke>=1 and vname=='sie': # if first expt load obs
+        if ke>=1 and (vname=='sie' or vname=='sic'): # if first expt load obs
           fps=24
           sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
           sic_mod = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
@@ -1064,13 +1175,17 @@ for serie_or_map in serie_or_maps:
                 siccz=np.nanmean(sicc_mo[iday,:,:],axis=0)
                 #exit()
                 #sicc_mod[t]=siccz # np.nanmean(sicc_mo[iday,:,:],axis=0)
-                print('Processing model SIC to get extent time: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
-                sicct=np.zeros((np.shape(siccz)[0],np.shape(siccz)[1]))
-                iext=np.where(siccz>.15)#[0]; sicct[iext]=1;
-                for ii in range(np.shape(iext)[1]):
-                  sicct[iext[0][ii],iext[1][ii]]=1.
-                sicct[inan_mod]=np.nan
-                sicc_mod[t]=sicct
+                if vname=='sie':
+                  print('Processing model SIC to get extent time: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
+                  sicct=np.zeros((np.shape(siccz)[0],np.shape(siccz)[1]))
+                  iext=np.where(siccz>.15)#[0]; sicct[iext]=1;
+                  for ii in range(np.shape(iext)[1]):
+                    sicct[iext[0][ii],iext[1][ii]]=1.
+                  sicct[inan_mod]=np.nan
+                  sicc_mod[t]=sicct
+                else:
+                  siccz[inan_mod]=np.nan
+                  sicc_mod[t]=siccz
               else:
                 sicc_modm=np.nanmean(sicc_mo[iday,:,:],axis=0)
                 st = tictoc.time(); print('Interp model SIC to obs grid: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
@@ -1350,51 +1465,81 @@ for serie_or_map in serie_or_maps:
           divider = make_axes_locatable(ax[ke+1])
           cax = divider.append_axes('right', size='5%', pad=0.05)
           fig.colorbar(im3, cax=cax, orientation='vertical')
+
+        # Ice divergence
+        if vname=='divergence': # if first expt load obs
+          if ke==1:
+            fig, ax = plt.subplots(1,len(expt), figsize = (16,8)) # landscape
+            time_obs=time_obsix
+
+          u_mod = udatac*3.6*24;  v_mod = vdatac*3.6*24;
+          #u_mod=np.where(u_mod!=0.0,u_mod,np.nan)
+          #v_mod=np.where(v_mod!=0.0,v_mod,np.nan)
+          
+          uc_mod = np.zeros([len(time_obsix),np.shape(v_mod)[1],np.shape(v_mod)[2]]); uc_mod[:]=np.nan
+          vc_mod = np.zeros([len(time_obsix),np.shape(v_mod)[1],np.shape(v_mod)[2]]); vc_mod[:]=np.nan
+          #st = tictoc.time();   print('Creating weights to interp. model to obs grid ...'); # get the start time
+          #func=myInterp.IrregularGridInterpolator(np.array(lon_mod),np.array(lat_mod),np.array(lon_obs),np.array(lat_obs))#[0]
+          #et = tictoc.time()-st; print('Execution time:', et, 'seconds')
+  
+          # daily data (average if nextsim)
+          #iday2=-9999
+          for t in range(len(time_obsix)): # (np.shape(sicc_mod)[0]):
+            if run=='BSOSE':
+              print('BSOSE day: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
+              diff=np.abs(int(time_obsn[t])-np.array(time_modi)); min_diff=np.min(diff)
+              iday=np.where(diff==min_diff)[0][0];
+              print(iday)
+              if iday!=iday2:
+                uc_modi=func.interp_field(np.array(u_mod[iday]))
+                vc_modi=func.interp_field(np.array(v_mod[iday]))
+                iday2=iday;
+              uc_mod[t]=uc_modi
+              vc_mod[t]=vc_modi
+            else:
+              #print('Cocatenating model drift results: '+time_obsix[t].strftime("%Y%m%d%HH:%MM"))
+              iday=np.where(time_obsixn[t]==time_mod)[0]
+              uc_mod[t]=u_mod[iday,:,:]
+              vc_mod[t]=v_mod[iday,:,:]
+              #uc_mod[t]=func.interp_field(np.array(ucmod)) #,np.array(lon_obs),np.array(lat_obs))[0]
+              #vc_mod[t]=func.interp_field(np.array(vcmod)) #,np.array(lon_obs),np.array(lat_obs))[0]
+              #st = tictoc.time();   print('Interping model siu and siv to obs grid ...'); # get the start time
+              #uc_mod[t]=seapy.oasurf(np.array(lon_mod),np.array(lat_mod),np.array(ucmod),np.array(lon_obs),np.array(lat_obs))[0]
+              #vc_mod[t]=seapy.oasurf(np.array(lon_mod),np.array(lat_mod),np.array(vcmod),np.array(lon_obs),np.array(lat_obs))[0]
+              #et = tictoc.time()-st; print('Execution time:', et, 'seconds')
     
-        elif varim=='sic' or varim=='sit': # solo model maps
-          fps=24
-          plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
-          sit_output = datac.sit.to_masked_array() # Extract a given variable
-          time = datac.time.indexes['time']
-      
-          time=time_mod; mask =1- mask; 
-          variable = sit_output;
+          uc_mod=np.where(uc_mod!=0.0,uc_mod,np.nan)
+          vc_mod=np.where(vc_mod!=0.0,vc_mod,np.nan)
+          time=time_obsix; 
+
+          dudx=(uc_mod[::,::,1::]-uc_mod[::,::,0:-1])/25.
+          dvdy=(vc_mod[::,1::,::]-vc_mod[::,0:-1,::])/25.
+          div_mod=dudx[::,0:-1,::]+dvdy[::,::,0:-1]
+
+          time=time_obs; mask=1-mask; 
           interval=10 #len(time))
-          #anim=make_animation(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
-          #def make_animation(time,mask,variable,interval=10):
-      
-          fig, ax1 = plt.subplots(1, 1 ,figsize=(8,8))
-          ax1.set_title('neXtSIM',loc='right')
-          ax1.set_title('Date : {} '.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
-          ax1.set_facecolor('xkcd:putty')
-      
-          # including colorbar
-          divider = make_axes_locatable(ax1)
-          cax = divider.append_axes('right', size='5%', pad=0.05)
-          if varim=='sic':
-            cmap = cmocean.cm.ice
-          elif varim=='sit':
-            cmap = cmocean.cm.dense_r
-          #im1=plt.pcolormesh(variable[0],cmap=cmap,animated=True,vmax = 2.5); 
-          #plt.colorbar(); 
-          im1 = ax1.imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmax = 3.5)
-          #plt.colorbar()
-          fig.colorbar(im1, cax=cax, orientation='vertical')
-          #exit()
-      
-          def animate(i):
-              im1.set_array(variable[i])
-              ax1.set_title('Date :{} '.format(time[i].strftime('%Y.%m.%d')), loc = 'left')
-              return [im1]
-      
-          Nt = np.shape(variable)[0]
-          anim = animation.FuncAnimation(fig, animate, frames=len(time),
-                                         interval=interval, blit=True)
-          #plt.show()
-          exit()
-          #return anim
+          fps=24
     
-        #exit()
+          cmap = cmocean.cm.balance
+          ax[ke-1].set_title(run,loc='right')
+          m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke-1])
+          lonp, latp = m(lon_mod[0:-1,0:-1],lat_mod[0:-1,0:-1]) #,inverse=True)
+          lonv, latv = m(lon_modv,lat_modv)#,inverse=True)
+          divider = make_axes_locatable(ax[ke-1])
+          cax = divider.append_axes('right', size='5%', pad=0.05)
+          if ke==1:
+            div_mo=div_mod
+            im1 = m.pcolormesh(lonp,latp,div_mo[0],cmap=cmap,vmin=-.2,vmax=.2)
+            fig.colorbar(im1, cax=cax, orientation='vertical')
+          else:
+            im2 = m.pcolormesh(lonp,latp,div_mod[0],cmap=cmap,vmin=-.2,vmax=.2)
+            fig.colorbar(im2, cax=cax, orientation='vertical')
+          #im22 = m.quiver(lonov, latov, uc_mod[0], vc_mod[0],color='black',width=0.002,scale=500.0) 
+          #qk=plt.quiverkey(im22,.5,.5,10,'10 km/day',labelpos='S',fontproperties={'size':8})
+          m.drawcoastlines()
+          m.fillcontinents(color='grey',lake_color='aqua')
+    
+    
         if vname=='drift':
           def animates(i):
             im1.set_array(magc_obs[i])
@@ -1406,7 +1551,15 @@ for serie_or_map in serie_or_maps:
             im3.set_array(magc_mod[i]-magc_obs[i])
             return [im1,im11,im2,im22,im3]
     
-        else:
+        elif vname=='divergence':
+          if ex==expt[-1]:
+            def animates(i):
+              im1.set_array(div_mo[i])
+              ax[0].set_title('{}'.format(time_obsix[i].strftime('%Y.%m.%d')), loc = 'left')
+              im2.set_array(div_mod[i])
+              return [im1,im2]
+    
+        else: # obs x mod x diff
           def animates(i):
             im1.set_array(sicc_obs[i])
             #plt.title('Date :{} '.format(time_obs[i].strftime('%Y.%m.%d')), loc = 'left')
@@ -1415,21 +1568,27 @@ for serie_or_map in serie_or_maps:
             im3.set_array(sicc_diff[i])
             return [im1,im2,im3]
     
-        time=time_obs
-        #Nt = np.shape(variable)[0]
-        plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
-        anim = animation.FuncAnimation(fig, animates, frames=len(time),
-                                           interval=interval, blit=True)
-        FFwriter = animation.FFMpegWriter( fps = fps)
-        if plt_show==1:
-          plt.show()
-        ##Save animation 
-        figname=path_fig+run+'/video_map_mod_x_obs_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.mp4'
-        if save_fig==1:
-          print('Saving: '+figname)
-          if os.path.exists(path_fig+run)==False:
-            os.mkdir(path_fig+run)
-          anim.save(figname, writer=FFwriter, dpi = 150)
+        if ex==expt[-1]:
+          time=time_obs
+          #Nt = np.shape(variable)[0]
+          plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
+          anim = animation.FuncAnimation(fig, animates, frames=len(time),
+                                             interval=interval, blit=True)
+          FFwriter = animation.FFMpegWriter( fps = fps)
+          if plt_show==1:
+            plt.show()
+
+          ##Save animation 
+          if vname=='divergence':
+            figname=path_fig+run+'/video_map_mod_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.mp4'
+          else:
+            figname=path_fig+run+'/video_map_mod_x_obs_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.mp4'
+
+          if save_fig==1:
+            print('Saving: '+figname)
+            if os.path.exists(path_fig+run)==False:
+              os.mkdir(path_fig+run)
+            anim.save(figname, writer=FFwriter, dpi = 150)
     
     
       ### Plot scatter plot
@@ -1446,45 +1605,45 @@ for serie_or_map in serie_or_maps:
           figname=path_fig+run+'/sst_x_sic_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
       
       
-      ### Make animation of sea-ice thickness
+      ### Make animation of solo model output
       if plot_anim==1:
         print('Ploting anim: '+vname+' '+run)
     
-        fps=60
+        fps=24
         plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
-        sit_output = vdatac # .sit.to_masked_array() # Extract a given variable
         time = time_modd # datac.time.indexes['time']
-        #sit_output = datac.sit.to_masked_array() # Extract a given variable
-        #time = datac.time.indexes['time']
       
-        #time=time_mod; mask =1- mask; 
-        variable = sit_output;
+        variable = vdatac;
+        variable=np.where(variable!=0,variable,np.nan)
         interval=10 #len(time))
-        #anim=make_animation(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
-        #def make_animation(time,mask,variable,interval=10):
       
-        fig, ax1 = plt.subplots(1, 1 ,figsize=(8,8))
-        ax1.set_title('neXtSIM',loc='right')
-        ax1.set_title('Date : {} '.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
-        ax1.set_facecolor('xkcd:putty')
+        fig, ax = plt.subplots(1, 1 ,figsize=(8,8))
+        ax.set_title(run+' '+vname,loc='right')
+        ax.set_title('Date : {} '.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
       
-        # including colorbar
-        divider = make_axes_locatable(ax1)
+        if vname=='sic':
+          cmap = cmocean.cm.ice; vmin=0; vmax=1.
+        elif vname=='sit':
+          cmap = cmocean.cm.dense_r; vmin=0; vmax=3.5
+        elif vname=='newice':
+          cmap = cmocean.cm.matter; vmin=0; vmax=0.04
+
+        ax.set_title(run,loc='right')
+        m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax)
+        lonp, latp = m(lon_mod,lat_mod)#,inverse=True)
+        lonv, latv = m(lon_modv,lat_modv)#,inverse=True)
+        im1 = m.pcolormesh(lonp, latp, variable[0], cmap=cmap, vmin=vmin, vmax=vmax)
+        divider = make_axes_locatable(ax)
         cax = divider.append_axes('right', size='5%', pad=0.05)
-        if varim=='sic':
-          cmap = cmocean.cm.ice
-        elif varim=='sit':
-          cmap = cmocean.cm.dense_r
-        #im1=plt.pcolormesh(variable[0],cmap=cmap,animated=True,vmax = 2.5); 
-        #plt.colorbar(); 
-        im1 = ax1.imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmax = 3.5)
-        #plt.colorbar()
         fig.colorbar(im1, cax=cax, orientation='vertical')
-        #exit()
+        #im22 = m.quiver(lonov, latov, uc_mod[0], vc_mod[0],color='black',width=0.002,scale=500.0) 
+        #qk=plt.quiverkey(im22,.5,.5,10,'10 km/day',labelpos='S',fontproperties={'size':8})
+        m.drawcoastlines()
+        m.fillcontinents(color='grey',lake_color='aqua')
       
         def animate(i):
             im1.set_array(variable[i])
-            ax1.set_title('Date :{} '.format(time[i].strftime('%Y.%m.%d')), loc = 'left')
+            ax.set_title('Date :{} '.format(time[i].strftime('%Y.%m.%d')), loc = 'left')
             return [im1]
       
         Nt = np.shape(variable)[0]
@@ -1500,7 +1659,7 @@ for serie_or_map in serie_or_maps:
       
         FFwriter = animation.FFMpegWriter(fps=fps)
         ##Save animation 
-        figname=path_fig+run+'/video_model_map_'+varim+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.mp4'
+        figname=path_fig+run+'/video_solo_map_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.mp4'
         if save_fig==1:
           if os.path.exists(path_fig+run)==False:
             os.mkdir(path_fig+run)

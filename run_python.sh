@@ -13,8 +13,4 @@ echo 'load-python-nextsim'
 
 python valid_nextsim.py_sub
 
-#srun singularity exec -B /nesi/nobackup/uoa03669 $NEXTSIM_IMAGE_NAME nextsim.exec --config-files=/config_files/nextsim.cfg
-
-#echo Deleting forcing files from expt dir to save space ...
-#rm -rf $NEXTSIM_INPUT_DIR/{ERA*,ETOPO*,GLORYS*} 
 
