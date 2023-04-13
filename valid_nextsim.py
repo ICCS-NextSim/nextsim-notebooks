@@ -36,14 +36,14 @@ start_month=1
 start_year =2016
 end_day    =28
 end_month  =12 # 
-end_year   =2020
+end_year   =2016
 
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=17
 exptc=[12,9,exp,15]#2,5,7,10]
 expt=exptc
-expt=[19,18]
+expt=[19]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1
@@ -51,9 +51,9 @@ inc_obs=1
 
 # Plot types
 plot_scatter=0
-plot_series =1
+plot_series =0
 plot_video  =0
-plot_map    =0 # seasonal maps
+plot_map    =1 # seasonal maps
 plot_maps   =0
 plot_anim   =0 # solo video
 save_fig    =1
@@ -61,8 +61,8 @@ plt_show    =1
 interp_obs  =1 # only for SIE maps obs has 2x the model resolution
 
 #Variables
-vname ='sit_rmse' # sie,bsie,sit,siv,drift,vcorr processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
-
+vname ='newice' # sie,bsie,sit,sit_rmse,siv,drift,vcorr, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
+                  # newice
 ####################################################################
 # after BSOSE run (ocean boundary cond), runs are all mEVP
 runs=['50km_ocean_wind'     ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',
@@ -112,7 +112,7 @@ if socket.gethostname()=='SC442555' or socket.gethostname()=='SC442555.local' or
   path_fig ='/Users/rsan613/Library/CloudStorage/OneDrive-TheUniversityofAuckland/001_WORK/nextsim/southern/figures/'
   path_data ='/Users/rsan613/n/southern/data/'
   path_bsose='/Volumes/LaCie/mahuika/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/bsose/'
-elif socket.gethostname()[0:3]=='wmc' or socket.gethostname()=='mahuika01' or socket.gethostname()=='mahuika':
+elif socket.gethostname()[0]=='w' or socket.gethostname()=='mahuika01' or socket.gethostname()=='mahuika':
   path_runs='/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/' # ''~/'
   path_fig ='/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/figures/' 
   path_data ='/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/'
@@ -136,6 +136,7 @@ lat_modv=lat_mod[::v_spam,::v_spam]
 sit_output = data.sit.to_masked_array() # Extract a given variable
 inan_mod=ma.getmaskarray(sit_output[0]); 
 mask = ma.getmaskarray(sit_output[0]) #Get mask
+lon_mod360=np.where(lon_mod>=0,lon_mod,lon_mod+360)
 
 #ETOPO
 filename=path_data+'etopo/ETOPO_Antarctic_10arcmin.nc'
@@ -149,8 +150,8 @@ lon_etopo,lat_etopo=np.meshgrid(lon_etopo,lat_etopo)
 
 if plot_map==1 and vname=='newice': 
   print('Interpolating etopo bathy to nextsim grid')
-  func=myInterp.IrregularGridInterpolator(np.array(lon_etopo),np.array(lat_etopo),np.array(lon_mod),np.array(lat_mod))
-  h_etopoi=func.interp_field(np.array(h_etopo))
+  #func=myInterp.IrregularGridInterpolator(np.array(lon_etopo),np.array(lat_etopo),np.array(lon_mod),np.array(lat_mod))
+  #h_etopoi=func.interp_field(np.array(h_etopo))
 
 for serie_or_map in serie_or_maps:
   print(str(serie_or_map))
@@ -470,7 +471,6 @@ for serie_or_map in serie_or_maps:
               print('Computing monthly thickness rmse')
               for t in range(0,len(time)):
                 mean[t]=np.sqrt(np.nanmean(np.square(np.subtract(sicc_obs[t],sicc_mod[t]))))
-                exit()
               timec=time; 
               plt.ylabel('Sea ice thickness rmse (m)'); plt.title('Sea ice thickness rmse [Model interp to Obs]')
 
@@ -956,11 +956,30 @@ for serie_or_map in serie_or_maps:
             if ex==expt[-1]:
               ax=fig.add_subplot(2,2,km+1)
               bm = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l')#,ax=ax[km])
-              #Weddel
-              for lsec in [-150,-60,-20,24,90,160]:
-                x,y = bm([lsec,lsec],[-90, -50]); bm.plot(x,y,'g',linewidth=1,) 
+              #write regional means on maps
+              lon_regions=np.array([-150,-61,-20,34,90,160]);
+              lon_r360=np.where(lon_regions>=0,lon_regions,lon_regions+360);
+              for kl in range(0,len(lon_regions)):
+                lsec=lon_regions[kl]
+                x,y = bm([lsec,lsec],[-90, -50]); bm.plot(x,y,'k',linewidth=1,) 
+                if lsec==lon_regions[0]: # values crossing the 180E/W line
+                  meanf=np.where(lon_mod<lon_regions[0],mean,0); meanf2=np.where(lon_mod>lon_regions[-1],mean,0); meanf=meanf+meanf2
+                  meanf=np.where(meanf!=0,meanf,np.nan) 
+                else: # other regions
+                  meanf=np.where(lon_mod>lon_regions[kl-1],mean,np.nan); meanf=np.where(lon_mod<lon_regions[kl],meanf,np.nan)
 
-              bm.drawcoastlines()
+                meanf=format(np.nansum(meanf),'.2f')
+                print('Mean area: ',meanf)
+                if kl==0:
+                  lon_r=lon_r360
+                else:
+                  lon_r=lon_regions
+                print(np.nanmean([lon_r[kl-1],lon_r[kl]]))
+                x,y = bm(np.nanmean([lon_r[kl-1],lon_r[kl]])-0,-65);
+                plt.annotate(meanf, xy=(x, y), xycoords='data', xytext=(x, y),fontsize=9)#, textcoords='offset points',
+                #color='r', arrowprops=dict(arrowstyle="->")) #"fancy", color='g')
+#bla            
+              bm.drawcoastlines(linewidth=.5)
               bm.fillcontinents(color='grey',lake_color='aqua')
               #bm.drawparallels(np.arange(-90,-30,30))
               #bm.drawmeridians(np.arange(0,360,30))
@@ -976,15 +995,14 @@ for serie_or_map in serie_or_maps:
               # contour
               lone, late = bm(lon_etopo,lat_etopo)#,inverse=True)
               ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
-              clevels=[-300]# np.linspace(0,40,40,endpoint=False)
-              ic=bm.contour(lonp,latp,h_etopoi,clevels,colors=('b'),linewidths=(1.5,),origin='upper',linestyles='solid',extent=ext)
+              clevels=[-300] # np.linspace(0,40,40,endpoint=False)
+              ic=bm.contour(lone,late,h_etopo,clevels,colors=('b'),linewidths=(1.5,),origin='upper',linestyles='solid',extent=ext)
               #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
               # computing stats per subregion
               # including colorbar
               divider = make_axes_locatable(ax)
               cax = divider.append_axes('right', size='5%', pad=0.05)
               fig.colorbar(im1, cax=cax, orientation='vertical')
-              exit()
  
           figname=path_fig+run+'/map_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
 

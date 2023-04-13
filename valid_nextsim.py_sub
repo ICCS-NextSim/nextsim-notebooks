@@ -33,17 +33,17 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2016
+start_year =2013
 end_day    =28
-end_month  =12 # 
-end_year   =2020
+end_month  =8 # 
+end_year   =2021
 
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=17
 exptc=[12,9,exp,15]#2,5,7,10]
 expt=exptc
-expt=[19,18]
+expt=[12,19,18]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1
@@ -470,7 +470,6 @@ for serie_or_map in serie_or_maps:
               print('Computing monthly thickness rmse')
               for t in range(0,len(time)):
                 mean[t]=np.sqrt(np.nanmean(np.square(np.subtract(sicc_obs[t],sicc_mod[t]))))
-                exit()
               timec=time; 
               plt.ylabel('Sea ice thickness rmse (m)'); plt.title('Sea ice thickness rmse [Model interp to Obs]')
 
