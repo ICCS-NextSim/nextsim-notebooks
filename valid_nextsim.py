@@ -17,7 +17,7 @@ import irregular_grid_interpolator as myInterp
 #from scipy import interpolate
 import datetime
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from Utils import * #make_animation, time_series_plot, time_series_plot2
+from Utils import * 
 import projection_info
 from sys import exit
 import os
@@ -36,18 +36,22 @@ start_month=1
 start_year =2016
 end_day    =28
 end_month  =12 # 
-end_year   =2016
+end_year   =2021
 
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=17
 exptc=[12,9,exp,15]#2,5,7,10]
 expt=exptc
-expt=[19]
+expt=[18,19]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1
 inc_obs=1
+
+#Variables
+vname ='newice_diff' # sie,bsie,sit,sit_rmse,siv,drift,vcorr, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
+                  # newice, newice_diff
 
 # Plot types
 plot_scatter=0
@@ -60,9 +64,6 @@ save_fig    =1
 plt_show    =1
 interp_obs  =1 # only for SIE maps obs has 2x the model resolution
 
-#Variables
-vname ='newice' # sie,bsie,sit,sit_rmse,siv,drift,vcorr, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
-                  # newice
 ####################################################################
 # after BSOSE run (ocean boundary cond), runs are all mEVP
 runs=['50km_ocean_wind'     ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',
@@ -148,10 +149,17 @@ h_etopo=ds.variables['z'][:]
 ds.close()
 lon_etopo,lat_etopo=np.meshgrid(lon_etopo,lat_etopo)
 
-if plot_map==1 and vname=='newice': 
-  print('Interpolating etopo bathy to nextsim grid')
+if plot_map==1 and vname[0:6]=='newice': 
+  #print('Interpolating etopo bathy to nextsim grid')
   #func=myInterp.IrregularGridInterpolator(np.array(lon_etopo),np.array(lat_etopo),np.array(lon_mod),np.array(lat_mod))
   #h_etopoi=func.interp_field(np.array(h_etopo))
+  #h=xr.DataArray(h_etopoi) #,coords={'y': lat_e,'x': lon_e},dims=["y", "x"])
+  filename=path_data+'etopo/ETOPO_Antarctic_50km_nextsim.nc'
+  #h.to_netcdf(filename)
+  print('Loading: '+filename)
+  ds=xr.open_dataset(filename)
+  h_etopoi=ds.variables['__xarray_dataarray_variable__'][:]
+
 
 for serie_or_map in serie_or_maps:
   print(str(serie_or_map))
@@ -942,12 +950,12 @@ for serie_or_map in serie_or_maps:
               imonth1=time_modd.month==10; imonth2=time_modd.month==11; imonth3=time_modd.month==12; 
 
             vdatas=np.concatenate((vdatac[imonth1],vdatac[imonth2],vdatac[imonth3]),0)
-            mean=np.nanmean(vdatas,0)
+            mean=np.nanmean(vdatas,0)*90
             mean=np.where(mean!=0.0,mean,np.nan)
             # computing difference between 2 expts
             if vname=='newice_diff':
               if ex==expt[-1]:
-                mean=(means[km,:,:]-mean)*90
+                mean=(means[km,:,:]-mean)#*90
               else:
                 if km==0:
                   means=np.zeros((4,np.shape(mean)[0],np.shape(mean)[1]))
@@ -956,49 +964,37 @@ for serie_or_map in serie_or_maps:
             if ex==expt[-1]:
               ax=fig.add_subplot(2,2,km+1)
               bm = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l')#,ax=ax[km])
-              #write regional means on maps
-              lon_regions=np.array([-150,-61,-20,34,90,160]);
-              lon_r360=np.where(lon_regions>=0,lon_regions,lon_regions+360);
-              for kl in range(0,len(lon_regions)):
-                lsec=lon_regions[kl]
-                x,y = bm([lsec,lsec],[-90, -50]); bm.plot(x,y,'k',linewidth=1,) 
-                if lsec==lon_regions[0]: # values crossing the 180E/W line
-                  meanf=np.where(lon_mod<lon_regions[0],mean,0); meanf2=np.where(lon_mod>lon_regions[-1],mean,0); meanf=meanf+meanf2
-                  meanf=np.where(meanf!=0,meanf,np.nan) 
-                else: # other regions
-                  meanf=np.where(lon_mod>lon_regions[kl-1],mean,np.nan); meanf=np.where(lon_mod<lon_regions[kl],meanf,np.nan)
-
-                meanf=format(np.nansum(meanf),'.2f')
-                print('Mean area: ',meanf)
-                if kl==0:
-                  lon_r=lon_r360
-                else:
-                  lon_r=lon_regions
-                print(np.nanmean([lon_r[kl-1],lon_r[kl]]))
-                x,y = bm(np.nanmean([lon_r[kl-1],lon_r[kl]])-0,-65);
-                plt.annotate(meanf, xy=(x, y), xycoords='data', xytext=(x, y),fontsize=9)#, textcoords='offset points',
-                #color='r', arrowprops=dict(arrowstyle="->")) #"fancy", color='g')
-#bla            
+  
               bm.drawcoastlines(linewidth=.5)
               bm.fillcontinents(color='grey',lake_color='aqua')
-              #bm.drawparallels(np.arange(-90,-30,30))
+              #bm.drawparallels(np.arange(-90,-30,5))
               #bm.drawmeridians(np.arange(0,360,30))
               lonp, latp = bm(lon_mod,lat_mod)#,inverse=True)
               if len(expt)==1:
                 plt.title(tseason[km]+' '+run+' newice',loc='center')
                 cmap = cmocean.cm.matter
-                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=.015)
+                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=.6)#,vmin=0,vmax=.015)
               else:
-                plt.title(tseason[km]+' '+runs[expt[0]][5:-9]+' - '+runs[expt[1]][5:-9],loc='center')
+                plt.title(tseason[km]+' '+runs[expt[0]]+' - '+runs[expt[1]],loc='center')
                 cmap = cmocean.cm.balance
                 im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-.2,vmax=.2)
               # contour
               lone, late = bm(lon_etopo,lat_etopo)#,inverse=True)
               ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
               clevels=[-300] # np.linspace(0,40,40,endpoint=False)
-              ic=bm.contour(lone,late,h_etopo,clevels,colors=('b'),linewidths=(1.5,),origin='upper',linestyles='solid',extent=ext)
+              ic=bm.contour(lonp,latp,h_etopoi,clevels,colors=('b'),linewidths=(1.5,),origin='upper',linestyles='solid',extent=ext)
               #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
               # computing stats per subregion
+              lon_regions=[-150,-61,-20,34,90,160];
+              text_map_w_stats(mean,lon_mod,bm,lon_regions,'sum','m')
+              plt.annotate('Total int. diff.: '+format(np.nansum(mean),'.2f')+' m', xy=(.3,.56), xycoords='axes fraction',fontsize=9)#, textcoords='offset points',
+              dataf=np.where(h_etopoi>=-300,mean,np.nan); dataf=format(np.nansum(dataf),'.2f')
+              plt.annotate('Shallow int. diff.: '+dataf+' m', xy=(.3,.51), xycoords='axes fraction',fontsize=9)#, textcoords='offset points',
+              dataf=np.where(h_etopoi<-300,mean,np.nan); dataf=format(np.nansum(dataf),'.2f')
+              plt.annotate('Deep int. diff.: '+dataf+' m', xy=(.3,.46), xycoords='axes fraction',fontsize=9)#, textcoords='offset points',
+
+
+
               # including colorbar
               divider = make_axes_locatable(ax)
               cax = divider.append_axes('right', size='5%', pad=0.05)
