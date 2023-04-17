@@ -1,0 +1,213 @@
+import xarray as xr
+import numpy as np
+import matplotlib.pyplot as plt
+import numpy.ma as ma
+import cmocean
+import cartopy
+import cartopy.crs as ccrs
+from matplotlib.animation import FuncAnimation
+from matplotlib import animation, rc
+
+def veccor1(u1,v1,u2,v2):
+    ''' 
+    # [a,theta]=VECCOR1(u1,v1,u2,v2) computes the complex vector correlation
+    # coefficient following Kundu (1976), JPO, 6, 238-242. Input are the
+    # four time series vectors. Output is complex, with amplitude and
+    # rotation angle in degrees. A positive angle indicates that series 1
+    # is rotated positively (counterclockwise) from series 2.
+    #
+    ########################################################################
+    # ver. 1: 12/1/96 (R.Beardsley)
+    # ver. 2: allow for complex arguments, remove mean
+    # brought (as is) to atsee collection in August 1999 by JiM.
+    # Adpated from matlab to python by Rafa Santana, 30/01/2023
+    ''' 
+    import numpy as np
+    from sys import exit
+  
+    # converting the vectors to complex numbers
+    #  X=u1(:)+i*v1;
+    #u1=u1.flatten(); v1=v1.flatten()
+    #u2=u2.flatten(); v2=v2.flatten()
+    X=np.transpose([u1.flatten()]) + 1j*v1.flatten()
+    Y=np.transpose([u2.flatten()]) + 1j*v2.flatten()
+
+    X=np.complex64(X)
+    Y=np.complex64(Y)
+
+    ## work on the common good points only
+    #ii=find((isfinite(X+Y)));
+    ii=np.isfinite(X+Y)==1;
+
+    ## if no common good points, return NaNs
+    if(np.sum(ii)<1):
+      ac=np.NaN; theta=np.NaN; trans=np.NaN;
+      return ac,theta 
+      exit()
+
+    X=X[ii]; 
+    # there is seem to be some memory problem, in which "Y" gets 0 values
+    # computing "Y" again solves the problem
+    #Y=np.transpose([uc_mod[0,::v_spave,::v_spave].flatten()]) + 1j*vc_mod[0,::v_spave,::v_spave].flatten()
+    Y=np.transpose([u2.flatten()]) + 1j*v2.flatten()
+    Y=np.complex64(Y)
+    Y=Y[ii];
+    # if that doesnt work swap the input (e.g. model vs obs or obs vs model)
+    
+ 
+    ## remove mean
+    X=X-np.nanmean(X[:]); 
+    Y=Y-np.nanmean(Y[:]);
+    ## compute a, theta
+    #c=(rot90(X)*conj(Y))./(sqrt(rot90(X)*conj(X))*sqrt(rot90(Y)*conj(Y)));
+    #c = np.rot90([X],k=1,axes=(0,1)) * np.conj(Y)  / (np.sqrt(np.rot90([X],k=1,axes=(0,1))*np.conj(X))*np.sqrt(np.rot90([Y],k=1,axes=(0,1))*np.conj(Y)));
+    numera = np.matmul(np.rot90([X],k=1,axes=(1,0)).T , np.conj(Y)) 
+    denomi = (np.sqrt ( np.matmul(np.rot90([X],k=1,axes=(1,0)).T , np.conj(X)) ) * np.sqrt( np.matmul(np.rot90([Y],k=1,axes=(1,0)).T , np.conj(Y)) ) );
+
+    c=np.divide(numera,denomi);
+    ac=np.abs(c);
+    theta=180*np.angle(c)/np.pi;
+    
+    return ac,theta,X,Y 
+
+def format_map(ax):
+    ax.gridlines(zorder=2,linewidth=0.25,linestyle="--",color="darkgrey")
+    ax.set_extent([-360, 180, -54, -90], ccrs.PlateCarree())
+    ax.add_feature(cartopy.feature.LAND,zorder=1,alpha=0.7,facecolor="lightgreen")
+
+
+def make_animation_util(time,mask,variable,
+                           interval=10):
+    '''
+    Animation of nextsim simulation outputs for one variable
+    time : time serie
+    mask : mask of the dataset
+    variable : variable of interest
+    interval : time (ms) between 2 frames (typically 20ms)
+     '''
+    
+    fig, ax1 = plt.subplots(1, 1 ,figsize=(8,8))  
+    ax1.set_title('neXtSIM',loc='right')
+    ax1.set_title('Date : {} '.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
+    ax1.set_facecolor('xkcd:putty')
+    
+    cmap = cmocean.cm.ice
+    im1 = ax1.imshow(variable[0],cmap=cmap,origin = 'lower',animated=True,vmax = 2.5)
+
+    def animate(i):
+        im1.set_array(variable[i])
+        ax1.set_title('Date :{} '.format(time[i].strftime('%Y.%m.%d')), loc = 'left')
+        return [im1]
+    Nt = np.shape(variable)[0]
+
+    anim = animation.FuncAnimation(fig, animate, frames=len(time),
+                                   interval=interval, blit=True)
+    #plt.show()
+    return anim
+
+def time_series(time, variable, mask, save_name, title): 
+    ''' 
+    plot the time serie mean of any Masked Array and save the figure
+    Inputs : 
+    - time (datetime array)
+    - vzriable : variable of interest
+    - mask : mask of the variable
+    - save_name : figure name for saving
+    - title : plot title
+    '''
+    
+    T = np.shape(variable)[0]
+    mean = np.zeros(T)
+    std = np.zeros(T)
+    for t in range(T):
+        mean[t] = np.mean(variable[t][variable[t].mask == False])
+    plt.plot(time, mean, '.--b')
+
+def time_series_plot(time, variable, mask, save_name, title): 
+    ''' 
+    plot the time serie mean of any Masked Array and save the figure
+    Inputs : 
+    - time (datetime array)
+    - vzriable : variable of interest
+    - mask : mask of the variable
+    - save_name : figure name for saving
+    - title : plot title
+    '''
+    
+    fig, ax = plt.subplots(1, 1, figsize = (15,5))
+    T = np.shape(variable)[0]
+    mean = np.zeros(T)
+    std = np.zeros(T)
+    for t in range(T):
+        mean[t] = np.mean(variable[t][variable[t].mask == False])
+    plt.plot(time, mean, '.--')
+    plt.xlabel('Time')
+    plt.ylabel('Domain average SIT (m)')
+    plt.title(title)
+    plt.savefig(save_name +'.png')
+    
+def time_series_plot2(time, variable, time2, variable2, time3, variable3, mask, save_name, title): 
+    ''' 
+    plot the time serie mean of any Masked Array and save the figure
+    Inputs : 
+    - time (datetime array)
+    - vzriable : variable of interest
+    - mask : mask of the variable
+    - save_name : figure name for saving
+    - title : plot title
+    '''
+    
+    fig, ax = plt.subplots(1, 1, figsize = (15,5))
+    T = np.shape(variable)[0]; T2 = np.shape(variable2)[0]; T3 = np.shape(variable3)[0]
+    mean = np.zeros(T); mean2 = np.zeros(T2);  mean3 = np.zeros(T3)
+    
+    for t in range(T):
+        mean[t] = np.mean(variable[t][variable[t].mask == False])
+    for t in range(T2):
+        mean2[t] = np.mean(variable2[t][variable2[t].mask == False])
+    for t in range(T3):
+        mean3[t] = np.mean(variable3[t][variable3[t].mask == False])
+        
+    plt.plot(time, mean, '.--',label='ocean-only')
+    plt.plot(time2, mean2, '.--',label='ocean+thermodynamics')
+    #plt.plot(time3, mean3, '.--',label='ocean+wind+thermodynamics')
+    plt.xlabel('Time')
+    plt.legend()                      
+    plt.ylabel('Domain average SIT (m)')
+    plt.title(title)
+    plt.savefig(save_name +'.png')
+
+    
+def time_series_plot3(time, variable, time2, variable2, time3, variable3, mask, save_name, title): 
+    ''' 
+    plot the time serie mean of any Masked Array and save the figure
+    Inputs : 
+    - time (datetime array)
+    - vzriable : variable of interest
+    - mask : mask of the variable
+    - save_name : figure name for saving
+    - title : plot title
+    '''
+    
+    fig, ax = plt.subplots(1, 1, figsize = (15,5))
+    T = np.shape(variable)[0]; T2 = np.shape(variable2)[0]; T3 = np.shape(variable3)[0]
+    mean = np.zeros(T); mean2 = np.zeros(T2);  mean3 = np.zeros(T3)
+    
+    for t in range(T):
+        mean[t] = np.mean(variable[t][variable[t].mask == False])
+    for t in range(T2):
+        mean2[t] = np.mean(variable2[t][variable2[t].mask == False])
+    for t in range(T3):
+        mean3[t] = np.mean(variable3[t][variable3[t].mask == False])
+        
+    plt.plot(time, mean, '.--',label='ocean-only')
+    plt.plot(time2, mean2, '.--',label='ocean+thermodynamics')
+    plt.plot(time3, mean3, '.--',label='ocean+wind+thermodynamics')
+    plt.xlabel('Time')
+    plt.legend()                      
+    plt.ylabel('Domain average SIT (m)')
+    plt.title(title)
+    plt.savefig(save_name +'.png')
+
+
+    

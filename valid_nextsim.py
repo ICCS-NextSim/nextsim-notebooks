@@ -33,25 +33,28 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2016
+start_year =2015
 end_day    =28
 end_month  =12 # 
-end_year   =2021
+end_year   =2020
 
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=17
 exptc=[12,9,exp,15]#2,5,7,10]
 expt=exptc
-expt=[18,19]
+expt=[18]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1
 inc_obs=1
 
 #Variables
-vname ='newice_diff' # sie,bsie,sit,sit_rmse,siv,drift,vcorr, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
-                  # newice, newice_diff
+vname ='sit_obs_diff' 
+# sie, bsie,
+# sit, sit_rmse, sit_obs_diff (plot_map)
+# siv, drift,vcorr, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
+# newice, newice_diff
 
 # Plot types
 plot_scatter=0
@@ -78,7 +81,7 @@ obs_colors=['g','y','orange'];
 # varrays according to vname
 if vname=='sic' or vname=='sie' or vname=='bsie':
   varray='sic' 
-elif vname=='sit' or vname=='siv' or vname=='sit_rmse':
+elif vname[0:3]=='sit' or vname=='siv': # or vname=='sit_rmse':
   varray='sit' 
 elif vname=='drift' or vname=='vcorr' or vname=='divergence':
   varray='siv' 
@@ -108,7 +111,7 @@ obs_sources=['OSISAFease2']#,'OSISAF-ease'] #['NSIDC','OSISAF','OSISAF-ease','OS
 
 #paths
 print('Hostname: '+socket.gethostname())
-if socket.gethostname()=='SC442555' or socket.gethostname()=='SC442555.local' or socket.gethostname()=='wifi-staff-172-24-40-164.net.auckland.ac.nz':
+if socket.gethostname()[0:8]=='SC442555' or socket.gethostname()=='wifi-staff-172-24-40-164.net.auckland.ac.nz':
   path_runs='/Users/rsan613/n/southern/runs/' # ''~/'
   path_fig ='/Users/rsan613/Library/CloudStorage/OneDrive-TheUniversityofAuckland/001_WORK/nextsim/southern/figures/'
   path_data ='/Users/rsan613/n/southern/data/'
@@ -148,17 +151,21 @@ lat_etopo=ds.variables['lat'][:]
 h_etopo=ds.variables['z'][:]
 ds.close()
 lon_etopo,lat_etopo=np.meshgrid(lon_etopo,lat_etopo)
+filename=path_data+'etopo/ETOPO_Antarctic_50km_nextsim.nc'
+print('Loading: '+filename)
+ds=xr.open_dataset(filename)
+h_etopoi=ds.variables['__xarray_dataarray_variable__'][:]
+ds.close()
 
-if plot_map==1 and vname[0:6]=='newice': 
-  #print('Interpolating etopo bathy to nextsim grid')
-  #func=myInterp.IrregularGridInterpolator(np.array(lon_etopo),np.array(lat_etopo),np.array(lon_mod),np.array(lat_mod))
-  #h_etopoi=func.interp_field(np.array(h_etopo))
-  #h=xr.DataArray(h_etopoi) #,coords={'y': lat_e,'x': lon_e},dims=["y", "x"])
+save_etopoi=0 
+if save_etopoi==1: 
+  print('Interpolating etopo bathy to nextsim grid')
+  func=myInterp.IrregularGridInterpolator(np.array(lon_etopo),np.array(lat_etopo),np.array(lon_mod),np.array(lat_mod))
+  h_etopoi=func.interp_field(np.array(h_etopo))
+  h=xr.DataArray(h_etopoi) #,coords={'y': lat_e,'x': lon_e},dims=["y", "x"])
   filename=path_data+'etopo/ETOPO_Antarctic_50km_nextsim.nc'
-  #h.to_netcdf(filename)
-  print('Loading: '+filename)
-  ds=xr.open_dataset(filename)
-  h_etopoi=ds.variables['__xarray_dataarray_variable__'][:]
+  print('Saving: '+filename)
+  h.to_netcdf(filename)
 
 
 for serie_or_map in serie_or_maps:
@@ -934,7 +941,113 @@ for serie_or_map in serie_or_maps:
 
           figname=path_fig+run+'/map_vector_complex_correlation_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
 
-        if vname[0:6]=='newice': 
+        elif vname[0:3]=='sit': # newice, newice_diff, 
+          timec=time_obs
+          time_ob=dates.date2num(timec); time_obss=dates.num2date(time_ob); time_obsd=pd.DatetimeIndex(time_obss)
+          if vname[0:7]=='sit_obs': # _diff' or _rmse
+            if ke==1: # if first expt load obs
+              kc=0; 
+              # Loading data
+              filename=path_data+'sit_cs2wfa/'+str(2020)+'/CS2WFA_25km_'+str(2020)+'0'+str(1)+'.nc'
+              data = xr.open_dataset(filename); lon_obs = data.variables['lon']; lat_obs = data.variables['lat']
+              lon_obs=np.where(lon_obs<180,lon_obs,lon_obs-360); lon_obs=np.where(lon_obs!=np.max(lon_obs),lon_obs,180)
+              lon_obs=np.where(lon_obs!=np.min(lon_obs),lon_obs,-180); sitc_obs = np.zeros([ym_end-ym_start,np.shape(sicc)[1],np.shape(sicc)[2]])
+              timec=[]; ll=['CS2WFA']; k=0; 
+              print('Creating weights to interp. model to obs grid ...'); # get the start time
+              func=myInterp.IrregularGridInterpolator(np.array(lon_obs),np.array(lat_obs),np.array(lon_mod),np.array(lat_mod))#[0]
+              for ym in range( ym_start, ym_end ):
+                k+=1; y, m = divmod( ym, 12 ); m+=1
+                filename=path_data+'sit_cs2wfa/'+str(y)+'/CS2WFA_25km_'+str(y)+str(m).zfill(2)+'.nc'; print(filename)
+                data = xr.open_dataset(filename,group='sea_ice_thickness')
+                if k==1:
+                  sitc = data.variables['sea_ice_thickness']; #vdatac = data.variables[varray]#['sit']
+                  sitc=np.where(sitc>0,sitc, np.nan); sitc=np.where(sitc<10,sitc, np.nan)
+                else:
+                  sit = data.variables['sea_ice_thickness']; sit=np.where(sit>0,sit, np.nan); sit=np.where(sit<10,sit, np.nan)
+                  sitc = np.concatenate([sitc,sit],0) # 'time')
+                timec.append(datetime.datetime(y,m,1))
+                data.close()
+              sit_obs=sitc
+              time_ob=dates.date2num(timec); time_obss=dates.num2date(time_ob); time_obsd=pd.DatetimeIndex(time_obss)
+
+          # loop in the four seasons
+          km=-1; tseason=['JFM','AMJ','JAS','OND']
+          for m in [1,4,7,10]:
+            km+=1; 
+            print(run+': computing 3-month mean starting in month '+str(m).zfill(2))
+            if m==1:
+              imonth1o=time_obsd.month==1; imonth2o=time_obsd.month==2; imonth3o=time_obsd.month==3; 
+              imonth1=time_modd.month==1; imonth2=time_modd.month==2; imonth3=time_modd.month==3; 
+            if m==4: 
+              imonth1o=time_obsd.month==4; month2o=time_obsd.month==5; imonth3o=time_obsd.month==6; 
+              imonth1=time_modd.month==4; imonth2=time_modd.month==5; imonth3=time_modd.month==6; 
+            if m==7: 
+              imonth1o=time_obsd.month==7; month2o=time_obsd.month==8; imonth3o=time_obsd.month==9; 
+              imonth1=time_modd.month==7; imonth2=time_modd.month==8; imonth3=time_modd.month==9; 
+            if m==10: 
+              imonth1o=time_obsd.month==10; month2o=time_obsd.month==11; imonth3o=time_obsd.month==12; 
+              imonth1=time_modd.month==10; imonth2=time_modd.month==11; imonth3=time_modd.month==12; 
+
+            sit_obss=np.concatenate((sit_obs[imonth1o],sit_obs[imonth2o],sit_obs[imonth3o]),0)
+            vdatas=np.concatenate((vdatac[imonth1],vdatac[imonth2],vdatac[imonth3]),0)
+
+            mobs=np.nanmean(sit_obss,0)
+            mobs=np.where(mobs!=0.0,mobs,np.nan)
+            mean=np.nanmean(vdatas,0)
+            mean=np.where(mean!=0.0,mean,np.nan)
+
+            if vname=='sit_obs_diff':
+              mobs=func.interp_field(mobs)
+              mean=mean-mobs
+
+            # computing difference between 2 expts
+            if vname=='sit_diff':
+              if ex==expt[-1]:
+                mean=(means[km,:,:]-mean)#*90
+              else:
+                if km==0:
+                  means=np.zeros((4,np.shape(mean)[0],np.shape(mean)[1]))
+                means[km,:,:]=mean
+
+            if ex==expt[-1]:
+              ax=fig.add_subplot(2,2,km+1)
+              bm = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l')#,ax=ax[km])
+              bm.drawcoastlines(linewidth=.5)
+              bm.fillcontinents(color='grey',lake_color='aqua')
+              #bm.drawparallels(np.arange(-90,-30,5))
+              #bm.drawmeridians(np.arange(0,360,30))
+              lonp, latp = bm(lon_mod,lat_mod)#,inverse=True)
+              if vname=='sit': 
+                plt.title(tseason[km]+' '+run+' '+vname,loc='center')
+                cmap = cmocean.cm.dense_r
+                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=3.0)#,vmin=0,vmax=.015)
+              elif vname=='sit_obs_diff':
+                plt.title(tseason[km]+' '+runs[expt[0]]+' - Obs.',loc='center')
+                cmap = cmocean.cm.balance
+                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-2.,vmax=2.)
+              # contour
+              lone, late = bm(lon_etopo,lat_etopo)#,inverse=True)
+              ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
+              clevels=[-300] # np.linspace(0,40,40,endpoint=False)
+              ic=bm.contour(lonp,latp,h_etopoi,clevels,colors=('grey'),linewidths=(.5,),origin='upper',linestyles='solid',extent=ext)
+              #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
+              # computing stats per subregion
+              lon_regions=[-150,-61,-20,34,90,160];
+              text_map_w_stats(mean,lon_mod,bm,lon_regions,'mean','m')
+              plt.annotate('Total mean diff.: '+format(np.nanmean(mean),'.2f')+' m', xy=(.3,.56), xycoords='axes fraction',fontsize=9)#, textcoords='offset points',
+              dataf=np.where(h_etopoi>=-300,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
+              plt.annotate('Shallow mean diff.: '+dataf+' m', xy=(.3,.51), xycoords='axes fraction',fontsize=9)#, textcoords='offset points',
+              dataf=np.where(h_etopoi<-300,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
+              plt.annotate('Deep mean diff.: '+dataf+' m', xy=(.3,.46), xycoords='axes fraction',fontsize=9)#, textcoords='offset points',
+
+              # including colorbar
+              divider = make_axes_locatable(ax)
+              cax = divider.append_axes('right', size='5%', pad=0.05)
+              fig.colorbar(im1, cax=cax, orientation='vertical')
+
+          figname=path_fig+run+'/map_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+
+        elif vname[0:6]=='newice': # newice, newice_diff, 
           # loop in the four seasons
           km=-1; tseason=['JFM','AMJ','JAS','OND']
           for m in [1,4,7,10]:
@@ -952,6 +1065,7 @@ for serie_or_map in serie_or_maps:
             vdatas=np.concatenate((vdatac[imonth1],vdatac[imonth2],vdatac[imonth3]),0)
             mean=np.nanmean(vdatas,0)*90
             mean=np.where(mean!=0.0,mean,np.nan)
+
             # computing difference between 2 expts
             if vname=='newice_diff':
               if ex==expt[-1]:
@@ -970,19 +1084,20 @@ for serie_or_map in serie_or_maps:
               #bm.drawparallels(np.arange(-90,-30,5))
               #bm.drawmeridians(np.arange(0,360,30))
               lonp, latp = bm(lon_mod,lat_mod)#,inverse=True)
-              if len(expt)==1:
-                plt.title(tseason[km]+' '+run+' newice',loc='center')
-                cmap = cmocean.cm.matter
-                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=.6)#,vmin=0,vmax=.015)
-              else:
-                plt.title(tseason[km]+' '+runs[expt[0]]+' - '+runs[expt[1]],loc='center')
-                cmap = cmocean.cm.balance
-                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-.2,vmax=.2)
+              if vname[0:6]=='newice': # newice, newice_diff, 
+                if len(expt)==1:
+                  plt.title(tseason[km]+' '+run+' newice',loc='center')
+                  cmap = cmocean.cm.matter
+                  im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=.6)#,vmin=0,vmax=.015)
+                else:
+                  plt.title(tseason[km]+' '+runs[expt[0]]+' - '+runs[expt[1]],loc='center')
+                  cmap = cmocean.cm.balance
+                  im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-.2,vmax=.2)
               # contour
               lone, late = bm(lon_etopo,lat_etopo)#,inverse=True)
               ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
               clevels=[-300] # np.linspace(0,40,40,endpoint=False)
-              ic=bm.contour(lonp,latp,h_etopoi,clevels,colors=('b'),linewidths=(1.5,),origin='upper',linestyles='solid',extent=ext)
+              ic=bm.contour(lonp,latp,h_etopoi,clevels,colors=('grey'),linewidths=(.5,),origin='upper',linestyles='solid',extent=ext)
               #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
               # computing stats per subregion
               lon_regions=[-150,-61,-20,34,90,160];
@@ -992,17 +1107,15 @@ for serie_or_map in serie_or_maps:
               plt.annotate('Shallow int. diff.: '+dataf+' m', xy=(.3,.51), xycoords='axes fraction',fontsize=9)#, textcoords='offset points',
               dataf=np.where(h_etopoi<-300,mean,np.nan); dataf=format(np.nansum(dataf),'.2f')
               plt.annotate('Deep int. diff.: '+dataf+' m', xy=(.3,.46), xycoords='axes fraction',fontsize=9)#, textcoords='offset points',
-
-
-
               # including colorbar
               divider = make_axes_locatable(ax)
               cax = divider.append_axes('right', size='5%', pad=0.05)
               fig.colorbar(im1, cax=cax, orientation='vertical')
- 
+
           figname=path_fig+run+'/map_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
 
         fig.tight_layout() 
+        exit()
         if ex==expt[-1]:
           if save_fig==1:
             if os.path.exists(path_fig+run)==False:
