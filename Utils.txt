@@ -53,6 +53,7 @@ def veccor1(u1,v1,u2,v2):
     Y=np.complex64(Y)
     Y=Y[ii];
     # if that doesnt work swap the input (e.g. model vs obs or obs vs model)
+    
  
     ## remove mean
     X=X-np.nanmean(X[:]); 
@@ -68,53 +69,6 @@ def veccor1(u1,v1,u2,v2):
     theta=180*np.angle(c)/np.pi;
     
     return ac,theta,X,Y 
-
-def text_map_w_stats(data,lon_mod,bm,lon_regions,oper,unit,colort):
-    ''' 
-    text_maps_w_stats(lon_regions,bm,oper,unit)
-    data = input 2D data
-    lon_mod = model longitude
-    bm = Basemap() output
-    lon_regions = longitudinal sections to compute stats
-    starting from the smallest e.g. -179
-    oper = operation, e.g.: sum, mean
-    unit = m, m3, etc
-    
-    This function computes and writes stats in the regions between
-    two lon_regions longitudes. Operations available are sum and mean
-     
-    Rafa Santana, 14/04/2023
-    ######################################################################
-    ''' 
-    import numpy as np
-    from sys import exit
-
-    lon_regions=np.array(lon_regions);
-    lon_r360=np.where(lon_regions>=0,lon_regions,lon_regions+360); # lon 0-360
-
-    for kl in range(0,len(lon_regions)):
-      lsec=lon_regions[kl]
-      x,y = bm([lsec,lsec],[-75, -50]); bm.plot(x,y,'k',linewidth=1,)
-
-      if lsec==lon_regions[0]: # values crossing the 180E/W line
-        dataf=np.where(lon_mod<lon_regions[0],data,0); dataf2=np.where(lon_mod>lon_regions[-1],data,0); dataf=dataf+dataf2
-        dataf=np.where(dataf!=0,dataf,np.nan)
-      else: # other regions
-        dataf=np.where(lon_mod>lon_regions[kl-1],data,np.nan); dataf=np.where(lon_mod<lon_regions[kl],dataf,np.nan)
-
-      if oper=='sum':
-        dataf=format(np.nansum(dataf),'.2f')
-      elif oper=='mean':
-        dataf=format(np.nanmean(dataf),'.2f')
-
-      if kl==0: # values crossing the 180E/W line
-        lon_r=lon_r360
-      else:
-        lon_r=lon_regions
-
-      x,y = bm(np.nanmean([lon_r[kl-1],lon_r[kl]])-0,-63);
-      plt.annotate(dataf+' '+unit, xy=(x, y), xycoords='data', xytext=(x, y),fontsize=9,color=colort,fontweight='bold')#, textcoords='offset points',
-      #color='r', arrowprops=dict(arrowstyle="->")) #"fancy", color='g')
 
 def format_map(ax):
     ax.gridlines(zorder=2,linewidth=0.25,linestyle="--",color="darkgrey")

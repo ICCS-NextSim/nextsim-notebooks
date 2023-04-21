@@ -36,7 +36,7 @@ start_month=1
 start_year =2015
 end_day    =28
 end_month  =12 # 
-end_year   =2015
+end_year   =2020
 
 
 #Runs (names) or experiments (numbers - starts with 1)
@@ -50,8 +50,11 @@ my_dates=1
 inc_obs=1
 
 #Variables
-vname ='vcorr' # sie,bsie,sit,sit_rmse,siv,drift,vcorr, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
-                  # newice, newice_diff
+vname ='vcorr_diff' 
+# sie, bsie,
+# sit, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
+# siv, drift, vcorr, vcorr_diff processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
+# newice, newice_diff
 
 # Plot types
 plot_scatter=0
@@ -78,9 +81,9 @@ obs_colors=['g','y','orange'];
 # varrays according to vname
 if vname=='sic' or vname=='sie' or vname=='bsie':
   varray='sic' 
-elif vname=='sit' or vname=='siv' or vname=='sit_rmse':
+elif vname[0:3]=='sit' or vname=='siv': # or vname=='sit_rmse':
   varray='sit' 
-elif vname=='drift' or vname=='vcorr' or vname=='divergence':
+elif vname=='drift' or vname[0:5]=='vcorr' or vname=='divergence':
   varray='siv' 
 elif vname=='newice' or vname=='newice_diff':
   varray='newice' 
@@ -108,7 +111,7 @@ obs_sources=['OSISAFease2']#,'OSISAF-ease'] #['NSIDC','OSISAF','OSISAF-ease','OS
 
 #paths
 print('Hostname: '+socket.gethostname())
-if socket.gethostname()=='SC442555' or socket.gethostname()=='SC442555.local' or socket.gethostname()=='wifi-staff-172-24-40-164.net.auckland.ac.nz':
+if socket.gethostname()[0:8]=='SC442555' or socket.gethostname()[0:10]=='wifi-staff':
   path_runs='/Users/rsan613/n/southern/runs/' # ''~/'
   path_fig ='/Users/rsan613/Library/CloudStorage/OneDrive-TheUniversityofAuckland/001_WORK/nextsim/southern/figures/'
   path_data ='/Users/rsan613/n/southern/data/'
@@ -148,17 +151,21 @@ lat_etopo=ds.variables['lat'][:]
 h_etopo=ds.variables['z'][:]
 ds.close()
 lon_etopo,lat_etopo=np.meshgrid(lon_etopo,lat_etopo)
+filename=path_data+'etopo/ETOPO_Antarctic_50km_nextsim.nc'
+print('Loading: '+filename)
+ds=xr.open_dataset(filename)
+h_etopoi=ds.variables['__xarray_dataarray_variable__'][:]
+ds.close()
 
-if plot_map==1 and vname[0:6]=='newice': 
-  #print('Interpolating etopo bathy to nextsim grid')
-  #func=myInterp.IrregularGridInterpolator(np.array(lon_etopo),np.array(lat_etopo),np.array(lon_mod),np.array(lat_mod))
-  #h_etopoi=func.interp_field(np.array(h_etopo))
-  #h=xr.DataArray(h_etopoi) #,coords={'y': lat_e,'x': lon_e},dims=["y", "x"])
+save_etopoi=0 
+if save_etopoi==1: 
+  print('Interpolating etopo bathy to nextsim grid')
+  func=myInterp.IrregularGridInterpolator(np.array(lon_etopo),np.array(lat_etopo),np.array(lon_mod),np.array(lat_mod))
+  h_etopoi=func.interp_field(np.array(h_etopo))
+  h=xr.DataArray(h_etopoi) #,coords={'y': lat_e,'x': lon_e},dims=["y", "x"])
   filename=path_data+'etopo/ETOPO_Antarctic_50km_nextsim.nc'
-  #h.to_netcdf(filename)
-  print('Loading: '+filename)
-  ds=xr.open_dataset(filename)
-  h_etopoi=ds.variables['__xarray_dataarray_variable__'][:]
+  print('Saving: '+filename)
+  h.to_netcdf(filename)
 
 
 for serie_or_map in serie_or_maps:
@@ -211,7 +218,8 @@ for serie_or_map in serie_or_maps:
     time_obsn=dates.date2num(times)
     time_obs=dates.num2date(time_obsn)
     time_obsd=pd.DatetimeIndex(time_obs)
-
+    time_obsni=[int(time_obsn[ii]) for ii in range(len(time_obsn))] # integer time for daily search
+    time_obsni=np.array(time_obsni)
     timesix=pd.date_range(dates.num2date(time_ini), periods=int(time_fin-time_ini)*24/6, freq=('%dH' % int(6)))
     time_obsixn=dates.date2num(timesix)
     time_obsix=dates.num2date(time_obsixn)
@@ -272,7 +280,8 @@ for serie_or_map in serie_or_maps:
         time_mods=dates.num2date(time_mod)
         time_modd=pd.DatetimeIndex(time_mods)
         time_modi=[int(time_mod[ii]) for ii in range(len(time_mod))] # integer time for daily search
-    
+        time_modi=np.array(time_modi)
+ 
       else:
         k=0
         for ym in range( ym_start, ym_end ):
@@ -488,13 +497,13 @@ for serie_or_map in serie_or_maps:
           sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
           sic = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
           sic_mod = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
-          diff=np.abs(int(time_obsn[0])-np.array(time_modi)); min_diff=np.min(diff)
+          diff=np.abs(int(time_obsni[0])-np.array(time_modi)); min_diff=np.min(diff)
           ifirst=np.where(diff==min_diff)[0][0]-1; 
           if ifirst<0:
             ifirst=0
-          diff=np.abs(int(time_obsn[-1])-np.array(time_modi)); min_diff=np.min(diff)
+          diff=np.abs(int(time_obsni[-1])-np.array(time_modi)); min_diff=np.min(diff)
           ilast=np.where(diff==min_diff)[-1][-1]+1
-          #ilast=np.where(int(time_obsn[-1])==time_modi)[0][-1]
+          #ilast=np.where(int(time_obsni[-1])==time_modi)[0][-1]
           sicc_mo=np.zeros((len(time_mod[ifirst:ilast+1]),np.shape(sic_mod)[1],np.shape(sic_mod)[2]))
           T=len(time_mod[ifirst:ilast])
           #T = np.shape(sit)[0]
@@ -606,11 +615,11 @@ for serie_or_map in serie_or_maps:
           if ke>=1: # if first expt load obs
             sic_mod = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
     
-            diff=np.abs(int(time_obsn[0])-np.array(time_modi)); min_diff=np.min(diff)
+            diff=np.abs(int(time_obsni[0])-np.array(time_modi)); min_diff=np.min(diff)
             ifirst=np.where(diff==min_diff)[0][0]#-1; 
             if ifirst<0:
               ifirst=0
-            diff=np.abs(int(time_obsn[-1])-np.array(time_modi)); min_diff=np.min(diff)
+            diff=np.abs(int(time_obsni[-1])-np.array(time_modi)); min_diff=np.min(diff)
             ilast=np.where(diff==min_diff)[-1][-1]+1
             sicc_mo=np.zeros((len(time_mod[ifirst:ilast])+1,np.shape(sic_mod)[1],np.shape(sic_mod)[2]))
             k=-1
@@ -631,7 +640,7 @@ for serie_or_map in serie_or_maps:
             for t in range(len(time_obs)): # (np.shape(sicc_mod)[0]):
               if run=='BSOSE':
                 # find the closest date
-                diff=np.abs(int(time_obsn[t])-np.array(time_modi)); min_diff=np.min(diff)
+                diff=np.abs(int(time_obsni[t])-np.array(time_modi)); min_diff=np.min(diff)
                 iday=np.where(diff==min_diff)[0][0];
                 print(iday)
                 if iday!=iday2:
@@ -651,7 +660,7 @@ for serie_or_map in serie_or_maps:
                 sicc_mod[t]=sicc_ex # np.nanmean(sicc_mo[iday,:,:],axis=0)
     
               else:  
-                iday=np.where(time_obsn[t]==time_modi)[0]
+                iday=np.where(time_obsni[t]==time_modi)[0]
                 if interp_obs==1:
                   siccz=np.nanmean(sicc_mo[iday,:,:],axis=0)
                   print('Processing model SIC to get extent time: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
@@ -761,7 +770,7 @@ for serie_or_map in serie_or_maps:
           for t in range(len(time_obs)): # (np.shape(sicc_mod)[0]):
             print('Computing model and obs vector complex correlation on day: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
             if run=='BSOSE':
-              diff=np.abs(int(time_obsn[t])-np.array(time_modi)); min_diff=np.min(diff)
+              diff=np.abs(int(time_obsni[t])-np.array(time_modi)); min_diff=np.min(diff)
               iday=np.where(diff==min_diff)[0][0];
               print(iday)
               if iday!=iday2:
@@ -773,7 +782,7 @@ for serie_or_map in serie_or_maps:
               uc_mod[t]=np.where(uc_mod[t]!=0.0,uc_mod[t],np.nan)
               vc_mod[t]=np.where(vc_mod[t]!=0.0,vc_mod[t],np.nan)
             else: # nextsim
-              iday=np.where(time_obsn[t]==time_modi)[0]
+              iday=np.where(time_obsni[t]==time_modi)[0]
               ucmod=np.nanmean(u_mod[iday,:,:],axis=0)
               vcmod=np.nanmean(v_mod[iday,:,:],axis=0)
               uc_mod[t]=func.interp_field(np.array(ucmod))
@@ -824,7 +833,7 @@ for serie_or_map in serie_or_maps:
         print('Ploting map: '+vname+' '+run)
         plt.rcParams.update({'font.size': 12})
         fig=plt.figure(figsize = (9,8)) # landscape
-        if vname=='vcorr': 
+        if vname[0:5]=='vcorr': 
           if ke==1 : # if first expt load obs
             ll=[]; k=0
             for t in time_obs:
@@ -862,7 +871,7 @@ for serie_or_map in serie_or_maps:
           for t in range(len(time_obs)): # (np.shape(sicc_mod)[0]):
             if run=='BSOSE':
               print('BSOSE day: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
-              diff=np.abs(int(time_obsn[t])-np.array(time_modi)); min_diff=np.min(diff)
+              diff=np.abs(int(time_obsni[t])-np.array(time_modi)); min_diff=np.min(diff)
               iday=np.where(diff==min_diff)[0][0];
               print(iday)
               if iday!=iday2:
@@ -875,7 +884,7 @@ for serie_or_map in serie_or_maps:
               vc_mod[t]=np.where(vc_mod[t]!=0.0,vc_mod[t],np.nan)
             else:
               print('Computing model and obs vector complex correlation on day: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
-              iday=np.where(time_obsn[t]==time_modi)[0]
+              iday=np.where(time_obsni[t]==time_modi)[0]
               ucmod=np.nanmean(u_mod[iday,:,:],axis=0)
               vcmod=np.nanmean(v_mod[iday,:,:],axis=0)
               uc_mod[t]=func.interp_field(np.array(ucmod))
@@ -913,28 +922,194 @@ for serie_or_map in serie_or_maps:
                  vcorr,angle,X,Y=veccor1(uc_ob,vc_ob,uc_mo,vc_mo) 
                  mean[i][ii]=vcorr
 
-    
-            ax=fig.add_subplot(2,2,km+1)
-            plt.title(tseason[km]+' '+run+' vel. corr.',loc='center')
-            cmap = cmocean.cm.amp
-            bm = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l')#,ax=ax[km])
-            bm.drawcoastlines()
-            bm.fillcontinents(color='grey',lake_color='aqua')
-            lonp, latp = bm(lon_obs,lat_obs)#,inverse=True)
-            im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=1)
-            # contour
-            ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
-            clevels=[.7,1.]# np.linspace(0,40,40,endpoint=False)
-            ic=bm.contour(lonp,latp,mean,clevels,colors=('k'),linewidths=(1.5,),origin='upper',linestyles='solid',extent=ext)
-            #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
-            # including colorbar
-            divider = make_axes_locatable(ax)
-            cax = divider.append_axes('right', size='5%', pad=0.05)
-            fig.colorbar(im1, cax=cax, orientation='vertical')
+            # computing difference between 2 expts
+            if vname=='vcorr_diff':
+              if ex==expt[-1]:
+                print('Last experiment')
+                mean=(means[km,:,:]-mean)#*90
+              else:
+                print('First experiment')
+                if km==0:
+                  means=np.zeros((4,np.shape(mean)[0],np.shape(mean)[1]))
+                means[km,:,:]=mean
 
-          figname=path_fig+run+'/map_vector_complex_correlation_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+            if ex==expt[-1]:
+              ax=fig.add_subplot(2,2,km+1)
+              bm = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l')#,ax=ax[km])
+              bm.drawcoastlines()
+              bm.fillcontinents(color='grey',lake_color='aqua')
+              lonp, latp = bm(lon_obs,lat_obs)#,inverse=True)
+              if vname=='vcorr_diff':
+                plt.title(tseason[km]+' '+runs[expt[0]]+' corr. - '+runs[expt[1]]+' corr.',loc='center')
+                cmap = cmocean.cm.balance
+                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-1,vmax=1)
+                # contour
+                ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
+                clevels=[0]# np.linspace(0,40,40,endpoint=False)
+                ic=bm.contour(lonp,latp,mean,clevels,colors=('k'),linewidths=(1.5,),origin='upper',linestyles='solid',extent=ext)
+              else:
+                plt.title(tseason[km]+' '+run+' vel. corr.',loc='center')
+                cmap = cmocean.cm.amp
+                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=1)
+                # contour
+                ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
+                clevels=[.7,1.]# np.linspace(0,40,40,endpoint=False)
+                ic=bm.contour(lonp,latp,mean,clevels,colors=('k'),linewidths=(1.5,),origin='upper',linestyles='solid',extent=ext)
+                #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
+              # including colorbar
+              divider = make_axes_locatable(ax)
+              cax = divider.append_axes('right', size='5%', pad=0.05)
+              fig.colorbar(im1, cax=cax, orientation='vertical')
 
-        if vname[0:6]=='newice': 
+          figname=path_fig+run+'/map_vector_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+
+        elif vname[0:3]=='sit':  
+          #timec=time_obs
+          #time_ob=dates.date2num(timec); time_obss=dates.num2date(time_ob); time_obsd=pd.DatetimeIndex(time_obss)
+          if vname[0:7]=='sit_obs': # _diff' or _rmse
+            if ke==1: # if first expt load obs
+              kc=0; 
+              # Loading data
+              filename=path_data+'sit_cs2wfa/'+str(2020)+'/CS2WFA_25km_'+str(2020)+'0'+str(1)+'.nc'
+              data = xr.open_dataset(filename); lon_obs = data.variables['lon']; lat_obs = data.variables['lat']
+              lon_obs=np.where(lon_obs<180,lon_obs,lon_obs-360); lon_obs=np.where(lon_obs!=np.max(lon_obs),lon_obs,180)
+              lon_obs=np.where(lon_obs!=np.min(lon_obs),lon_obs,-180); sitc_obs = np.zeros([ym_end-ym_start,np.shape(sicc)[1],np.shape(sicc)[2]])
+              timec=[]; ll=['CS2WFA']; k=0; 
+              print('Creating weights to interp. model to obs grid ...'); # get the start time
+              func=myInterp.IrregularGridInterpolator(np.array(lon_obs),np.array(lat_obs),np.array(lon_mod),np.array(lat_mod))#[0]
+              for ym in range( ym_start, ym_end ):
+                k+=1; y, m = divmod( ym, 12 ); m+=1
+                filename=path_data+'sit_cs2wfa/'+str(y)+'/CS2WFA_25km_'+str(y)+str(m).zfill(2)+'.nc'; print(filename)
+                data = xr.open_dataset(filename,group='sea_ice_thickness')
+                if k==1:
+                  sitc = data.variables['sea_ice_thickness'][0]; #vdatac = data.variables[varray]#['sit']
+                  sitc=np.where(sitc>0,sitc, np.nan); sitc=np.where(sitc<10,sitc, np.nan)
+                  if vname[0:12]=='sit_obs_rmse':
+                    sitc=func.interp_field(sitc)
+                    sitc=sitc.reshape(1,np.shape(sitc)[0],np.shape(sitc)[1])
+                else:
+                  sit = data.variables['sea_ice_thickness'][0]; sit=np.where(sit>0,sit, np.nan); sit=np.where(sit<10,sit, np.nan)
+                  if vname[0:12]=='sit_obs_rmse':
+                    sit=func.interp_field(sit)
+                    sit=sit.reshape(1,np.shape(sit)[0],np.shape(sit)[1])
+                  sitc = np.concatenate([sitc,sit],0) # 'time')
+                timec.append(datetime.datetime(y,m,1))
+                data.close()
+              sit_obs=sitc
+              time_ob=dates.date2num(timec); time_obss=dates.num2date(time_ob); time_obsd=pd.DatetimeIndex(time_obss)
+
+          # computing monthly mean prior to rmse
+          if vname[0:12]=='sit_obs_rmse': # _diff' or _rmse
+            sit_mod=vdatac
+            km=-1; time=[]
+            sicc_mod = np.zeros([ym_end-ym_start,np.shape(sit_mod)[1],np.shape(sit_mod)[2]])
+            for ym in range( ym_start, ym_end ):
+              km+=1; y, m = divmod( ym, 12 ); m+=1
+              print(run+': computing monthly mean for '+str(y)+'/'+str(m).zfill(2))
+              iyear=time_modd.year==y
+              imonth=time_modd.month==m; iym=np.where(iyear*imonth==True)
+              time.append(time_mods[iym[0][0]])
+              sicc_mod[km]=np.nanmean(sit_mod[iyear*imonth],axis=0) # month average
+              sicc_mod[km]=np.where(sicc_mod[km]>0,sicc_mod[km] , np.nan)
+              sicc_mod[km]=np.where(sicc_mod[km]<10,sicc_mod[km] , np.nan)
+            vdatac=sicc_mod
+            time_mod=dates.date2num(time); time_mods=dates.num2date(time_mod); time_modd=pd.DatetimeIndex(time_mods)
+
+          # loop in the four seasons
+          km=-1; tseason=['JFM','AMJ','JAS','OND']
+          for m in [1,4,7,10]:
+            km+=1; 
+            print(run+': computing 3-month mean starting in month '+str(m).zfill(2))
+            if m==1:
+              imonth1o=time_obsd.month==1; imonth2o=time_obsd.month==2; imonth3o=time_obsd.month==3; 
+              imonth1=time_modd.month==1; imonth2=time_modd.month==2; imonth3=time_modd.month==3; 
+            if m==4: 
+              imonth1o=time_obsd.month==4; month2o=time_obsd.month==5; imonth3o=time_obsd.month==6; 
+              imonth1=time_modd.month==4; imonth2=time_modd.month==5; imonth3=time_modd.month==6; 
+            if m==7: 
+              imonth1o=time_obsd.month==7; month2o=time_obsd.month==8; imonth3o=time_obsd.month==9; 
+              imonth1=time_modd.month==7; imonth2=time_modd.month==8; imonth3=time_modd.month==9; 
+            if m==10: 
+              imonth1o=time_obsd.month==10; month2o=time_obsd.month==11; imonth3o=time_obsd.month==12; 
+              imonth1=time_modd.month==10; imonth2=time_modd.month==11; imonth3=time_modd.month==12; 
+
+            sit_obss=np.concatenate((sit_obs[imonth1o],sit_obs[imonth2o],sit_obs[imonth3o]),0)
+            vdatas=np.concatenate((vdatac[imonth1],vdatac[imonth2],vdatac[imonth3]),0)
+
+            if vname[0:12]=='sit_obs_rmse':
+              # loop for each grid point
+              mean = np.zeros([np.shape(vdatas)[1],np.shape(vdatas)[2]]); mean[:]=np.nan
+              for i in range(np.shape(vdatas)[1]):
+                for ii in range(np.shape(vdatas)[2]):
+                  sit_mo=vdatas[::,i,ii]; sit_ob=sit_obss[::,i,ii]; 
+                  mean[i,ii]=np.sqrt(np.nanmean(np.square(np.subtract(sit_ob,sit_mo))))
+            else:
+              mobs=np.nanmean(sit_obss,0)
+              mobs=np.where(mobs!=0.0,mobs,np.nan)
+              mean=np.nanmean(vdatas,0)
+              mean=np.where(mean!=0.0,mean,np.nan)
+
+            if vname=='sit_obs_diff':
+              mobs=func.interp_field(mobs)
+              mean=mean-mobs
+
+            # computing difference between 2 expts
+            if vname=='sit_diff' or vname=='sit_obs_rmse_diff':
+              if ex==expt[-1]:
+                mean=(means[km,:,:]-mean)#*90
+              else:
+                if km==0:
+                  means=np.zeros((4,np.shape(mean)[0],np.shape(mean)[1]))
+                means[km,:,:]=mean
+
+            if ex==expt[-1]:
+              ax=fig.add_subplot(2,2,km+1)
+              bm = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l')#,ax=ax[km])
+              bm.drawcoastlines(linewidth=.5)
+              bm.fillcontinents(color='grey',lake_color='aqua')
+              #bm.drawparallels(np.arange(-90,-30,5))
+              #bm.drawmeridians(np.arange(0,360,30))
+              lonp, latp = bm(lon_mod,lat_mod)#,inverse=True)
+              if vname=='sit': 
+                plt.title(tseason[km]+' '+run+' '+vname,loc='center')
+                cmap = cmocean.cm.dense_r
+                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=3.0)#,vmin=0,vmax=.015)
+              elif vname=='sit_obs_rmse': 
+                plt.title(tseason[km]+' '+run+' rmse',loc='center')
+                cmap = cmocean.cm.amp
+                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=3.0)#,vmin=0,vmax=.015)
+              elif vname=='sit_obs_diff':
+                plt.title(tseason[km]+' '+runs[expt[0]]+' - Obs.',loc='center')
+                cmap = cmocean.cm.balance
+                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-2.,vmax=2.)
+              elif vname=='sit_obs_rmse_diff':
+                plt.title(tseason[km]+' '+runs[expt[0]]+' - '+runs[expt[1]]+' rmse',loc='center')
+                cmap = cmocean.cm.balance
+                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-2.,vmax=2.)
+              # contour
+              lone, late = bm(lon_etopo,lat_etopo)#,inverse=True)
+              ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
+              clevels=[-800] # np.linspace(0,40,40,endpoint=False)
+              ic=bm.contour(lonp,latp,h_etopoi,clevels,colors=('magenta'),linewidths=(.5,),origin='upper',linestyles='solid',extent=ext)
+              #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
+              # computing stats per subregion
+              lon_regions=[-150,-61,-20,34,90,160];
+              text_map_w_stats(mean,lon_mod,bm,lon_regions,'mean','m','black')
+
+              plt.annotate('Total mean: '+format(np.nanmean(mean),'.2f')+' m', xy=(.3,.56), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+              dataf=np.where(h_etopoi>=-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
+              plt.annotate('Shallow mean: '+dataf+' m', xy=(.3,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+              dataf=np.where(h_etopoi<-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
+              plt.annotate('Deep mean: '+dataf+' m', xy=(.3,.46), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+
+              # including colorbar
+              divider = make_axes_locatable(ax)
+              cax = divider.append_axes('right', size='5%', pad=0.05)
+              fig.colorbar(im1, cax=cax, orientation='vertical')
+
+          figname=path_fig+run+'/map_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+
+        elif vname[0:6]=='newice': # newice, newice_diff, 
           # loop in the four seasons
           km=-1; tseason=['JFM','AMJ','JAS','OND']
           for m in [1,4,7,10]:
@@ -952,6 +1127,7 @@ for serie_or_map in serie_or_maps:
             vdatas=np.concatenate((vdatac[imonth1],vdatac[imonth2],vdatac[imonth3]),0)
             mean=np.nanmean(vdatas,0)*90
             mean=np.where(mean!=0.0,mean,np.nan)
+
             # computing difference between 2 expts
             if vname=='newice_diff':
               if ex==expt[-1]:
@@ -970,19 +1146,20 @@ for serie_or_map in serie_or_maps:
               #bm.drawparallels(np.arange(-90,-30,5))
               #bm.drawmeridians(np.arange(0,360,30))
               lonp, latp = bm(lon_mod,lat_mod)#,inverse=True)
-              if len(expt)==1:
-                plt.title(tseason[km]+' '+run+' newice',loc='center')
-                cmap = cmocean.cm.matter
-                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=.6)#,vmin=0,vmax=.015)
-              else:
-                plt.title(tseason[km]+' '+runs[expt[0]]+' - '+runs[expt[1]],loc='center')
-                cmap = cmocean.cm.balance
-                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-.2,vmax=.2)
+              if vname[0:6]=='newice': # newice, newice_diff, 
+                if len(expt)==1:
+                  plt.title(tseason[km]+' '+run+' newice',loc='center')
+                  cmap = cmocean.cm.matter
+                  im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=.6)#,vmin=0,vmax=.015)
+                else:
+                  plt.title(tseason[km]+' '+runs[expt[0]]+' - '+runs[expt[1]],loc='center')
+                  cmap = cmocean.cm.balance
+                  im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-.2,vmax=.2)
               # contour
               lone, late = bm(lon_etopo,lat_etopo)#,inverse=True)
               ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
               clevels=[-300] # np.linspace(0,40,40,endpoint=False)
-              ic=bm.contour(lonp,latp,h_etopoi,clevels,colors=('b'),linewidths=(1.5,),origin='upper',linestyles='solid',extent=ext)
+              ic=bm.contour(lonp,latp,h_etopoi,clevels,colors=('grey'),linewidths=(.5,),origin='upper',linestyles='solid',extent=ext)
               #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
               # computing stats per subregion
               lon_regions=[-150,-61,-20,34,90,160];
@@ -992,14 +1169,11 @@ for serie_or_map in serie_or_maps:
               plt.annotate('Shallow int. diff.: '+dataf+' m', xy=(.3,.51), xycoords='axes fraction',fontsize=9)#, textcoords='offset points',
               dataf=np.where(h_etopoi<-300,mean,np.nan); dataf=format(np.nansum(dataf),'.2f')
               plt.annotate('Deep int. diff.: '+dataf+' m', xy=(.3,.46), xycoords='axes fraction',fontsize=9)#, textcoords='offset points',
-
-
-
               # including colorbar
               divider = make_axes_locatable(ax)
               cax = divider.append_axes('right', size='5%', pad=0.05)
               fig.colorbar(im1, cax=cax, orientation='vertical')
- 
+
           figname=path_fig+run+'/map_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
 
         fig.tight_layout() 
@@ -1130,11 +1304,11 @@ for serie_or_map in serie_or_maps:
           sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
           sic_mod = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
     
-          diff=np.abs(int(time_obsn[0])-np.array(time_modi)); min_diff=np.min(diff)
+          diff=np.abs(int(time_obsni[0])-np.array(time_modi)); min_diff=np.min(diff)
           ifirst=np.where(diff==min_diff)[0][0]#-1; 
           if ifirst<0:
             ifirst=0
-          diff=np.abs(int(time_obsn[-1])-np.array(time_modi)); min_diff=np.min(diff)
+          diff=np.abs(int(time_obsni[-1])-np.array(time_modi)); min_diff=np.min(diff)
           ilast=np.where(diff==min_diff)[-1][-1]+1
           sicc_mo=np.zeros((len(time_mod[ifirst:ilast])+1,np.shape(sic_mod)[1],np.shape(sic_mod)[2]))
           #sicc_mo=sic_mod[ifirst:ilast+1][:][:] #,np.shape(sic_mod)[1],np.shape(sic_mod)[2]))
@@ -1164,7 +1338,7 @@ for serie_or_map in serie_or_maps:
           for t in range(len(time_obs)): # (np.shape(sicc_mod)[0]):
             if run=='BSOSE':
               # find the closest date
-              diff=np.abs(int(time_obsn[t])-np.array(time_modi)); min_diff=np.min(diff)
+              diff=np.abs(int(time_obsni[t])-np.array(time_modi)); min_diff=np.min(diff)
               iday=np.where(diff==min_diff)[0][0];
               print(iday)
               if iday!=iday2:
@@ -1184,7 +1358,7 @@ for serie_or_map in serie_or_maps:
               sicc_mod[t]=sicc_ex # np.nanmean(sicc_mo[iday,:,:],axis=0)
     
             else:  
-              iday=np.where(time_obsn[t]==time_modi)[0]
+              iday=np.where(time_obsni[t]==time_modi)[0]
               if interp_obs==1:
                 siccz=np.nanmean(sicc_mo[iday,:,:],axis=0)
                 #exit()
@@ -1421,7 +1595,7 @@ for serie_or_map in serie_or_maps:
           for t in range(len(time_obs)): # (np.shape(sicc_mod)[0]):
             if run=='BSOSE':
               print('BSOSE day: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
-              diff=np.abs(int(time_obsn[t])-np.array(time_modi)); min_diff=np.min(diff)
+              diff=np.abs(int(time_obsni[t])-np.array(time_modi)); min_diff=np.min(diff)
               iday=np.where(diff==min_diff)[0][0];
               print(iday)
               if iday!=iday2:
@@ -1432,7 +1606,7 @@ for serie_or_map in serie_or_maps:
               vc_mod[t]=vc_modi
             else:
               print('Computing model drift daily mean: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
-              iday=np.where(time_obsn[t]==time_modi)[0]
+              iday=np.where(time_obsni[t]==time_modi)[0]
               ucmod=np.nanmean(u_mod[iday,:,:],axis=0)
               vcmod=np.nanmean(v_mod[iday,:,:],axis=0)
               uc_mod[t]=func.interp_field(np.array(ucmod)) #,np.array(lon_obs),np.array(lat_obs))[0]
@@ -1501,7 +1675,7 @@ for serie_or_map in serie_or_maps:
           for t in range(len(time_obsix)): # (np.shape(sicc_mod)[0]):
             if run=='BSOSE':
               print('BSOSE day: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
-              diff=np.abs(int(time_obsn[t])-np.array(time_modi)); min_diff=np.min(diff)
+              diff=np.abs(int(time_obsni[t])-np.array(time_modi)); min_diff=np.min(diff)
               iday=np.where(diff==min_diff)[0][0];
               print(iday)
               if iday!=iday2:
@@ -1686,4 +1860,4 @@ for serie_or_map in serie_or_maps:
 
 
 print('End of script')
-plt.close('all')
+#plt.close('all')
