@@ -35,32 +35,33 @@ start_day  =1
 start_month=1
 start_year =2015
 end_day    =28
-end_month  =12 # 
-end_year   =2020
+end_month  =2 # 
+end_year   =2015
 
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=17
 exptc=[12,9,exp,15]#2,5,7,10]
 expt=exptc
-expt=[18]
+expt=[19]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1
 inc_obs=1
 
 #Variables
-vname ='vcorr_diff' 
+vname ='divergence' 
 # sie, bsie,
 # sit, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
-# siv, drift, vcorr, vcorr_diff processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
+# siv, drift, vcorr, vcorr_diff, divergence processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
 # newice, newice_diff
 
 # Plot types
 plot_scatter=0
 plot_series =0
+plot_pdf    =1
 plot_video  =0
-plot_map    =1 # seasonal maps
+plot_map    =0 # seasonal maps
 plot_maps   =0
 plot_anim   =0 # solo video
 save_fig    =1
@@ -156,6 +157,11 @@ print('Loading: '+filename)
 ds=xr.open_dataset(filename)
 h_etopoi=ds.variables['__xarray_dataarray_variable__'][:]
 ds.close()
+filename=path_data+'etopo/ETOPO_Antarctic_drift.nc'
+print('Loading: '+filename)
+ds=xr.open_dataset(filename)
+h_etopod=ds.variables['__xarray_dataarray_variable__'][:]
+ds.close()
 
 save_etopoi=0 
 if save_etopoi==1: 
@@ -166,7 +172,20 @@ if save_etopoi==1:
   filename=path_data+'etopo/ETOPO_Antarctic_50km_nextsim.nc'
   print('Saving: '+filename)
   h.to_netcdf(filename)
-
+save_etopod=0
+if save_etopod==1: 
+  file=path_data+'/drift_osisaf_ease2/2016'+'/ice_drift_sh_ease2-750_cdr-v1p0_24h-20160101'+'1200.nc'; 
+  print(file)
+  data = xr.open_dataset(file)
+  lon_obs = data.variables['lon']; lat_obs = data.variables['lat']
+  print('Interpolating etopo bathy to nextsim grid')
+  func=myInterp.IrregularGridInterpolator(np.array(lon_etopo),np.array(lat_etopo),np.array(lon_obs),np.array(lat_obs))
+  h_etopod=func.interp_field(np.array(h_etopo))
+  h=xr.DataArray(h_etopod) #,coords={'y': lat_e,'x': lon_e},dims=["y", "x"])
+  filename=path_data+'etopo/ETOPO_Antarctic_drift.nc'
+  print('Saving: '+filename)
+  h.to_netcdf(filename)
+  exit()
 
 for serie_or_map in serie_or_maps:
   print(str(serie_or_map))
@@ -827,6 +846,53 @@ for serie_or_map in serie_or_maps:
             plt.savefig(figname)
           if plt_show==1:
             plt.show()
+
+      if plot_pdf==1:
+        print('Ploting pdf: '+vname+' '+run)
+        plt.rcParams.update({'font.size': 22})
+        # Plotting time series
+        # Ice divergence
+        if vname=='divergence': # if first expt load obs
+          fig, ax = plt.subplots(1, 2, figsize = (16,8)) # landscape
+
+          time_obs=time_obsix
+          u_mod = udatac*3.6*24;  v_mod = vdatac*3.6*24;
+         
+          # if BSOSE 
+          uc_mod = np.zeros([len(time_obsix),np.shape(v_mod)[1],np.shape(v_mod)[2]]); uc_mod[:]=np.nan
+          vc_mod = np.zeros([len(time_obsix),np.shape(v_mod)[1],np.shape(v_mod)[2]]); vc_mod[:]=np.nan
+  
+          # daily data (average if nextsim)
+          iday2=-9999
+          for t in range(len(time_obsix)): # (np.shape(sicc_mod)[0]):
+            if run=='BSOSE':
+              print('BSOSE day: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
+              diff=np.abs(int(time_obsni[t])-np.array(time_modi)); min_diff=np.min(diff)
+              iday=np.where(diff==min_diff)[0][0];
+              print(iday)
+              if iday!=iday2:
+                uc_modi=func.interp_field(np.array(u_mod[iday]))
+                vc_modi=func.interp_field(np.array(v_mod[iday]))
+                iday2=iday;
+              uc_mod[t]=uc_modi
+              vc_mod[t]=vc_modi
+            else:
+              #print('Cocatenating model drift results: '+time_obsix[t].strftime("%Y%m%d%HH:%MM"))
+              iday=np.where(time_obsixn[t]==time_mod)[0]
+              uc_mod[t]=u_mod[iday,:,:]
+              vc_mod[t]=v_mod[iday,:,:]
+              #uc_mod[t]=func.interp_field(np.array(ucmod)) #,np.array(lon_obs),np.array(lat_obs))[0]
+              #vc_mod[t]=func.interp_field(np.array(vcmod)) #,np.array(lon_obs),np.array(lat_obs))[0]
+    
+          uc_mod=np.where(uc_mod!=0.0,uc_mod,np.nan)
+          vc_mod=np.where(vc_mod!=0.0,vc_mod,np.nan)
+          time=time_obsix; 
+
+          dudx=(uc_mod[::,::,1::]-uc_mod[::,::,0:-1])/25.
+          dvdy=(vc_mod[::,1::,::]-vc_mod[::,0:-1,::])/25.
+          div_mod=dudx[::,0:-1,::]+dvdy[::,::,0:-1]
+          exit()
+
       
       ### Plot maps (seasonal) 
       if plot_map==1:
@@ -956,6 +1022,14 @@ for serie_or_map in serie_or_maps:
                 clevels=[.7,1.]# np.linspace(0,40,40,endpoint=False)
                 ic=bm.contour(lonp,latp,mean,clevels,colors=('k'),linewidths=(1.5,),origin='upper',linestyles='solid',extent=ext)
                 #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
+              # computing stats per subregion
+              lon_regions=[-150,-61,-20,34,90,160];
+              text_map_w_stats(mean,lon_obs,bm,lon_regions,'mean','','black')
+              plt.annotate('Total mean: '+format(np.nanmean(mean),'.2f')+'', xy=(.3,.56), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+              dataf=np.where(h_etopod>=-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
+              plt.annotate('Shallow mean: '+dataf+'', xy=(.3,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+              dataf=np.where(h_etopod<-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
+              plt.annotate('Deep mean: '+dataf+'', xy=(.3,.46), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
               # including colorbar
               divider = make_axes_locatable(ax)
               cax = divider.append_axes('right', size='5%', pad=0.05)
@@ -1095,7 +1169,6 @@ for serie_or_map in serie_or_maps:
               # computing stats per subregion
               lon_regions=[-150,-61,-20,34,90,160];
               text_map_w_stats(mean,lon_mod,bm,lon_regions,'mean','m','black')
-
               plt.annotate('Total mean: '+format(np.nanmean(mean),'.2f')+' m', xy=(.3,.56), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
               dataf=np.where(h_etopoi>=-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
               plt.annotate('Shallow mean: '+dataf+' m', xy=(.3,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
