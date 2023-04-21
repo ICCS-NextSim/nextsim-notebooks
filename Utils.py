@@ -69,7 +69,7 @@ def veccor1(u1,v1,u2,v2):
     
     return ac,theta,X,Y 
 
-def text_map_w_stats(data,lon_mod,bm,lon_regions,oper,unit):
+def text_map_w_stats(data,lon_mod,bm,lon_regions,oper,unit,colort):
     ''' 
     text_maps_w_stats(lon_regions,bm,oper,unit)
     data = input 2D data
@@ -112,8 +112,8 @@ def text_map_w_stats(data,lon_mod,bm,lon_regions,oper,unit):
       else:
         lon_r=lon_regions
 
-      x,y = bm(np.nanmean([lon_r[kl-1],lon_r[kl]])-0,-65);
-      plt.annotate(dataf+' '+unit, xy=(x, y), xycoords='data', xytext=(x, y),fontsize=9)#, textcoords='offset points',
+      x,y = bm(np.nanmean([lon_r[kl-1],lon_r[kl]])-0,-63);
+      plt.annotate(dataf+' '+unit, xy=(x, y), xycoords='data', xytext=(x, y),fontsize=9,color=colort,fontweight='bold')#, textcoords='offset points',
       #color='r', arrowprops=dict(arrowstyle="->")) #"fancy", color='g')
 
 def format_map(ax):
