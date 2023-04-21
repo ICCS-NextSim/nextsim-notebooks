@@ -33,24 +33,24 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2016
+start_year =2015
 end_day    =28
 end_month  =12 # 
-end_year   =2021
+end_year   =2015
 
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=17
 exptc=[12,9,exp,15]#2,5,7,10]
 expt=exptc
-expt=[18,19]
+expt=[18]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1
 inc_obs=1
 
 #Variables
-vname ='newice_diff' # sie,bsie,sit,sit_rmse,siv,drift,vcorr, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
+vname ='vcorr' # sie,bsie,sit,sit_rmse,siv,drift,vcorr, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
                   # newice, newice_diff
 
 # Plot types
