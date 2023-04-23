@@ -14,7 +14,8 @@ from mpl_toolkits.basemap import Basemap
 #import cartopy.crs as ccrs
 import seapy
 import irregular_grid_interpolator as myInterp
-#from scipy import interpolate
+#from scipiy import interpolate
+from scipy.stats import norm
 import datetime
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from Utils import * 
@@ -35,7 +36,7 @@ start_day  =1
 start_month=1
 start_year =2015
 end_day    =28
-end_month  =2 # 
+end_month  =12 # 
 end_year   =2015
 
 
@@ -43,7 +44,7 @@ end_year   =2015
 exp=17
 exptc=[12,9,exp,15]#2,5,7,10]
 expt=exptc
-expt=[19]
+expt=[19,18]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1
@@ -853,8 +854,9 @@ for serie_or_map in serie_or_maps:
         # Plotting time series
         # Ice divergence
         if vname=='divergence': # if first expt load obs
-          fig, ax = plt.subplots(1, 2, figsize = (16,8)) # landscape
-
+          if ke==1:
+            #fig=plt.figure(figsize = (16,8)) 
+            fig, ax = plt.subplots(1, 3, figsize = (16,8)) # landscape
           time_obs=time_obsix
           u_mod = udatac*3.6*24;  v_mod = vdatac*3.6*24;
          
@@ -891,14 +893,44 @@ for serie_or_map in serie_or_maps:
           dudx=(uc_mod[::,::,1::]-uc_mod[::,::,0:-1])/25.
           dvdy=(vc_mod[::,1::,::]-vc_mod[::,0:-1,::])/25.
           div_mod=dudx[::,0:-1,::]+dvdy[::,::,0:-1]
-          exit()
 
+          hist_int=2E-2;
+          model=div_mod; 
+          div_mod=np.where(model>0.0,model,np.nan) # divergence
+          con_mod=np.where(model<0.0,model,np.nan) # convergence
+
+          hdiv=np.histogram(div_mod.flatten(),np.arange(0,np.nanmax(np.abs(model)),hist_int))
+          hcon=np.histogram(con_mod.flatten(),np.arange(-np.nanmax(np.abs(model)),0,hist_int))
+          #hcon=np.histogram(con_mod.flatten(),np.arange(np.nanmin(con_mod),np.nanmax(con_mod),hist_int))
+          #a=norm.pdf(div_mod.flatten(), loc=np.nanmean(div_mod.flatten()), scale=np.nanstd(div_mod.flatten()))
+          
+          if ke==1:
+            #ax1=fig.add_subplot(1,3,1)
+            ll=[]
+          ax[0].loglog(hdiv[1][0:-1],hdiv[0],#/hdiv[0][0]
+          color=colors[ke-1])
+          plt.ylim([0, 1E7])
+          
+          if ke==1:
+            #ax2=fig.add_subplot(1,3,2)
+            ll=[]
+          ax[1].loglog(hcon[1][0:-1]*-1,hcon[0],#/hdiv[0][0]
+          color=colors[ke-1])
+          plt.ylim([0, 1E7])
+
+        if ex==expt[-1]:
+          for i in expt:
+            ll.append(runs[i])
+    
+          #ax1=fig.add_subplot(1,3,1)
+          ax[0].legend(ll)
+          plt.tight_layout()
       
       ### Plot maps (seasonal) 
       if plot_map==1:
         print('Ploting map: '+vname+' '+run)
         plt.rcParams.update({'font.size': 12})
-        fig=plt.figure(figsize = (9,8)) # landscape
+        fig=plt.figure(figsize = (9,8)) # square
         if vname[0:5]=='vcorr': 
           if ke==1 : # if first expt load obs
             ll=[]; k=0
