@@ -34,35 +34,35 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2015
+start_year =2016
 end_day    =28
 end_month  =12 # 
-end_year   =2015
+end_year   =2016
 
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=17
 exptc=[12,9,exp,15]#2,5,7,10]
 expt=exptc
-expt=[19,18]
+expt=[18]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1
 inc_obs=1
 
 #Variables
-vname ='divergence' 
+vname ='sie' # 'divergence' 
 # sie, bsie,
 # sit, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
-# siv, drift, vcorr, vcorr_diff, divergence processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
+# siv, drift, vcorr, vcorr_diff, divergence, shear processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
 # newice, newice_diff
 
 # Plot types
 plot_scatter=0
 plot_series =0
-plot_pdf    =1
+plot_pdf    =0
 plot_video  =0
-plot_map    =0 # seasonal maps
+plot_map    =1 # seasonal maps
 plot_maps   =0
 plot_anim   =0 # solo video
 save_fig    =1
@@ -85,7 +85,7 @@ if vname=='sic' or vname=='sie' or vname=='bsie':
   varray='sic' 
 elif vname[0:3]=='sit' or vname=='siv': # or vname=='sit_rmse':
   varray='sit' 
-elif vname=='drift' or vname[0:5]=='vcorr' or vname=='divergence':
+elif vname=='drift' or vname[0:5]=='vcorr' or vname=='divergence' or vname=='shear':
   varray='siv' 
 elif vname=='newice' or vname=='newice_diff':
   varray='newice' 
@@ -205,8 +205,8 @@ for serie_or_map in serie_or_maps:
   elif serie_or_map==3: # map
     expt=[exp]
     plot_series=0; plot_video=0; plot_map=1;
-    vnames=[ 'vcorr'] 
-    varrays=['siv'] 
+    vnames=[ 'vcorr','sit'] 
+    varrays=['siv'  ,'sit'] 
   else:
     vnames=[vname]; varrays=[varray]
   
@@ -891,8 +891,11 @@ for serie_or_map in serie_or_maps:
           time=time_obsix; 
 
           dudx=(uc_mod[::,::,1::]-uc_mod[::,::,0:-1])/25.
+          dvdx=(vc_mod[::,::,1::]-vc_mod[::,::,0:-1])/25.
+          dudy=(uc_mod[::,1::,::]-uc_mod[::,0:-1,::])/25.
           dvdy=(vc_mod[::,1::,::]-vc_mod[::,0:-1,::])/25.
           div_mod=dudx[::,0:-1,::]+dvdy[::,::,0:-1]
+          shear_mod=np.sqrt( np.square(dudx[::,0:-1,::]+dvdy[::,::,0:-1]) + np.square(dudy[::,0::,1::]+dvdx[::,1::,0::]) )
 
           hist_int=2E-2;
           model=div_mod; 
@@ -900,23 +903,37 @@ for serie_or_map in serie_or_maps:
           con_mod=np.where(model<0.0,model,np.nan) # convergence
 
           hdiv=np.histogram(div_mod.flatten(),np.arange(0,np.nanmax(np.abs(model)),hist_int))
-          hcon=np.histogram(con_mod.flatten(),np.arange(-np.nanmax(np.abs(model)),0,hist_int))
+          hcon=np.histogram(con_mod.flatten(),np.arange(np.nanmin((con_mod)),0,hist_int))
+          hshe=np.histogram(shear_mod.flatten(),np.arange(0,np.nanmax(shear_mod),hist_int))
           #hcon=np.histogram(con_mod.flatten(),np.arange(np.nanmin(con_mod),np.nanmax(con_mod),hist_int))
           #a=norm.pdf(div_mod.flatten(), loc=np.nanmean(div_mod.flatten()), scale=np.nanstd(div_mod.flatten()))
           
           if ke==1:
             #ax1=fig.add_subplot(1,3,1)
             ll=[]
-          ax[0].loglog(hdiv[1][0:-1],hdiv[0],#/hdiv[0][0]
+          #ax[0].loglog(hdiv[1][0:-1],hdiv[0]/hdiv[0][0],
+          ax[0].bar(hdiv[1][0:-1],hdiv[0]/hdiv[0][0],
           color=colors[ke-1])
-          plt.ylim([0, 1E7])
+          #plt.ylim([0, 1E2])
+          ax[0].set_title('Divergence')
+          ax[0].set_xlabel('(d-1)')
           
           if ke==1:
             #ax2=fig.add_subplot(1,3,2)
             ll=[]
-          ax[1].loglog(hcon[1][0:-1]*-1,hcon[0],#/hdiv[0][0]
+          #ax[1].loglog(hcon[1][0:-1]*-1,hcon[0]/hcon[0][-1],
+          ax[1].bar(hcon[1][0:-1]*-1,hcon[0]/hcon[0][-1],
           color=colors[ke-1])
-          plt.ylim([0, 1E7])
+          #plt.ylim([0, 1E2])
+          ax[1].set_title('Convergence')
+          ax[1].set_xlabel('(d-1)')
+
+          #ax[2].loglog(hshe[1][0:-1],hshe[0]/hshe[0][0],
+          ax[2].bar(hshe[1][0:-1],hshe[0]/hshe[0][0],
+          color=colors[ke-1])
+          #plt.ylim([0, 1E2])
+          ax[2].set_title('Shear')
+          ax[2].set_xlabel('(d-1)')
 
         if ex==expt[-1]:
           for i in expt:
@@ -1068,6 +1085,244 @@ for serie_or_map in serie_or_maps:
               fig.colorbar(im1, cax=cax, orientation='vertical')
 
           figname=path_fig+run+'/map_vector_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+
+        elif vname[0:3]=='sie' or vname[0:3]=='sic': # if first expt load obs
+          # plot obs
+          if ke==1:# and vname[0:7]=='sie_obs': # _diff' or _rmse
+            # loop in time to read obs
+            kc=0; ll=[]
+            for obs_source in obs_sources: 
+              ll.append('OBS-'+obs_source); k=0; kc+=1
+              if obs_source[0:11]=='OSISAF-ease' or obs_source[0:11]=='OSISAFease2':
+                if obs_source[0:11]=='OSISAF-ease':
+                  file=path_data+'/sic_osisaf/2018'+'/ice_conc_sh_ease-125_multi_20180101'+'.nc';
+                elif obs_source[0:11]=='OSISAFease2':
+                  file=path_data+'/sic_osisaf/2018'+'/ice_conc_sh_ease2-250_icdr-v2p0_20180101.nc';
+                data = xr.open_dataset(file)
+                lon_obs = data.variables['lon']; lat_obs = data.variables['lat']
+                xobs = data.variables['xc']; yobs = data.variables['yc']
+                data.close()
+                dx,dy=np.meshgrid(np.diff(xobs),np.diff(yobs)); dy=np.abs(dy); obs_grid_area=dx*dy
+                st = tictoc.time();   print('Creating weights to interp. obs to model grid ...'); # get the start time
+                func=myInterp.IrregularGridInterpolator(np.array(lon_obs),np.array(lat_obs),np.array(lon_nex),np.array(lat_nex))#[0]
+                et = tictoc.time()-st; print('Execution time:', et, 'seconds')
+              for t in time_obs:
+                k+=1
+                if obs_source=='NSIDC':
+                  file=path_data+'/sic_nsidc/'+t.strftime("%Y")+'/'+'seaice_conc_daily_sh__'+t.strftime("%Y%m%d")+'_f17_v04r00.nc'
+                  print(file)
+                  obs_grid_area=25
+                  data = xr.open_dataset(file)
+                  if k==1:
+                    sicc_obs = data.variables['nsidc_nt_seaice_conc']#['cdr_seaice_conc']
+                    #exit()
+                  else:
+                    sic_obs = data.variables['nsidc_nt_seaice_conc']#['cdr_seaice_conc'];  
+                    sicc_obs = xr.Variable.concat([sicc_obs,sic_obs] ,'tdim' )
+                elif obs_source[0:6]=='OSISAF':
+                  if obs_source[0:11]=='OSISAF-ease':
+                    file=path_data+'/sic_osisaf/'+t.strftime("%Y")+'/ice_conc_sh_ease-125_multi_'+t.strftime("%Y%m%d")+'.nc'; 
+                  elif obs_source[0:11]=='OSISAFease2':
+                    file=path_data+'/sic_osisaf/'+t.strftime("%Y")+'/ice_conc_sh_ease2-250_icdr-v2p0_'+t.strftime("%Y%m%d")+'.nc'; 
+                  else:
+                    file=path_data+'/sic_osisaf/'+t.strftime("%Y")+'/ice_conc_sh_polstere-100_multi_'+t.strftime("%Y%m%d")+'.nc'
+                    obs_grid_area=12.53377297 # 10 polstere
+                  print(file)
+                  data = xr.open_dataset(file)
+                  if k==1:
+                    sicc_obs = data.variables['ice_conc']/100. #['cdr_seaice_conc']
+                  else:
+                    sic_obs = data.variables['ice_conc']/100. #['cdr_seaice_conc'];  
+                    sicc_obs = xr.Variable.concat([sicc_obs,sic_obs] ,'time' )
+                data.close()
+    
+              print('Processing obs SIC to get extent')
+              if interp_obs==1:
+                sic_obs = np.zeros([np.shape(sicc_obs)[0],np.shape(lon_nex)[0],np.shape(lon_nex)[1]])
+              else:
+                sic_obs = np.zeros([np.shape(sicc_obs)[0],np.shape(lon_obs)[0],np.shape(lon_obs)[1]])
+              for t in range(np.shape(sicc_obs)[0]):
+                sicct=sicc_obs[t]; 
+                if interp_obs==1:
+                  st = tictoc.time();   print('Interping obs to model grid ...'); # get the start time
+                  sicobsi=func.interp_field(np.array(sicct))#[0]
+                  # fixing gap due to interp method 
+                  for tt in range(0,150): #226,np.shape(sicc_mod)[1]):  
+                    sicobsi[tt][150]=sicobsi[tt][151] 
+                  et = tictoc.time()-st; print('Execution time:', et, 'seconds')
+                  sicct=sicobsi
+
+                #if vname=='sie':
+                #  siccz=np.zeros((np.shape(sicct)[0],np.shape(sicct)[1])) 
+                #  iext=np.where(sicct>.15); 
+                #  st = tictoc.time(); print('Processing obs SIC to get extent time: '+time_obs[t].strftime("%Y%m%d%HH:%MM")) # get the start time
+                #  for ii in range(np.shape(iext)[1]):
+                #    siccz[iext[0][ii],iext[1][ii]]=1.
+                #  siccz[inan_mod]=np.nan
+                #  sic_obs[t]=siccz
+                #else:
+                sicct[inan_mod]=np.nan
+                sic_obs[t]=sicct
+    
+              sicc_obs=sic_obs
+
+          if ke>=1: # if first expt load obs
+            sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
+            sic_mod = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
+    
+            diff=np.abs(int(time_obsni[0])-np.array(time_modi)); min_diff=np.min(diff)
+            ifirst=np.where(diff==min_diff)[0][0]#-1; 
+            if ifirst<0:
+              ifirst=0
+            diff=np.abs(int(time_obsni[-1])-np.array(time_modi)); min_diff=np.min(diff)
+            ilast=np.where(diff==min_diff)[-1][-1]+1
+            sicc_mo=np.zeros((len(time_mod[ifirst:ilast])+1,np.shape(sic_mod)[1],np.shape(sic_mod)[2]))
+            k=-1
+            #Processing model SIC to get extent 
+            for t in range(ifirst,ilast+1,1): # (np.shape(sicc_mod)[0]):
+              k+=1
+              print('Processing model SIC to get extent time: '+time_mods[t].strftime("%Y%m%d%HH:%MM"))
+              sicct=sic_mod[t];
+              sicc_mo[k]=sicct
+  
+            if run=='BSOSE':
+              st = tictoc.time();   print('Creating weights to interp. BSOSE to model grid ...'); # get the start time
+              func=myInterp.IrregularGridInterpolator(np.array(lon_mod),np.array(lat_mod),np.array(lon_nex),np.array(lat_nex))#[0]
+              et = tictoc.time()-st; print('Execution time:', et, 'seconds')
+  
+            time_modi=time_modi[ifirst:ilast]
+            # daily average
+            if interp_obs==1:
+              sicc_mod=np.zeros((len(time_obs),np.shape(lon_nex)[0],np.shape(lon_nex)[1]))
+            else:
+              sicc_mod=np.zeros((len(time_obs),np.shape(lon_obs)[0],np.shape(lon_obs)[1]))
+            iday2=-9999
+            for t in range(len(time_obs)): # (np.shape(sicc_mod)[0]):
+              if run=='BSOSE':
+                # find the closest date
+                diff=np.abs(int(time_obsni[t])-np.array(time_modi)); min_diff=np.min(diff)
+                iday=np.where(diff==min_diff)[0][0];
+                print(iday)
+                if iday!=iday2:
+                  # interp to nextsim grid
+                  siccz=func.interp_field(np.array(sicc_mo[iday]))#[0]
+                  siccz[inan_mod]=np.nan
+                  iday2=iday;
+    
+                print('Processing model SIC to get extent time: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
+                sicc_ex=np.zeros((np.shape(siccz)[0],np.shape(siccz)[1]))
+                iext=np.where(siccz>.15)#[0]; sicct[iext]=1;
+                for ii in range(np.shape(iext)[1]):
+                  sicc_ex[iext[0][ii],iext[1][ii]]=1.
+                sicc_mod[t]=sicc_ex # np.nanmean(sicc_mo[iday,:,:],axis=0)
+    
+              else:  
+                iday=np.where(time_obsni[t]==time_modi)[0]
+                if interp_obs==1:
+                  siccz=np.nanmean(sicc_mo[iday,:,:],axis=0)
+                  #exit()
+                  #sicc_mod[t]=siccz # np.nanmean(sicc_mo[iday,:,:],axis=0)
+                  #if vname=='sie':
+                  #  print('Processing model SIC to get extent time: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
+                  #  sicct=np.zeros((np.shape(siccz)[0],np.shape(siccz)[1]))
+                  #  iext=np.where(siccz>.15)#[0]; sicct[iext]=1;
+                  #  for ii in range(np.shape(iext)[1]):
+                  #    sicct[iext[0][ii],iext[1][ii]]=1.
+                  #  sicct[inan_mod]=np.nan
+                  #  sicc_mod[t]=sicct
+                  #else:
+                  siccz[inan_mod]=np.nan
+                  sicc_mod[t]=siccz
+                else:
+                  sicc_modm=np.nanmean(sicc_mo[iday,:,:],axis=0)
+                  st = tictoc.time(); print('Interp model SIC to obs grid: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
+                  sicc_mod[t]=seapy.oasurf(np.array(lon_mod),np.array(lat_mod),np.array(sicc_modm),np.array(lon_obs),np.array(lat_obs))[0]
+                  et = tictoc.time()-st; print('Execution time:', et, 'seconds')
+    
+
+          #sicc_diff=sicc_mod-sicc_obs 
+
+          # loop in the four seasons
+          km=-1; tseason=['JFM','AMJ','JAS','OND']
+          for m in [1,4,7,10]:
+            km+=1; 
+            print(run+': computing seasonal complex vector correlation starting in month '+str(m).zfill(2))
+            if m==1:
+              imonth1=time_obsd.month==1; imonth2=time_obsd.month==2; imonth3=time_obsd.month==3; 
+            if m==4: 
+              imonth1=time_obsd.month==4; imonth2=time_obsd.month==5; imonth3=time_obsd.month==6; 
+            if m==7: 
+              imonth1=time_obsd.month==7; imonth2=time_obsd.month==8; imonth3=time_obsd.month==9; 
+            if m==10: 
+              imonth1=time_obsd.month==10; imonth2=time_obsd.month==11; imonth3=time_obsd.month==12; 
+            sic_mods=np.concatenate((sicc_mod[imonth1],sicc_mod[imonth2],sicc_mod[imonth3]),0)
+            sic_obss=np.concatenate((sicc_obs[imonth1],sicc_obs[imonth2],sicc_obs[imonth3]),0)
+
+            mmod=np.nanmean(sic_mods,0)
+            mobs=np.nanmean(sic_obss,0)
+            if vname=='sie':
+              siccz=np.zeros((np.shape(mmod)[0],np.shape(mmod)[1])) 
+              sicco=np.zeros((np.shape(mmod)[0],np.shape(mmod)[1])) 
+              iext=np.where(mmod>.15); 
+              ioxt=np.where(mobs>.15); 
+              for ii in range(np.shape(iext)[1]):
+                siccz[iext[0][ii],iext[1][ii]]=1.
+              siccz[inan_mod]=np.nan
+              mmod=siccz
+              for ii in range(np.shape(ioxt)[1]):
+                sicco[ioxt[0][ii],ioxt[1][ii]]=1.
+              sicco[inan_mod]=np.nan
+              mobs=sicco
+
+            mean=mmod-mobs
+
+            if ex==expt[-1]:
+              ax=fig.add_subplot(2,2,km+1)
+              bm = Basemap(projection='splaea',boundinglat=-52,lon_0=180,resolution='l')#,ax=ax[km])
+              bm.drawcoastlines(linewidth=.5)
+              bm.fillcontinents(color='grey',lake_color='aqua')
+              #bm.drawparallels(np.arange(-90,-30,5))
+              #bm.drawmeridians(np.arange(0,360,30))
+              lonp, latp = bm(lon_mod,lat_mod)#,inverse=True)
+              if vname=='sit': 
+                plt.title(tseason[km]+' '+run+' '+vname,loc='center')
+                cmap = cmocean.cm.dense_r
+                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=3.0)#,vmin=0,vmax=.015)
+              elif vname=='sit_obs_rmse': 
+                plt.title(tseason[km]+' '+run+' rmse',loc='center')
+                cmap = cmocean.cm.amp
+                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=3.0)#,vmin=0,vmax=.015)
+              elif vname=='sie' or vname=='sic':
+                plt.title(tseason[km]+' '+runs[expt[0]]+' - Obs.',loc='center')
+                cmap = cmocean.cm.balance
+                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-2.,vmax=2.)
+              elif vname=='sisdfsfds':
+                plt.title(tseason[km]+' '+runs[expt[0]]+' - '+runs[expt[1]]+' rmse',loc='center')
+                cmap = cmocean.cm.balance
+                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-2.,vmax=2.)
+              # contour
+              lone, late = bm(lon_etopo,lat_etopo)#,inverse=True)
+              ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
+              clevels=[-800] # np.linspace(0,40,40,endpoint=False)
+              ic=bm.contour(lonp,latp,h_etopoi,clevels,colors=('magenta'),linewidths=(.5,),origin='upper',linestyles='solid',extent=ext)
+              #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
+              # computing stats per subregion
+              #lon_regions=[-150,-61,-20,34,90,160];
+              #text_map_w_stats(mean,lon_mod,bm,lon_regions,'mean','','black')
+              #plt.annotate('Total mean: '+format(np.nanmean(mean),'.2f')+' m', xy=(.3,.56), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+              #dataf=np.where(h_etopoi>=-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
+              #plt.annotate('Shallow mean: '+dataf+' m', xy=(.3,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+              #dataf=np.where(h_etopoi<-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
+              #plt.annotate('Deep mean: '+dataf+' m', xy=(.3,.46), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+
+              # including colorbar
+              divider = make_axes_locatable(ax)
+              cax = divider.append_axes('right', size='5%', pad=0.05)
+              fig.colorbar(im1, cax=cax, orientation='vertical')
+
+          figname=path_fig+run+'/map_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+
+
 
         elif vname[0:3]=='sit':  
           #timec=time_obs
@@ -1760,7 +2015,7 @@ for serie_or_map in serie_or_maps:
           fig.colorbar(im3, cax=cax, orientation='vertical')
 
         # Ice divergence
-        if vname=='divergence': # if first expt load obs
+        if vname=='divergence' or vname=='shear': # if first expt load obs
           if ke==1:
             fig, ax = plt.subplots(1,len(expt), figsize = (16,8)) # landscape
             time_obs=time_obsix
@@ -1806,14 +2061,26 @@ for serie_or_map in serie_or_maps:
           time=time_obsix; 
 
           dudx=(uc_mod[::,::,1::]-uc_mod[::,::,0:-1])/25.
+          dvdx=(vc_mod[::,::,1::]-vc_mod[::,::,0:-1])/25.
+          dudy=(uc_mod[::,1::,::]-uc_mod[::,0:-1,::])/25.
           dvdy=(vc_mod[::,1::,::]-vc_mod[::,0:-1,::])/25.
-          div_mod=dudx[::,0:-1,::]+dvdy[::,::,0:-1]
+          
+          if vname=='divergence': # 
+            div_mod=dudx[::,0:-1,::]+dvdy[::,::,0:-1]
+          elif vname=='shear': # shear
+            div_mod=np.sqrt( np.square(dudx[::,0:-1,::]+dvdy[::,::,0:-1]) + np.square(dudy[::,0::,1::]+dvdx[::,1::,0::]) )
 
           time=time_obs; mask=1-mask; 
           interval=10 #len(time))
           fps=24
     
-          cmap = cmocean.cm.balance
+          if vname=='divergence': # if first expt load obs
+            cmap = cmocean.cm.balance
+            vmin=-.2;vmax=.2
+          elif vname=='shear': # if first expt load obs
+            cmap = cmocean.cm.thermal_r
+            vmin=0;vmax=.2
+
           ax[ke-1].set_title(run,loc='right')
           m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke-1])
           lonp, latp = m(lon_mod[0:-1,0:-1],lat_mod[0:-1,0:-1]) #,inverse=True)
@@ -1822,16 +2089,15 @@ for serie_or_map in serie_or_maps:
           cax = divider.append_axes('right', size='5%', pad=0.05)
           if ke==1:
             div_mo=div_mod
-            im1 = m.pcolormesh(lonp,latp,div_mo[0],cmap=cmap,vmin=-.2,vmax=.2)
+            im1 = m.pcolormesh(lonp,latp,div_mo[0],cmap=cmap,vmin=vmin,vmax=vmax)
             fig.colorbar(im1, cax=cax, orientation='vertical')
           else:
-            im2 = m.pcolormesh(lonp,latp,div_mod[0],cmap=cmap,vmin=-.2,vmax=.2)
+            im2 = m.pcolormesh(lonp,latp,div_mod[0],cmap=cmap,vmin=vmin,vmax=vmax)
             fig.colorbar(im2, cax=cax, orientation='vertical')
           #im22 = m.quiver(lonov, latov, uc_mod[0], vc_mod[0],color='black',width=0.002,scale=500.0) 
           #qk=plt.quiverkey(im22,.5,.5,10,'10 km/day',labelpos='S',fontproperties={'size':8})
           m.drawcoastlines()
           m.fillcontinents(color='grey',lake_color='aqua')
-    
     
         if vname=='drift':
           def animates(i):
@@ -1844,7 +2110,7 @@ for serie_or_map in serie_or_maps:
             im3.set_array(magc_mod[i]-magc_obs[i])
             return [im1,im11,im2,im22,im3]
     
-        elif vname=='divergence':
+        elif vname=='divergence' or vname=='shear':
           if ex==expt[-1]:
             def animates(i):
               im1.set_array(div_mo[i])
