@@ -36,7 +36,7 @@ start_day  =1
 start_month=1
 start_year =2016
 end_day    =28
-end_month  =12 # 
+end_month  =2 
 end_year   =2016
 
 
@@ -59,10 +59,10 @@ vname ='sie' # 'divergence'
 
 # Plot types
 plot_scatter=0
-plot_series =0
+plot_series =1
 plot_pdf    =0
 plot_video  =0
-plot_map    =1 # seasonal maps
+plot_map    =0 # seasonal maps
 plot_maps   =0
 plot_anim   =0 # solo video
 save_fig    =1
@@ -109,7 +109,8 @@ paramtd=[9, 10, 11, 12];
 parame=[3, 4, 2, 5, 6, 8]; 
 
 # SIE obs sources
-obs_sources=['OSISAFease2']#,'OSISAF-ease'] #['NSIDC','OSISAF','OSISAF-ease','OSISAFease2']: 
+obs_sources=['NSIDC','OSISAF','OSISAF-ease','OSISAFease2'];
+#obs_sources=['OSISAFease2']#,'OSISAF-ease'] #['NSIDC','OSISAF','OSISAF-ease','OSISAFease2']: 
 
 #paths
 print('Hostname: '+socket.gethostname())
@@ -1275,6 +1276,7 @@ for serie_or_map in serie_or_maps:
               mobs=sicco
 
             mean=mmod-mobs
+            mean=np.where(mean!=0,mean,np.nan)
 
             if ex==expt[-1]:
               ax=fig.add_subplot(2,2,km+1)
@@ -1298,7 +1300,7 @@ for serie_or_map in serie_or_maps:
                 cmap = cmocean.cm.balance
                 im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-2.,vmax=2.)
                 #ic=bm.contour(lonp,latp,mmod,[1.],colors=('magenta'),linewidths=(.5,),origin='upper',linestyles='solid',extent=ext)
-                ic=bm.contour(lonp,latp,mobs,[1.],colors=('green'),linewidths=(.5,),origin='upper',linestyles='solid',extent=ext)
+                ic=bm.contour(lonp,latp,mobs,[1.],colors=('green'),linewidths=(1.,),origin='upper',linestyles='solid',extent=ext)
               elif vname=='sisdfsfds':
                 plt.title(tseason[km]+' '+runs[expt[0]]+' - '+runs[expt[1]]+' rmse',loc='center')
                 cmap = cmocean.cm.balance
@@ -1545,7 +1547,7 @@ for serie_or_map in serie_or_maps:
             if os.path.exists(path_fig+run)==False:
               os.mkdir(path_fig+run)
             print('Saving: '+figname)
-            plt.savefig(figname,dpi=200,bbox_inches='tight')
+            plt.savefig(figname,dpi=300,bbox_inches='tight')
           if plt_show==1:
             plt.show()
     
