@@ -34,10 +34,10 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2016
+start_year =2018
 end_day    =28
-end_month  =2 
-end_year   =2016
+end_month  =12
+end_year   =2018
 
 
 #Runs (names) or experiments (numbers - starts with 1)
@@ -54,7 +54,7 @@ inc_obs=1
 vname ='sie' # 'divergence' 
 # sie, bsie,
 # sit, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
-# siv, drift, vcorr, vcorr_diff, divergence, shear processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
+# siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
 # newice, newice_diff
 
 # Plot types
@@ -90,7 +90,6 @@ elif vname=='drift' or vname[0:5]=='vcorr' or vname=='divergence' or vname=='she
 elif vname=='newice' or vname=='newice_diff':
   varray='newice' 
 
-
 #trick to cover all months in runs longer than a year
 end_month=end_month+1
 ym_start= 12*start_year + start_month - 1
@@ -109,7 +108,7 @@ paramtd=[9, 10, 11, 12];
 parame=[3, 4, 2, 5, 6, 8]; 
 
 # SIE obs sources
-obs_sources=['NSIDC','OSISAF','OSISAF-ease','OSISAFease2'];
+obs_sources=['NSIDC','OSISAFease2'];
 #obs_sources=['OSISAFease2']#,'OSISAF-ease'] #['NSIDC','OSISAF','OSISAF-ease','OSISAFease2']: 
 
 #paths
@@ -366,12 +365,19 @@ for serie_or_map in serie_or_maps:
                 xobs = data.variables['xc']; yobs = data.variables['yc']
                 data.close()
                 dx,dy=np.meshgrid(np.diff(xobs),np.diff(yobs)); dy=np.abs(dy); obs_grid_area=dx*dy
+              if obs_source=='NSIDC':
+                file=path_data+'/sic_nsidc/2018'+'/'+'seaice_conc_daily_sh__20180101'+'_f17_v04r00.nc'
+                data = xr.open_dataset(file)
+                xobs = data.variables['xgrid']/1000.; yobs = data.variables['ygrid']/1000.
+                data.close()
+                dx,dy=np.meshgrid(np.diff(xobs),np.diff(yobs)); dy=np.abs(dy); obs_grid_area=dx*dy
+               
               for t in time_obs:
                 k+=1
                 if obs_source=='NSIDC':
                   file=path_data+'/sic_nsidc/'+t.strftime("%Y")+'/'+'seaice_conc_daily_sh__'+t.strftime("%Y%m%d")+'_f17_v04r00.nc'
                   print(file)
-                  obs_grid_area=25
+                  #obs_grid_area=25
                   data = xr.open_dataset(file)
                   if k==1:
                     sicc_obs = data.variables['nsidc_nt_seaice_conc']#['cdr_seaice_conc']
@@ -403,6 +409,7 @@ for serie_or_map in serie_or_maps:
                 print('Processing obs SIC to get extent time: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
                 #mean[t] = np.sum(sicc_obs[t]*25*25)
                 sicct=sicc_obs[t]; 
+                sicct=np.where(sicct<=1,sicct,np.nan); 
                 siccz=np.zeros((np.shape(sicct)[0],np.shape(sicct)[1])) 
                 #iext=np.where(sicct>1); sicct[iext]=0;
                 #iext=np.where(sicct>.15)[0]; sicct[iext]=1;
@@ -411,7 +418,7 @@ for serie_or_map in serie_or_maps:
                   siccz[iext[0][i],iext[1][i]]=1.
                 #iext=np.where(sicct<=.15)[0]; sicct[iext]=0;
                 #mean[t] = np.sum(sicct*25*25)
-                if obs_source[0:11]=='OSISAF-ease' or obs_source[0:11]=='OSISAFease2':
+                if obs_source[0:11]=='OSISAF-ease' or obs_source[0:11]=='OSISAFease2' or obs_source=='NSIDC':
                   meant = np.multiply(siccz[0:-1,0:-1],obs_grid_area); # meant = np.multiply(meant,obs_grid_area);
                 else:
                   meant = np.multiply(siccz,obs_grid_area); meant = np.multiply(meant,obs_grid_area);
@@ -419,7 +426,7 @@ for serie_or_map in serie_or_maps:
     
               plt.plot(time_obs, mean, color=obs_colors[kc-1])   
               plt.grid('on')
-     
+ 
         if vname[0:3]=='sit':
           if inc_obs==0:
             if ke==1:
