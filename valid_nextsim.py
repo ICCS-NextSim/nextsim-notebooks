@@ -1284,6 +1284,7 @@ for serie_or_map in serie_or_maps:
               #bm.drawparallels(np.arange(-90,-30,5))
               #bm.drawmeridians(np.arange(0,360,30))
               lonp, latp = bm(lon_mod,lat_mod)#,inverse=True)
+              ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
               if vname=='sit': 
                 plt.title(tseason[km]+' '+run+' '+vname,loc='center')
                 cmap = cmocean.cm.dense_r
@@ -1296,6 +1297,8 @@ for serie_or_map in serie_or_maps:
                 plt.title(tseason[km]+' '+runs[expt[0]]+' - Obs.',loc='center')
                 cmap = cmocean.cm.balance
                 im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-2.,vmax=2.)
+                #ic=bm.contour(lonp,latp,mmod,[1.],colors=('magenta'),linewidths=(.5,),origin='upper',linestyles='solid',extent=ext)
+                ic=bm.contour(lonp,latp,mobs,[1.],colors=('green'),linewidths=(.5,),origin='upper',linestyles='solid',extent=ext)
               elif vname=='sisdfsfds':
                 plt.title(tseason[km]+' '+runs[expt[0]]+' - '+runs[expt[1]]+' rmse',loc='center')
                 cmap = cmocean.cm.balance
@@ -1304,7 +1307,7 @@ for serie_or_map in serie_or_maps:
               lone, late = bm(lon_etopo,lat_etopo)#,inverse=True)
               ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
               clevels=[-800] # np.linspace(0,40,40,endpoint=False)
-              ic=bm.contour(lonp,latp,h_etopoi,clevels,colors=('magenta'),linewidths=(.5,),origin='upper',linestyles='solid',extent=ext)
+              #ic=bm.contour(lonp,latp,h_etopoi,clevels,colors=('magenta'),linewidths=(.5,),origin='upper',linestyles='solid',extent=ext)
               #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
               # computing stats per subregion
               #lon_regions=[-150,-61,-20,34,90,160];
@@ -1316,9 +1319,9 @@ for serie_or_map in serie_or_maps:
               #plt.annotate('Deep mean: '+dataf+' m', xy=(.3,.46), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
 
               # including colorbar
-              divider = make_axes_locatable(ax)
-              cax = divider.append_axes('right', size='5%', pad=0.05)
-              fig.colorbar(im1, cax=cax, orientation='vertical')
+              #divider = make_axes_locatable(ax)
+              #cax = divider.append_axes('right', size='5%', pad=0.05)
+              #fig.colorbar(im1, cax=cax, orientation='vertical')
 
           figname=path_fig+run+'/map_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
 
@@ -1542,7 +1545,7 @@ for serie_or_map in serie_or_maps:
             if os.path.exists(path_fig+run)==False:
               os.mkdir(path_fig+run)
             print('Saving: '+figname)
-            plt.savefig(figname)
+            plt.savefig(figname,dpi=200,bbox_inches='tight')
           if plt_show==1:
             plt.show()
     
