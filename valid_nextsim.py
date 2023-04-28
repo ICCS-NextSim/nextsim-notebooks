@@ -34,24 +34,24 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2018
+start_year =2016
 end_day    =28
-end_month  =12
-end_year   =2018
+end_month  =11
+end_year   =2021
 
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=17
 exptc=[12,9,exp,15]#2,5,7,10]
 expt=exptc
-expt=[18]
+expt=[12,18,19]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1
 inc_obs=1
 
 #Variables
-vname ='sie' # 'divergence' 
+vname ='bsie' # 'divergence' 
 # sie, bsie,
 # sit, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
@@ -77,7 +77,7 @@ runs=['50km_ocean_wind'     ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','
       '50km_hyle_20130102'  ,'50km_ckFFalse_20130102','BBM'                   ,'mEVP'] # last two are links to the original expts
 
 #Colors
-colors=['r','b','k','orange','pink','brown','yellow','g','r','b','k']
+colors=['r','b','orange','k','pink','brown','yellow','g','r','b','k']
 obs_colors=['g','y','orange'];
 
 # varrays according to vname
@@ -109,7 +109,7 @@ parame=[3, 4, 2, 5, 6, 8];
 
 # SIE obs sources
 obs_sources=['NSIDC','OSISAFease2'];
-#obs_sources=['OSISAFease2']#,'OSISAF-ease'] #['NSIDC','OSISAF','OSISAF-ease','OSISAFease2']: 
+obs_sources=['OSISAFease2']#,'OSISAF-ease'] #['NSIDC','OSISAF','OSISAF-ease','OSISAFease2']: 
 
 #paths
 print('Hostname: '+socket.gethostname())
@@ -718,10 +718,11 @@ for serie_or_map in serie_or_maps:
             time=time_obs
             #plt.plot(time, mtotal, colors[ke-1],linestyle=':')   
             plt.plot(time, mneg, colors[ke-1],linestyle='--')   
-            plt.plot(time, mpos, colors[ke-1],linestyle='-',marker='.')   
+            #plt.plot(time, mpos, colors[ke-1],linestyle='-',marker='.')   
             plt.ylabel('(%)'); 
-            plt.title('True positive (-), false positive (.-) and false negative (--) model-obs comparison')
+            #plt.title('True positive (-), false positive (.-) and false negative (--) model-obs comparison')
             #plt.title('Accurate (-), over- (.-) and underestimated (--) ice coverage')
+            plt.title('Accurate (-) and underestimated (--) ice coverage')
             figname=path_fig+run+'/serie_bsie_total_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
           
     
