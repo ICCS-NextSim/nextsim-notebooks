@@ -34,24 +34,25 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2016
-end_day    =28
-end_month  =11
+start_year =2013
+end_day    =24
+end_month  =8
 end_year   =2021
 
 
 #Runs (names) or experiments (numbers - starts with 1)
-exp=17
+exp=18
 exptc=[12,9,exp,15]#2,5,7,10]
 expt=exptc
-expt=[12,18,19]
+expt=[12,19,18]
+#expt=[exp]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1
-inc_obs=1
+inc_obs=0
 
 #Variables
-vname ='bsie' # 'divergence' 
+vname ='siv' # 'divergence' 
 # sie, bsie,
 # sit, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
@@ -77,7 +78,7 @@ runs=['50km_ocean_wind'     ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','
       '50km_hyle_20130102'  ,'50km_ckFFalse_20130102','BBM'                   ,'mEVP'] # last two are links to the original expts
 
 #Colors
-colors=['r','b','orange','k','pink','brown','yellow','g','r','b','k']
+colors=['k','orange','b','pink','brown','yellow','g','r','b','k']
 obs_colors=['g','y','orange'];
 
 # varrays according to vname
@@ -723,12 +724,58 @@ for serie_or_map in serie_or_maps:
             #plt.title('True positive (-), false positive (.-) and false negative (--) model-obs comparison')
             #plt.title('Accurate (-), over- (.-) and underestimated (--) ice coverage')
             plt.title('Accurate (-) and underestimated (--) ice coverage')
+            plt.grid('on')
             figname=path_fig+run+'/serie_bsie_total_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
           
     
         elif vname=='siv':
           print('Plotting sea ice volume')
-          if ke==1:
+          if inc_obs==1:
+            if ke==1: # if first expt load obs
+              kc=0; 
+              # Loading data
+              filename=path_data+'sit_cs2wfa/'+str(2020)+'/CS2WFA_25km_'+str(2020)+'0'+str(1)+'.nc'
+              data = xr.open_dataset(filename); lon_obs = data.variables['lon']; lat_obs = data.variables['lat']
+              lon_obs=np.where(lon_obs<180,lon_obs,lon_obs-360)
+              lon_obs=np.where(lon_obs!=np.max(lon_obs),lon_obs,180)
+              lon_obs=np.where(lon_obs!=np.min(lon_obs),lon_obs,-180)
+              sitc_obs = np.zeros([ym_end-ym_start,np.shape(sicc)[1],np.shape(sicc)[2]])
+              sicc_obs = np.zeros([ym_end-ym_start,np.shape(sicc)[1],np.shape(sicc)[2]])
+              timec=[]
+              k=0; 
+              for ym in range( ym_start, ym_end ):
+                k+=1; y, m = divmod( ym, 12 ); m+=1
+                filename=path_data+'sit_cs2wfa/'+str(y)+'/CS2WFA_25km_'+str(y)+str(m).zfill(2)+'.nc'
+                print(filename)
+                data = xr.open_dataset(filename,group='sea_ice_thickness')
+                data_sic = xr.open_dataset(filename)#,group='sea_ice_thickness')
+                if k==1:
+                  sitc = data.variables['sea_ice_thickness']; #vdatac = data.variables[varray]#['sit']
+                  sitc=np.where(sitc>0,sitc, np.nan)
+                  sitc=np.where(sitc<10,sitc, np.nan)
+                  sico = data_sic.variables['sea_ice_concentration']; #vdatac = data.variables[varray]#['sit']
+                  sico=np.where(sico>0,sico, np.nan)
+                else:
+                  sit = data.variables['sea_ice_thickness']; sit=np.where(sit>0,sit, np.nan); sit=np.where(sit<10,sit, np.nan)
+                  sitc = np.concatenate([sitc,sit],0) # 'time')
+                  sic = data_sic.variables['sea_ice_concentration']; sic=np.where(sic>0,sic, np.nan); 
+                  sico = np.concatenate([sico,sic],0) # 'time')
+                timec.append(datetime.datetime(y,m,28))
+                data.close(); data_sic.close()
+              sitc=(sitc/1000)*25*25
+              sicc_obs=np.nansum(sitc,axis=1)
+              mean=np.nansum(sicc_obs,axis=1); #mean=np.nanmean(mean,axis=1)
+              plt.plot(timec, mean, color=obs_colors[kc],linestyle='--')   
+
+              sitc=np.nanmean(sitc,axis=1); sitc=np.nanmean(sitc,axis=1)/1000; 
+              sico=sico*25*25
+              sico=np.nansum(sico,axis=1); sico=np.nansum(sico,axis=1); 
+              #sicc_obs=np.nansum(sitc,axis=1)
+              mean=sico*sitc
+              plt.plot(timec, mean, color=obs_colors[kc+1],linestyle='--')   
+              plt.grid('on')
+              ll=['CS2WFA','CS2WA-mean']
+          elif inc_obs==0 and ke==1:
             ll=[]
 
           if run=='BSOSE':
@@ -841,6 +888,7 @@ for serie_or_map in serie_or_maps:
           time=time_obs
       
         plt.plot(time, mean, colors[ke-1])   
+        plt.grid('on')
         if ex==expt[-1]:
           for i in expt:
             ll.append(runs[i])
