@@ -34,15 +34,15 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2013
+start_year =2015
 end_day    =24
-end_month  =8
-end_year   =2021
+end_month  =12 #8
+end_year   =2015
 
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=18
-exptc=[12,9,exp,15]#2,5,7,10]
+exptc=[12,19,18]#2,5,7,10]
 expt=exptc
 expt=[12,19,18]
 #expt=[exp]
@@ -52,7 +52,7 @@ my_dates=1
 inc_obs=0
 
 #Variables
-vname ='siv' # 'divergence' 
+vname ='vcorr' # 'divergence' 
 # sie, bsie,
 # sit, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
