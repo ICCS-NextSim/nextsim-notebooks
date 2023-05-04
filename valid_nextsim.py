@@ -52,7 +52,7 @@ my_dates=1
 inc_obs=0
 
 #Variables
-vname ='vcorr' # 'divergence' 
+vname ='drift' # 'divergence' 
 # sie, bsie,
 # sit, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
@@ -873,6 +873,8 @@ for serie_or_map in serie_or_maps:
                 [vcorr,angle,X,Y]=veccor1(uc_obs[t,::v_spave,::v_spave],vc_obs[t,::v_spave,::v_spave],uc_mod[t,::v_spave,::v_spave],vc_mod[t,::v_spave,::v_spave])
                 mean[t]=vcorr
             elif vname=='drift':
+              uc_mod[t]=np.where(uc_obs[t]!=0,uc_mod[t],np.nan)
+              vc_mod[t]=np.where(vc_obs[t]!=0,vc_mod[t],np.nan)
               magc_mod=np.sqrt(uc_mod[t]**2+vc_mod[t]**2)
               #magc_mod=np.where(magc_mod<=80.0,magc_mod,np.nan)
               mean[t]=np.nanmean(magc_mod)
