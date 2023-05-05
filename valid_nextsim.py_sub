@@ -36,13 +36,13 @@ start_day  =1
 start_month=1
 start_year =2015
 end_day    =24
-end_month  =12 #8
-end_year   =2020
+end_month  =8
+end_year   =2021
 
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=18
-exptc=[12,9,exp,15]#2,5,7,10]
+exptc=[12,19,18]#2,5,7,10]
 expt=exptc
 expt=[12,19,18]
 #expt=[exp]
@@ -52,9 +52,9 @@ my_dates=1
 inc_obs=0
 
 #Variables
-vname ='vcorr' # 'divergence' 
+vname ='siv' # 'divergence' 
 # sie, bsie,
-# sit, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
+# sit, siv, sit_rmse, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
 # newice, newice_diff
 
@@ -873,6 +873,8 @@ for serie_or_map in serie_or_maps:
                 [vcorr,angle,X,Y]=veccor1(uc_obs[t,::v_spave,::v_spave],vc_obs[t,::v_spave,::v_spave],uc_mod[t,::v_spave,::v_spave],vc_mod[t,::v_spave,::v_spave])
                 mean[t]=vcorr
             elif vname=='drift':
+              uc_mod[t]=np.where(uc_obs[t]!=0,uc_mod[t],np.nan)
+              vc_mod[t]=np.where(vc_obs[t]!=0,vc_mod[t],np.nan)
               magc_mod=np.sqrt(uc_mod[t]**2+vc_mod[t]**2)
               #magc_mod=np.where(magc_mod<=80.0,magc_mod,np.nan)
               mean[t]=np.nanmean(magc_mod)
