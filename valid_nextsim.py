@@ -34,17 +34,17 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2015
-end_day    =24
-end_month  =8
-end_year   =2021
+start_year =2016
+end_day    =28 #24
+end_month  =12 # 8
+end_year   =2016
 
 
 #Runs (names) or experiments (numbers - starts with 1)
-exp=18
+exp=19
 exptc=[12,19,18]#2,5,7,10]
 expt=exptc
-expt=[12,19,18]
+expt=[19,18]
 #expt=[exp]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
@@ -52,7 +52,7 @@ my_dates=1
 inc_obs=0
 
 #Variables
-vname ='siv' # 'divergence' 
+vname ='ridge_ratio' # 'newice'#'divergence' 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
@@ -60,9 +60,10 @@ vname ='siv' # 'divergence'
 
 # Plot types
 plot_scatter=0
-plot_series =1
-plot_pdf    =0
+plot_series =0
+plot_hist   =1
 plot_video  =0
+plot_vchoice=0
 plot_map    =0 # seasonal maps
 plot_maps   =0
 plot_anim   =0 # solo video
@@ -78,7 +79,11 @@ runs=['50km_ocean_wind'     ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','
       '50km_hyle_20130102'  ,'50km_ckFFalse_20130102','BBM'                   ,'mEVP'] # last two are links to the original expts
 
 #Colors
-colors=['k','orange','b','pink','brown','yellow','g','r','b','k']
+if expt[0]==19:
+  colors=['orange','b','pink','brown','yellow','g','r','b','k']
+else:
+  colors=['k','orange','b','pink','brown','yellow','g','r','b','k']
+
 obs_colors=['g','y','orange'];
 
 # varrays according to vname
@@ -90,6 +95,8 @@ elif vname=='drift' or vname[0:5]=='vcorr' or vname=='divergence' or vname=='she
   varray='siv' 
 elif vname=='newice' or vname=='newice_diff':
   varray='newice' 
+elif vname=='ridge_ratio':
+  varray='ridge_ratio'
 
 #trick to cover all months in runs longer than a year
 end_month=end_month+1
@@ -118,7 +125,8 @@ if socket.gethostname()[0:8]=='SC442555' or socket.gethostname()[0:10]=='wifi-st
   path_runs='/Users/rsan613/n/southern/runs/' # ''~/'
   path_fig ='/Users/rsan613/Library/CloudStorage/OneDrive-TheUniversityofAuckland/001_WORK/nextsim/southern/figures/'
   path_data ='/Users/rsan613/n/southern/data/'
-  path_bsose='/Volumes/LaCie/mahuika/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/bsose/'
+  path_bsose=path_data+'bsose/'
+  #path_bsose='/Volumes/LaCie/mahuika/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/bsose/'
 elif socket.gethostname()[0]=='w' or socket.gethostname()=='mahuika01' or socket.gethostname()=='mahuika':
   path_runs='/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/' # ''~/'
   path_fig ='/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/figures/' 
@@ -206,6 +214,11 @@ for serie_or_map in serie_or_maps:
   elif serie_or_map==3: # map
     expt=[exp]
     plot_series=0; plot_video=0; plot_map=1;
+    vnames=[ 'vcorr','sit'] 
+    varrays=['siv'  ,'sit'] 
+  elif serie_or_map==4: # video of choice
+    expt=[exp]
+    plot_series=0; plot_video=0; plot_map=0; plot_vchoice=1;
     vnames=[ 'vcorr','sit'] 
     varrays=['siv'  ,'sit'] 
   else:
@@ -907,8 +920,8 @@ for serie_or_map in serie_or_maps:
           if plt_show==1:
             plt.show()
 
-      if plot_pdf==1:
-        print('Ploting pdf: '+vname+' '+run)
+      if plot_hist==1:
+        print('Ploting histogram: '+vname+' '+run)
         plt.rcParams.update({'font.size': 22})
         # Plotting time series
         # Ice divergence
@@ -970,8 +983,8 @@ for serie_or_map in serie_or_maps:
           if ke==1:
             #ax1=fig.add_subplot(1,3,1)
             ll=[]
-          #ax[0].loglog(hdiv[1][0:-1],hdiv[0]/hdiv[0][0],
-          ax[0].bar(hdiv[1][0:-1],hdiv[0]/hdiv[0][0],
+          #ax[0].bar(hdiv[1][0:-1],hdiv[0]/hdiv[0][0],
+          ax[0].loglog(hdiv[1][0:-1],hdiv[0],#/hdiv[0][0],
           color=colors[ke-1])
           #plt.ylim([0, 1E2])
           ax[0].set_title('Divergence')
@@ -980,19 +993,51 @@ for serie_or_map in serie_or_maps:
           if ke==1:
             #ax2=fig.add_subplot(1,3,2)
             ll=[]
-          #ax[1].loglog(hcon[1][0:-1]*-1,hcon[0]/hcon[0][-1],
-          ax[1].bar(hcon[1][0:-1]*-1,hcon[0]/hcon[0][-1],
+          #ax[1].bar(hcon[1][0:-1]*-1,hcon[0]/hcon[0][-1],
+          ax[1].loglog(hcon[1][0:-1]*-1,hcon[0],#/hcon[0][-1],
           color=colors[ke-1])
           #plt.ylim([0, 1E2])
           ax[1].set_title('Convergence')
           ax[1].set_xlabel('(d-1)')
 
-          #ax[2].loglog(hshe[1][0:-1],hshe[0]/hshe[0][0],
-          ax[2].bar(hshe[1][0:-1],hshe[0]/hshe[0][0],
+          #ax[2].bar(hshe[1][0:-1],hshe[0]/hshe[0][0],
+          ax[2].loglog(hshe[1][0:-1],hshe[0],#/hshe[0][0],
           color=colors[ke-1])
           #plt.ylim([0, 1E2])
           ax[2].set_title('Shear')
           ax[2].set_xlabel('(d-1)')
+
+        if vname=='newice' or vname=='ridge_ratio': # if first expt load obs
+          if ke==1:
+            #fig=plt.figure(figsize = (16,8)) 
+            fig, ax = plt.subplots(1, 3, figsize = (16,8)) # landscape
+          time_obs=time_obsix
+          model=vdatac
+          if vname=='newice':# or vname=='ridge_ratio': # if first expt load obs
+            hist_int=2E-3; #E-2
+          elif vname=='ridge_ratio': # if first expt load obs
+            #model=model*100.
+            hist_int=2E-3;
+          model=np.where(model!=0.0,model,np.nan) # convergence
+
+          hist_int=2E-3;
+          hdiv=np.histogram(model.flatten(),np.arange(0,np.nanmax(np.abs(model)),hist_int))
+          #hcon=np.histogram(con_mod.flatten(),np.arange(np.nanmin(con_mod),np.nanmax(con_mod),hist_int))
+          #a=norm.pdf(div_mod.flatten(), loc=np.nanmean(div_mod.flatten()), scale=np.nanstd(div_mod.flatten()))
+          
+          if ke==1:
+            #ax1=fig.add_subplot(1,3,1)
+            ll=[]
+          #ax[0].bar(hdiv[1][0:-1],hdiv[0]/hdiv[0][0],
+          ax[0].loglog(hdiv[1][0:-1],hdiv[0],#/hdiv[0][0],
+          color=colors[ke-1])
+          #plt.ylim([0, 1E2])
+          if vname=='newice':# or vname=='ridge_ratio': # if first expt load obs
+            ax[0].set_title('Ice growth')
+            ax[0].set_xlabel('(m/day)')
+          elif vname=='ridge_ratio': # if first expt load obs
+            ax[0].set_title('Ridge ratio')
+            ax[0].set_xlabel('(Ridged ice) / (Total ice)')
 
         if ex==expt[-1]:
           for i in expt:
@@ -1001,6 +1046,18 @@ for serie_or_map in serie_or_maps:
           #ax1=fig.add_subplot(1,3,1)
           ax[0].legend(ll)
           plt.tight_layout()
+
+        figname=path_fig+run+'/histogram_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+        fig.tight_layout() 
+        if ex==expt[-1]:
+          if save_fig==1:
+            if os.path.exists(path_fig+run)==False:
+              os.mkdir(path_fig+run)
+            print('Saving: '+figname)
+            plt.savefig(figname,dpi=300,bbox_inches='tight')
+          if plt_show==1:
+            plt.show()
+    
       
       ### Plot maps (seasonal) 
       if plot_map==1:
@@ -2078,14 +2135,17 @@ for serie_or_map in serie_or_maps:
           fig.colorbar(im3, cax=cax, orientation='vertical')
 
         # Ice divergence
-        if vname=='divergence' or vname=='shear': # if first expt load obs
+        if vname=='divergence' or vname=='shear' or vname=='newice': # if first expt load obs
           if ke==1:
             fig, ax = plt.subplots(1,len(expt), figsize = (16,8)) # landscape
             time_obs=time_obsix
 
-          u_mod = udatac*3.6*24;  v_mod = vdatac*3.6*24;
-          #u_mod=np.where(u_mod!=0.0,u_mod,np.nan)
-          #v_mod=np.where(v_mod!=0.0,v_mod,np.nan)
+          if vname=='divergence' or vname=='shear':# or vname=='newice': # if first expt load obs
+            u_mod = udatac*3.6*24;  v_mod = vdatac*3.6*24;
+            #u_mod=np.where(u_mod!=0.0,u_mod,np.nan)
+            #v_mod=np.where(v_mod!=0.0,v_mod,np.nan)
+          elif vname=='newice': # if first expt load obs
+            div_mod=vdatac
           
           uc_mod = np.zeros([len(time_obsix),np.shape(v_mod)[1],np.shape(v_mod)[2]]); uc_mod[:]=np.nan
           vc_mod = np.zeros([len(time_obsix),np.shape(v_mod)[1],np.shape(v_mod)[2]]); vc_mod[:]=np.nan
@@ -2173,7 +2233,7 @@ for serie_or_map in serie_or_maps:
             im3.set_array(magc_mod[i]-magc_obs[i])
             return [im1,im11,im2,im22,im3]
     
-        elif vname=='divergence' or vname=='shear':
+        elif vname=='divergence' or vname=='shear' or vname=='newice':
           if ex==expt[-1]:
             def animates(i):
               im1.set_array(div_mo[i])
