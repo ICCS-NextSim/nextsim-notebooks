@@ -1,686 +1,220 @@
 Remember to load python for nextsim
-load-python-nextsim
-/scale_wlg_persistent/filesets/home/rsan613/scripts/uoa/nextsim-notebooks/valid_nextsim.py_sub:495: RuntimeWarning: Mean of empty slice
-  sit_modm=np.nanmean(sit_mod[iyear*imonth],axis=0) # month average
-/scale_wlg_persistent/filesets/home/rsan613/scripts/uoa/nextsim-notebooks/valid_nextsim.py_sub:495: RuntimeWarning: Mean of empty slice
-  sit_modm=np.nanmean(sit_mod[iyear*imonth],axis=0) # month average
-/scale_wlg_persistent/filesets/home/rsan613/scripts/uoa/nextsim-notebooks/valid_nextsim.py_sub:908: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
-  plt.show()
-Hostname: wmc022
-Reading: /scale_wlg_nobackup/filesets/nobackup/uoa03669/data/etopo/ETOPO_Antarctic_10arcmin.nc
-Loading: /scale_wlg_nobackup/filesets/nobackup/uoa03669/data/etopo/ETOPO_Antarctic_50km_nextsim.nc
-Loading: /scale_wlg_nobackup/filesets/nobackup/uoa03669/data/etopo/ETOPO_Antarctic_drift.nc
-0
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/bsose/SeaIceArea_bsoseI139_2013to2021_5dy.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/bsose/SeaIceHeff_bsoseI139_2013to2021_5dy.nc
-Ploting serie: sit_rmse BSOSE
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2015/CS2WFA_25km_201501.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2015/CS2WFA_25km_201502.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2015/CS2WFA_25km_201503.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2015/CS2WFA_25km_201504.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2015/CS2WFA_25km_201505.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2015/CS2WFA_25km_201506.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2015/CS2WFA_25km_201507.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2015/CS2WFA_25km_201508.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2015/CS2WFA_25km_201509.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2015/CS2WFA_25km_201510.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2015/CS2WFA_25km_201511.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2015/CS2WFA_25km_201512.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2016/CS2WFA_25km_201601.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2016/CS2WFA_25km_201602.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2016/CS2WFA_25km_201603.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2016/CS2WFA_25km_201604.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2016/CS2WFA_25km_201605.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2016/CS2WFA_25km_201606.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2016/CS2WFA_25km_201607.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2016/CS2WFA_25km_201608.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2016/CS2WFA_25km_201609.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2016/CS2WFA_25km_201610.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2016/CS2WFA_25km_201611.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2016/CS2WFA_25km_201612.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2017/CS2WFA_25km_201701.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2017/CS2WFA_25km_201702.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2017/CS2WFA_25km_201703.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2017/CS2WFA_25km_201704.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2017/CS2WFA_25km_201705.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2017/CS2WFA_25km_201706.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2017/CS2WFA_25km_201707.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2017/CS2WFA_25km_201708.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2017/CS2WFA_25km_201709.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2017/CS2WFA_25km_201710.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2017/CS2WFA_25km_201711.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2017/CS2WFA_25km_201712.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2018/CS2WFA_25km_201801.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2018/CS2WFA_25km_201802.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2018/CS2WFA_25km_201803.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2018/CS2WFA_25km_201804.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2018/CS2WFA_25km_201805.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2018/CS2WFA_25km_201806.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2018/CS2WFA_25km_201807.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2018/CS2WFA_25km_201808.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2018/CS2WFA_25km_201809.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2018/CS2WFA_25km_201810.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2018/CS2WFA_25km_201811.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2018/CS2WFA_25km_201812.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2019/CS2WFA_25km_201901.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2019/CS2WFA_25km_201902.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2019/CS2WFA_25km_201903.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2019/CS2WFA_25km_201904.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2019/CS2WFA_25km_201905.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2019/CS2WFA_25km_201906.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2019/CS2WFA_25km_201907.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2019/CS2WFA_25km_201908.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2019/CS2WFA_25km_201909.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2019/CS2WFA_25km_201910.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2019/CS2WFA_25km_201911.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2019/CS2WFA_25km_201912.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2020/CS2WFA_25km_202001.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2020/CS2WFA_25km_202002.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2020/CS2WFA_25km_202003.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2020/CS2WFA_25km_202004.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2020/CS2WFA_25km_202005.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2020/CS2WFA_25km_202006.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2020/CS2WFA_25km_202007.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2020/CS2WFA_25km_202008.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2020/CS2WFA_25km_202009.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2020/CS2WFA_25km_202010.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2020/CS2WFA_25km_202011.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2020/CS2WFA_25km_202012.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2021/CS2WFA_25km_202101.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2021/CS2WFA_25km_202102.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2021/CS2WFA_25km_202103.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2021/CS2WFA_25km_202104.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2021/CS2WFA_25km_202105.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2021/CS2WFA_25km_202106.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2021/CS2WFA_25km_202107.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/sit_cs2wfa/2021/CS2WFA_25km_202108.nc
-Creating weights to interp. model to obs grid ...
-Execution time: 19.295408964157104 seconds
-BSOSE: computing monthly mean for 2015/01
-BSOSE: computing monthly mean for 2015/02
-BSOSE: computing monthly mean for 2015/03
-BSOSE: computing monthly mean for 2015/04
-BSOSE: computing monthly mean for 2015/05
-BSOSE: computing monthly mean for 2015/06
-BSOSE: computing monthly mean for 2015/07
-BSOSE: computing monthly mean for 2015/08
-BSOSE: computing monthly mean for 2015/09
-BSOSE: computing monthly mean for 2015/10
-BSOSE: computing monthly mean for 2015/11
-BSOSE: computing monthly mean for 2015/12
-BSOSE: computing monthly mean for 2016/01
-BSOSE: computing monthly mean for 2016/02
-BSOSE: computing monthly mean for 2016/03
-BSOSE: computing monthly mean for 2016/04
-BSOSE: computing monthly mean for 2016/05
-BSOSE: computing monthly mean for 2016/06
-BSOSE: computing monthly mean for 2016/07
-BSOSE: computing monthly mean for 2016/08
-BSOSE: computing monthly mean for 2016/09
-BSOSE: computing monthly mean for 2016/10
-BSOSE: computing monthly mean for 2016/11
-BSOSE: computing monthly mean for 2016/12
-BSOSE: computing monthly mean for 2017/01
-BSOSE: computing monthly mean for 2017/02
-BSOSE: computing monthly mean for 2017/03
-BSOSE: computing monthly mean for 2017/04
-BSOSE: computing monthly mean for 2017/05
-BSOSE: computing monthly mean for 2017/06
-BSOSE: computing monthly mean for 2017/07
-BSOSE: computing monthly mean for 2017/08
-BSOSE: computing monthly mean for 2017/09
-BSOSE: computing monthly mean for 2017/10
-BSOSE: computing monthly mean for 2017/11
-BSOSE: computing monthly mean for 2017/12
-BSOSE: computing monthly mean for 2018/01
-BSOSE: computing monthly mean for 2018/02
-BSOSE: computing monthly mean for 2018/03
-BSOSE: computing monthly mean for 2018/04
-BSOSE: computing monthly mean for 2018/05
-BSOSE: computing monthly mean for 2018/06
-BSOSE: computing monthly mean for 2018/07
-BSOSE: computing monthly mean for 2018/08
-BSOSE: computing monthly mean for 2018/09
-BSOSE: computing monthly mean for 2018/10
-BSOSE: computing monthly mean for 2018/11
-BSOSE: computing monthly mean for 2018/12
-BSOSE: computing monthly mean for 2019/01
-BSOSE: computing monthly mean for 2019/02
-BSOSE: computing monthly mean for 2019/03
-BSOSE: computing monthly mean for 2019/04
-BSOSE: computing monthly mean for 2019/05
-BSOSE: computing monthly mean for 2019/06
-BSOSE: computing monthly mean for 2019/07
-BSOSE: computing monthly mean for 2019/08
-BSOSE: computing monthly mean for 2019/09
-BSOSE: computing monthly mean for 2019/10
-BSOSE: computing monthly mean for 2019/11
-BSOSE: computing monthly mean for 2019/12
-BSOSE: computing monthly mean for 2020/01
-BSOSE: computing monthly mean for 2020/02
-BSOSE: computing monthly mean for 2020/03
-BSOSE: computing monthly mean for 2020/04
-BSOSE: computing monthly mean for 2020/05
-BSOSE: computing monthly mean for 2020/06
-BSOSE: computing monthly mean for 2020/07
-BSOSE: computing monthly mean for 2020/08
-BSOSE: computing monthly mean for 2020/09
-BSOSE: computing monthly mean for 2020/10
-BSOSE: computing monthly mean for 2020/11
-BSOSE: computing monthly mean for 2020/12
-BSOSE: computing monthly mean for 2021/01
-BSOSE: computing monthly mean for 2021/02
-BSOSE: computing monthly mean for 2021/03
-BSOSE: computing monthly mean for 2021/04
-BSOSE: computing monthly mean for 2021/05
-BSOSE: computing monthly mean for 2021/06
-BSOSE: computing monthly mean for 2021/07
-BSOSE: computing monthly mean for 2021/08
-Computing monthly thickness rmse
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m08.nc
-Ploting serie: sit_rmse mEVP
-Creating weights to interp. model to obs grid ...
-Execution time: 0.9390542507171631 seconds
-mEVP: computing monthly mean for 2015/01
-mEVP: computing monthly mean for 2015/02
-mEVP: computing monthly mean for 2015/03
-mEVP: computing monthly mean for 2015/04
-mEVP: computing monthly mean for 2015/05
-mEVP: computing monthly mean for 2015/06
-mEVP: computing monthly mean for 2015/07
-mEVP: computing monthly mean for 2015/08
-mEVP: computing monthly mean for 2015/09
-mEVP: computing monthly mean for 2015/10
-mEVP: computing monthly mean for 2015/11
-mEVP: computing monthly mean for 2015/12
-mEVP: computing monthly mean for 2016/01
-mEVP: computing monthly mean for 2016/02
-mEVP: computing monthly mean for 2016/03
-mEVP: computing monthly mean for 2016/04
-mEVP: computing monthly mean for 2016/05
-mEVP: computing monthly mean for 2016/06
-mEVP: computing monthly mean for 2016/07
-mEVP: computing monthly mean for 2016/08
-mEVP: computing monthly mean for 2016/09
-mEVP: computing monthly mean for 2016/10
-mEVP: computing monthly mean for 2016/11
-mEVP: computing monthly mean for 2016/12
-mEVP: computing monthly mean for 2017/01
-mEVP: computing monthly mean for 2017/02
-mEVP: computing monthly mean for 2017/03
-mEVP: computing monthly mean for 2017/04
-mEVP: computing monthly mean for 2017/05
-mEVP: computing monthly mean for 2017/06
-mEVP: computing monthly mean for 2017/07
-mEVP: computing monthly mean for 2017/08
-mEVP: computing monthly mean for 2017/09
-mEVP: computing monthly mean for 2017/10
-mEVP: computing monthly mean for 2017/11
-mEVP: computing monthly mean for 2017/12
-mEVP: computing monthly mean for 2018/01
-mEVP: computing monthly mean for 2018/02
-mEVP: computing monthly mean for 2018/03
-mEVP: computing monthly mean for 2018/04
-mEVP: computing monthly mean for 2018/05
-mEVP: computing monthly mean for 2018/06
-mEVP: computing monthly mean for 2018/07
-mEVP: computing monthly mean for 2018/08
-mEVP: computing monthly mean for 2018/09
-mEVP: computing monthly mean for 2018/10
-mEVP: computing monthly mean for 2018/11
-mEVP: computing monthly mean for 2018/12
-mEVP: computing monthly mean for 2019/01
-mEVP: computing monthly mean for 2019/02
-mEVP: computing monthly mean for 2019/03
-mEVP: computing monthly mean for 2019/04
-mEVP: computing monthly mean for 2019/05
-mEVP: computing monthly mean for 2019/06
-mEVP: computing monthly mean for 2019/07
-mEVP: computing monthly mean for 2019/08
-mEVP: computing monthly mean for 2019/09
-mEVP: computing monthly mean for 2019/10
-mEVP: computing monthly mean for 2019/11
-mEVP: computing monthly mean for 2019/12
-mEVP: computing monthly mean for 2020/01
-mEVP: computing monthly mean for 2020/02
-mEVP: computing monthly mean for 2020/03
-mEVP: computing monthly mean for 2020/04
-mEVP: computing monthly mean for 2020/05
-mEVP: computing monthly mean for 2020/06
-mEVP: computing monthly mean for 2020/07
-mEVP: computing monthly mean for 2020/08
-mEVP: computing monthly mean for 2020/09
-mEVP: computing monthly mean for 2020/10
-mEVP: computing monthly mean for 2020/11
-mEVP: computing monthly mean for 2020/12
-mEVP: computing monthly mean for 2021/01
-mEVP: computing monthly mean for 2021/02
-mEVP: computing monthly mean for 2021/03
-mEVP: computing monthly mean for 2021/04
-mEVP: computing monthly mean for 2021/05
-mEVP: computing monthly mean for 2021/06
-mEVP: computing monthly mean for 2021/07
-mEVP: computing monthly mean for 2021/08
-Computing monthly thickness rmse
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2021m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2021m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2021m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2021m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2021m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2021m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2021m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2021m08.nc
-Ploting serie: sit_rmse BBM
-Creating weights to interp. model to obs grid ...
-Execution time: 0.8152248859405518 seconds
-BBM: computing monthly mean for 2015/01
-BBM: computing monthly mean for 2015/02
-BBM: computing monthly mean for 2015/03
-BBM: computing monthly mean for 2015/04
-BBM: computing monthly mean for 2015/05
-BBM: computing monthly mean for 2015/06
-BBM: computing monthly mean for 2015/07
-BBM: computing monthly mean for 2015/08
-BBM: computing monthly mean for 2015/09
-BBM: computing monthly mean for 2015/10
-BBM: computing monthly mean for 2015/11
-BBM: computing monthly mean for 2015/12
-BBM: computing monthly mean for 2016/01
-BBM: computing monthly mean for 2016/02
-BBM: computing monthly mean for 2016/03
-BBM: computing monthly mean for 2016/04
-BBM: computing monthly mean for 2016/05
-BBM: computing monthly mean for 2016/06
-BBM: computing monthly mean for 2016/07
-BBM: computing monthly mean for 2016/08
-BBM: computing monthly mean for 2016/09
-BBM: computing monthly mean for 2016/10
-BBM: computing monthly mean for 2016/11
-BBM: computing monthly mean for 2016/12
-BBM: computing monthly mean for 2017/01
-BBM: computing monthly mean for 2017/02
-BBM: computing monthly mean for 2017/03
-BBM: computing monthly mean for 2017/04
-BBM: computing monthly mean for 2017/05
-BBM: computing monthly mean for 2017/06
-BBM: computing monthly mean for 2017/07
-BBM: computing monthly mean for 2017/08
-BBM: computing monthly mean for 2017/09
-BBM: computing monthly mean for 2017/10
-BBM: computing monthly mean for 2017/11
-BBM: computing monthly mean for 2017/12
-BBM: computing monthly mean for 2018/01
-BBM: computing monthly mean for 2018/02
-BBM: computing monthly mean for 2018/03
-BBM: computing monthly mean for 2018/04
-BBM: computing monthly mean for 2018/05
-BBM: computing monthly mean for 2018/06
-BBM: computing monthly mean for 2018/07
-BBM: computing monthly mean for 2018/08
-BBM: computing monthly mean for 2018/09
-BBM: computing monthly mean for 2018/10
-BBM: computing monthly mean for 2018/11
-BBM: computing monthly mean for 2018/12
-BBM: computing monthly mean for 2019/01
-BBM: computing monthly mean for 2019/02
-BBM: computing monthly mean for 2019/03
-BBM: computing monthly mean for 2019/04
-BBM: computing monthly mean for 2019/05
-BBM: computing monthly mean for 2019/06
-BBM: computing monthly mean for 2019/07
-BBM: computing monthly mean for 2019/08
-BBM: computing monthly mean for 2019/09
-BBM: computing monthly mean for 2019/10
-BBM: computing monthly mean for 2019/11
-BBM: computing monthly mean for 2019/12
-BBM: computing monthly mean for 2020/01
-BBM: computing monthly mean for 2020/02
-BBM: computing monthly mean for 2020/03
-BBM: computing monthly mean for 2020/04
-BBM: computing monthly mean for 2020/05
-BBM: computing monthly mean for 2020/06
-BBM: computing monthly mean for 2020/07
-BBM: computing monthly mean for 2020/08
-BBM: computing monthly mean for 2020/09
-BBM: computing monthly mean for 2020/10
-BBM: computing monthly mean for 2020/11
-BBM: computing monthly mean for 2020/12
-BBM: computing monthly mean for 2021/01
-BBM: computing monthly mean for 2021/02
-BBM: computing monthly mean for 2021/03
-BBM: computing monthly mean for 2021/04
-BBM: computing monthly mean for 2021/05
-BBM: computing monthly mean for 2021/06
-BBM: computing monthly mean for 2021/07
-BBM: computing monthly mean for 2021/08
-Computing monthly thickness rmse
-Saving: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/figures/BBM/serie_sit_rmse_month_mean_2015-1-1_2021-8-24.png
-End of script
-/scale_wlg_persistent/filesets/home/rsan613/scripts/uoa/nextsim-notebooks/valid_nextsim.py_sub:908: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
-  plt.show()
-Hostname: wmc030
-Reading: /scale_wlg_nobackup/filesets/nobackup/uoa03669/data/etopo/ETOPO_Antarctic_10arcmin.nc
-Loading: /scale_wlg_nobackup/filesets/nobackup/uoa03669/data/etopo/ETOPO_Antarctic_50km_nextsim.nc
-Loading: /scale_wlg_nobackup/filesets/nobackup/uoa03669/data/etopo/ETOPO_Antarctic_drift.nc
-0
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/bsose/SeaIceArea_bsoseI139_2013to2021_5dy.nc
-/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/bsose/SeaIceHeff_bsoseI139_2013to2021_5dy.nc
-Ploting serie: siv BSOSE
-Plotting sea ice volume
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m08.nc
-Ploting serie: siv mEVP
-Plotting sea ice volume
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2015m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2016m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2017m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2018m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2019m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m08.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m09.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m10.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m11.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2020m12.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2021m01.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2021m02.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2021m03.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2021m04.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2021m05.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2021m06.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2021m07.nc
-/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/BBM/output/Moorings_2021m08.nc
-Ploting serie: siv BBM
-Plotting sea ice volume
-Saving: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/figures/BBM/serie_siv_total_2015-1-1_2021-8-24.png
-End of script
+load-matlab
+Opening log file:  /tmp/java.log.32169
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2019 The MathWorks, Inc.
+              R2019b Update 6 (9.7.0.1434023) 64-bit (glnxa64)
+                               July 15, 2020
+
+ 
+To get started, type doc.
+For product information, visit www.mathworks.com.
+ 
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m01.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m02.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m03.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m04.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m05.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m06.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m07.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m08.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m09.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m10.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m11.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2015m12.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m01.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m02.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m03.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m04.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m05.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m06.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m07.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m08.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m09.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m10.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m11.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2016m12.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m01.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m02.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m03.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m04.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m05.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m06.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m07.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m08.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m09.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m10.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m11.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2017m12.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m01.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m02.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m03.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m04.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m05.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m06.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m07.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m08.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m09.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m10.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m11.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2018m12.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m01.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m02.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m03.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m04.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m05.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m06.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m07.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m08.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m09.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m10.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m11.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2019m12.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m01.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m02.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m03.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m04.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m05.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m06.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m07.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m08.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m09.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m10.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m11.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2020m12.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m01.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m02.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m03.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m04.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m05.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m06.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m07.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m08.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m09.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m10.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m11.nc
+Loading: /scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/mEVP/output/Moorings_2021m12.nc
+Computing power spectrum analysis per gird point
+i = 1 of 298
+i = 2 of 298
+i = 3 of 298
+i = 4 of 298
+i = 5 of 298
+i = 6 of 298
+i = 7 of 298
+i = 8 of 298
+i = 9 of 298
+i = 10 of 298
+i = 11 of 298
+i = 12 of 298
+i = 13 of 298
+i = 14 of 298
+i = 15 of 298
+i = 16 of 298
+i = 17 of 298
+i = 18 of 298
+i = 19 of 298
+i = 20 of 298
+i = 21 of 298
+i = 22 of 298
+i = 23 of 298
+i = 24 of 298
+i = 25 of 298
+i = 26 of 298
+i = 27 of 298
+i = 28 of 298
+i = 29 of 298
+i = 30 of 298
+i = 31 of 298
+i = 32 of 298
+i = 33 of 298
+i = 34 of 298
+i = 35 of 298
+i = 36 of 298
+i = 37 of 298
+i = 38 of 298
+i = 39 of 298
+i = 40 of 298
+i = 41 of 298
+i = 42 of 298
+i = 43 of 298
+i = 44 of 298
+i = 45 of 298
+i = 46 of 298
+i = 47 of 298
+i = 48 of 298
+i = 49 of 298
+i = 50 of 298
+i = 51 of 298
+i = 52 of 298
+i = 53 of 298
+i = 54 of 298
+i = 55 of 298
+i = 56 of 298
+i = 57 of 298
+i = 58 of 298
+i = 59 of 298
+i = 60 of 298
+i = 61 of 298
+i = 62 of 298
+i = 63 of 298
+i = 64 of 298
+i = 65 of 298
+i = 66 of 298
+i = 67 of 298
+i = 68 of 298
+i = 69 of 298
+i = 70 of 298
+i = 71 of 298
+i = 72 of 298
+i = 73 of 298
+i = 74 of 298
+i = 75 of 298
+i = 76 of 298
+i = 77 of 298
+i = 78 of 298
+i = 79 of 298
+i = 80 of 298
+i = 81 of 298
+i = 82 of 298
+i = 83 of 298
+i = 84 of 298
+i = 85 of 298
+i = 86 of 298
+i = 87 of 298
+i = 88 of 298
+i = 89 of 298
+i = 90 of 298
+i = 91 of 298
+i = 92 of 298
+i = 93 of 298
+i = 94 of 298
+i = 95 of 298
+i = 96 of 298
+i = 97 of 298
+i = 98 of 298
+i = 99 of 298
+i = 100 of 298
+i = 101 of 298
+i = 102 of 298
+i = 103 of 298
+i = 104 of 298
+i = 105 of 298
+i = 106 of 298
+i = 107 of 298
+i = 108 of 298
+i = 109 of 298
+i = 110 of 298
+i = 111 of 298
+i = 112 of 298
+i = 113 of 298
+i = 114 of 298
+i = 115 of 298
+i = 116 of 298
+i = 117 of 298
+i = 118 of 298
+i = 119 of 298
+i = 120 of 298
+i = 121 of 298
+i = 122 of 298
