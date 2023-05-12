@@ -347,8 +347,8 @@ for ex = expt;
         if save_fig==1
           figname=[path_fig,run,'/psdw_',vname,'_',datestr(time_mod(1),'yyyy-mm-dd'),'_',datestr(time_mod(end),'yyyy-mm-dd'),'.png'];
           display(['Saving: ',figname]);
-          export_fig(gcf,figname,'-png','-r150' );
-          %print('-dpng','-r300',figname)
+          %export_fig(gcf,figname,'-png','-r150' );
+          print('-dpng','-r300',figname)
           %saveas(gcf,figname,'fig')
           %clf('reset')
           %set(gcf,'color',[1 1 1])

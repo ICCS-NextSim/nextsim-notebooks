@@ -34,10 +34,10 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2016
-end_day    =28 #24
-end_month  =12 # 8
-end_year   =2016
+start_year =2015
+end_day    =28 #24 # bsie
+end_month  =8  #sit
+end_year   =2021
 
 
 #Runs (names) or experiments (numbers - starts with 1)
@@ -52,7 +52,7 @@ my_dates=1
 inc_obs=1
 
 #Variables
-vname ='sit' 
+vname ='sit_rmse' 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
@@ -489,6 +489,8 @@ for serie_or_map in serie_or_maps:
                 plt.plot(timec, mean, color=obs_colors[kc])   
                 plt.grid('on')
                 ll=['CS2WFA mean = '+format(np.nanmean(sicc_obs),'.2f')]
+              else:
+                ll=[]
     
             sit_mod = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
             sic_mod = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
