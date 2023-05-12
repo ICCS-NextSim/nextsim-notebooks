@@ -44,24 +44,24 @@ end_year   =2016
 exp=19
 exptc=[12,19,18]#2,5,7,10]
 expt=exptc
-expt=[19,18]
+expt=[12,19,18]
 #expt=[exp]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1
-inc_obs=0
+inc_obs=1
 
 #Variables
-vname ='ridge_ratio' # 'newice'#'divergence' 
+vname ='sit' 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
-# newice, newice_diff
+# newice, newice_diff 'ridge_ratio' 'divergence' 
 
 # Plot types
 plot_scatter=0
-plot_series =0
-plot_hist   =1
+plot_series =1
+plot_hist   =0
 plot_video  =0
 plot_vchoice=0
 plot_map    =0 # seasonal maps
@@ -454,6 +454,7 @@ for serie_or_map in serie_or_maps:
             for t in range(T):
                 mean[t] = np.mean((sit[t]*sic[t])/sic[t])
             plt.ylabel('SIT (m)'); plt.title('Domain average sea ice thickness (SIT)')
+            ll.append(run+' mean = '+format(np.nanmean(mean),".2f"))
             figname=path_fig+run+'/serie_sit_domain_average_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
     
           elif inc_obs==1:
@@ -467,10 +468,6 @@ for serie_or_map in serie_or_maps:
               lon_obs=np.where(lon_obs!=np.min(lon_obs),lon_obs,-180)
               sitc_obs = np.zeros([ym_end-ym_start,np.shape(sicc)[1],np.shape(sicc)[2]])
               timec=[]
-              if vname=='sit': 
-                ll=['CS2WFA']
-              else:
-                ll=[]
               k=0; 
               for ym in range( ym_start, ym_end ):
                 k+=1; y, m = divmod( ym, 12 ); m+=1
@@ -491,6 +488,7 @@ for serie_or_map in serie_or_maps:
                 mean=np.nanmean(sicc_obs,axis=1); mean=np.nanmean(mean,axis=1)
                 plt.plot(timec, mean, color=obs_colors[kc])   
                 plt.grid('on')
+                ll=['CS2WFA mean = '+format(np.nanmean(sicc_obs),'.2f')]
     
             sit_mod = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
             sic_mod = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
@@ -521,6 +519,8 @@ for serie_or_map in serie_or_maps:
               sicc_diff=sicc_obs+(sicc_mod-sicc_obs)
               #sicc_diff=sicc_mod
               mean=np.nanmean(sicc_diff,axis=1); mean=np.nanmean(mean,axis=1)
+              print(run+' mean = '+format(np.nanmean(mean),".2f"))
+              ll.append(run+' mean = '+format(np.nanmean(mean),".2f"))
               timec=time; 
               plt.ylabel('Sea ice thickness (m)'); plt.title('Sea ice thickness [Model interp to Obs]')
             elif vname=='sit_rmse':
@@ -530,6 +530,7 @@ for serie_or_map in serie_or_maps:
               print('Computing monthly thickness rmse')
               for t in range(0,len(time)):
                 mean[t]=np.sqrt(np.nanmean(np.square(np.subtract(sicc_obs[t],sicc_mod[t]))))
+              ll.append(run+' mean = '+format(np.nanmean(mean),".2f"))
               timec=time; 
               plt.ylabel('Sea ice thickness rmse (m)'); plt.title('Sea ice thickness rmse [Model interp to Obs]')
 
@@ -905,8 +906,8 @@ for serie_or_map in serie_or_maps:
         plt.plot(time, mean, colors[ke-1])   
         plt.grid('on')
         if ex==expt[-1]:
-          for i in expt:
-            ll.append(runs[i])
+          #for i in expt:
+            #ll.append(runs[i]+' - mean = '+str(np.nanmean(mean)))
     
           plt.legend(ll)
           date_form = dates.DateFormatter("%b/%y")
@@ -1031,6 +1032,7 @@ for serie_or_map in serie_or_maps:
           #ax[0].bar(hdiv[1][0:-1],hdiv[0]/hdiv[0][0],
           ax[0].loglog(hdiv[1][0:-1],hdiv[0],#/hdiv[0][0],
           color=colors[ke-1])
+          ax[0].grid('on')
           #plt.ylim([0, 1E2])
           if vname=='newice':# or vname=='ridge_ratio': # if first expt load obs
             ax[0].set_title('Ice growth')
