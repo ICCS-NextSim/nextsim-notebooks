@@ -9,7 +9,7 @@ import cmocean
 from matplotlib.animation import FuncAnimation
 from matplotlib import animation, rc
 from matplotlib import dates
-from mpl_toolkits.basemap import Basemap
+from mpl_toolkits.basemap import Basemap, addcyclic
 #import cartopy
 #import cartopy.crs as ccrs
 import seapy
@@ -36,7 +36,7 @@ start_day  =1
 start_month=1
 start_year =2015
 end_day    =31 #24 # bsie
-end_month  =12  #sit
+end_month  =1  #sit
 end_year   =2015
 
 
@@ -45,7 +45,7 @@ exp=19
 exptc=[12,19,18]#2,5,7,10]
 expt=exptc
 #expt=[19,18]
-#expt=[exp]
+expt=[exp]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1
@@ -60,11 +60,11 @@ vname ='vcorr' #'sit_rmse'
 
 # Plot types
 plot_scatter=0
-plot_series =1
+plot_series =0
 plot_hist   =0
 plot_video  =0
 plot_vchoice=0
-plot_map    =0 # seasonal maps
+plot_map    =1 # seasonal maps
 plot_maps   =0
 plot_anim   =0 # solo video
 save_fig    =1
@@ -1173,6 +1173,8 @@ for serie_or_map in serie_or_maps:
             if ex==expt[-1]:
               ax=fig.add_subplot(2,2,km+1)
               bm = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l')#,ax=ax[km])
+              # add wrap-around point in longitude.
+              #mean,lon_obs = addcyclic (mean,lon_obs)
               bm.drawcoastlines()
               bm.fillcontinents(color='grey',lake_color='aqua')
               lonp, latp = bm(lon_obs,lat_obs)#,inverse=True)
@@ -1194,13 +1196,15 @@ for serie_or_map in serie_or_maps:
                 ic=bm.contour(lonp,latp,mean,clevels,colors=('k'),linewidths=(1.5,),origin='upper',linestyles='solid',extent=ext)
                 #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
               # computing stats per subregion
-              lon_regions=[-150,-61,-20,34,90,160];
-              text_map_w_stats(mean,lon_obs,bm,lon_regions,'mean','','black')
-              plt.annotate('Total mean: '+format(np.nanmean(mean),'.2f')+'', xy=(.3,.56), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
-              dataf=np.where(h_etopod>=-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
-              plt.annotate('Shallow mean: '+dataf+'', xy=(.3,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
-              dataf=np.where(h_etopod<-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
-              plt.annotate('Deep mean: '+dataf+'', xy=(.3,.46), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+              text_fig=0
+              if text_fig==1:
+                lon_regions=[-150,-61,-20,34,90,160];
+                text_map_w_stats(mean,lon_obs,bm,lon_regions,'mean','','black')
+                plt.annotate('Total mean: '+format(np.nanmean(mean),'.2f')+'', xy=(.3,.56), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+                dataf=np.where(h_etopod>=-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
+                plt.annotate('Shallow mean: '+dataf+'', xy=(.3,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+                dataf=np.where(h_etopod<-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
+                plt.annotate('Deep mean: '+dataf+'', xy=(.3,.46), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
               # including colorbar
               divider = make_axes_locatable(ax)
               cax = divider.append_axes('right', size='5%', pad=0.05)
