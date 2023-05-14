@@ -35,16 +35,16 @@ proj      = proj_info.pyproj
 start_day  =1
 start_month=1
 start_year =2015
-end_day    =28 #24 # bsie
-end_month  =8  #sit
-end_year   =2021
+end_day    =31 #24 # bsie
+end_month  =12  #sit
+end_year   =2015
 
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=19
 exptc=[12,19,18]#2,5,7,10]
 expt=exptc
-expt=[12,19,18]
+#expt=[19,18]
 #expt=[exp]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
@@ -52,7 +52,7 @@ my_dates=1
 inc_obs=1
 
 #Variables
-vname ='sit_rmse' 
+vname ='vcorr' #'sit_rmse' 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
@@ -815,10 +815,6 @@ for serie_or_map in serie_or_maps:
     
         elif vname=='vcorr' or vname=='drift':
           if ke==1:
-            if vname=='drift':
-              ll=['OSI-455']; 
-            else:
-              ll=[]; 
             k=0
             for t in time_obs:
               k+=1 # drift_osisaf_ease2
@@ -847,6 +843,11 @@ for serie_or_map in serie_or_maps:
               mean=np.nanmean(magc_obs,1); mean=np.nanmean(mean,1)
               time=time_obs
               plt.plot(time, mean, obs_colors[ke-1])   
+            if vname=='drift':
+              #ll=['OSI-455']; 
+              ll=['OSI-455 mean = '+format(np.nanmean(mean),'.2f')]
+            else:
+              ll=[]; 
     
           st = tictoc.time();   print('Creating weights to interp. model to obs grid ...'); # get the start time
           func=myInterp.IrregularGridInterpolator(np.array(lon_mod),np.array(lat_mod),np.array(lon_obs),np.array(lat_obs))#[0]
@@ -895,6 +896,7 @@ for serie_or_map in serie_or_maps:
               #magc_mod=np.where(magc_mod<=80.0,magc_mod,np.nan)
               mean[t]=np.nanmean(magc_mod)
           if vname=='vcorr':
+            ll.append(run+' - mean = '+format(np.nanmean(mean),".2f"))
             plt.ylabel('Complex correlation'); plt.title('Ice drift complex correlation between model and obs (OSI-455)')
             plt.ylim([0,1]) 
             figname=path_fig+run+'/serie_vector_complex_correlation_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
