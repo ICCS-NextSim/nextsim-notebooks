@@ -34,25 +34,25 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1
 start_month=1
-start_year =2015
-end_day    =31 #24 # bsie
-end_month  =1  #sit
-end_year   =2015
+start_year =2016
+end_day    =29 #24 # bsie
+end_month  =12  #8 sit
+end_year   =2016
 
 
 #Runs (names) or experiments (numbers - starts with 1)
-exp=19
+exp=18
 exptc=[12,19,18]#2,5,7,10]
 expt=exptc
-#expt=[19,18]
-expt=[exp]
+expt=[19,18]#,21,20]
+#expt=[exp]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1
 inc_obs=1
 
 #Variables
-vname ='vcorr' #'sit_rmse' 
+vname ='divergence' #'sit_rmse' 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
@@ -61,22 +61,23 @@ vname ='vcorr' #'sit_rmse'
 # Plot types
 plot_scatter=0
 plot_series =0
-plot_hist   =0
+plot_hist   =1
 plot_video  =0
 plot_vchoice=0
-plot_map    =1 # seasonal maps
+plot_map    =0 # seasonal maps
 plot_maps   =0
 plot_anim   =0 # solo video
 save_fig    =1
 plt_show    =1
 interp_obs  =1 # only for SIE maps obs has 2x the model resolution
-
+hist_norm   =1
 ####################################################################
 # after BSOSE run (ocean boundary cond), runs are all mEVP
 runs=['50km_ocean_wind'     ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',
       '50km_20Clab_20180102','50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',
       '50km_glorys_20180102','BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',           # 15
-      '50km_hyle_20130102'  ,'50km_ckFFalse_20130102','BBM'                   ,'mEVP'] # last two are links to the original expts
+      '50km_hyle_20130102'  ,'50km_ckFFalse_20130102','BBM'                   ,'mEVP'                  ,'25km_bbm_20130102',
+      '25km_mevp_20130102'    ] # last two are links to the original expts
 
 #Colors
 if expt[0]==19:
@@ -930,7 +931,7 @@ for serie_or_map in serie_or_maps:
         plt.rcParams.update({'font.size': 22})
         # Plotting time series
         # Ice divergence
-        if vname=='divergence': # if first expt load obs
+        if vname[0:10]=='divergence': # if first expt load obs
           if ke==1:
             #fig=plt.figure(figsize = (16,8)) 
             fig, ax = plt.subplots(1, 3, figsize = (16,8)) # landscape
@@ -986,28 +987,37 @@ for serie_or_map in serie_or_maps:
           #a=norm.pdf(div_mod.flatten(), loc=np.nanmean(div_mod.flatten()), scale=np.nanstd(div_mod.flatten()))
           
           if ke==1:
-            #ax1=fig.add_subplot(1,3,1)
             ll=[]
-          #ax[0].bar(hdiv[1][0:-1],hdiv[0]/hdiv[0][0],
-          ax[0].loglog(hdiv[1][0:-1],hdiv[0],#/hdiv[0][0],
-          color=colors[ke-1])
+          if hist_norm==1: 
+            ax[0].loglog(hdiv[1][0:-1],hdiv[0]/np.sum(hdiv[0][:]),#hdiv[0][0],
+            color=colors[ke-1])
+          else:
+            ax[0].loglog(hdiv[1][0:-1],hdiv[0],#/hdiv[0][0],
+            color=colors[ke-1])
           #plt.ylim([0, 1E2])
           ax[0].set_title('Divergence')
           ax[0].set_xlabel('(d-1)')
           
           if ke==1:
-            #ax2=fig.add_subplot(1,3,2)
             ll=[]
-          #ax[1].bar(hcon[1][0:-1]*-1,hcon[0]/hcon[0][-1],
-          ax[1].loglog(hcon[1][0:-1]*-1,hcon[0],#/hcon[0][-1],
-          color=colors[ke-1])
+          if hist_norm==1: 
+            ax[1].loglog(hcon[1][0:-1]*-1,hcon[0]/np.sum(hcon[0][:]),#hcon[0][-1],
+            color=colors[ke-1])
+          else:
+            ax[1].loglog(hcon[1][0:-1]*-1,hcon[0],#/hcon[0][-1],
+            color=colors[ke-1])
           #plt.ylim([0, 1E2])
           ax[1].set_title('Convergence')
           ax[1].set_xlabel('(d-1)')
 
           #ax[2].bar(hshe[1][0:-1],hshe[0]/hshe[0][0],
-          ax[2].loglog(hshe[1][0:-1],hshe[0],#/hshe[0][0],
-          color=colors[ke-1])
+          if hist_norm==1: 
+            ax[2].loglog(hshe[1][0:-1],hshe[0]/np.sum(hshe[0][:]),#hshe[0][0],
+            color=colors[ke-1])
+          else:
+            ax[2].loglog(hshe[1][0:-1],hshe[0],#/hshe[0][0],
+            color=colors[ke-1])
+            
           #plt.ylim([0, 1E2])
           ax[2].set_title('Shear')
           ax[2].set_xlabel('(d-1)')
@@ -1196,7 +1206,7 @@ for serie_or_map in serie_or_maps:
                 ic=bm.contour(lonp,latp,mean,clevels,colors=('k'),linewidths=(1.5,),origin='upper',linestyles='solid',extent=ext)
                 #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
               # computing stats per subregion
-              text_fig=0
+              text_fig=1
               if text_fig==1:
                 lon_regions=[-150,-61,-20,34,90,160];
                 text_map_w_stats(mean,lon_obs,bm,lon_regions,'mean','','black')
