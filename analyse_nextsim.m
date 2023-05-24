@@ -15,7 +15,7 @@ end_year   =2016;
 
 %Runs (names) or experiments (numbers - starts with 1)
 expt=[12,9,17,15];%2,5,7,10]
-expt=[19,18];
+expt=[19];
 
 serie_or_maps=[0]; % 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1;

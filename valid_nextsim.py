@@ -32,19 +32,19 @@ proj_info = projection_info.ProjectionInfo.sp_laea()
 proj      = proj_info.pyproj
 
 #Time
-start_day  =1
+start_day  =10 # 6 initial day
 start_month=1
-start_year =2016
-end_day    =29 #24 # bsie
+start_year =2013
+end_day    =28 #24 # bsie
 end_month  =12  #8 sit
-end_year   =2016
+end_year   =2013
 
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=18
 exptc=[12,19,18]#2,5,7,10]
 expt=exptc
-expt=[19,18]#,21,20]
+expt=[19,18,21,20,23,22]
 #expt=[exp]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
@@ -77,11 +77,11 @@ runs=['50km_ocean_wind'     ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','
       '50km_20Clab_20180102','50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',
       '50km_glorys_20180102','BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',           # 15
       '50km_hyle_20130102'  ,'50km_ckFFalse_20130102','BBM'                   ,'mEVP'                  ,'25km_bbm_20130102',
-      '25km_mevp_20130102'    ] # last two are links to the original expts
+      '25km_mevp_20130102'  ,'12km_bbm_20130102'     ,'12km_mEVP_20130102'] # last two are links to the original expts
 
 #Colors
 if expt[0]==19:
-  colors=['orange','b','pink','brown','yellow','g','r','b','k']
+  colors=['orange','b','pink','brown','yellow','g','r','k']
 else:
   colors=['k','orange','b','pink','brown','yellow','g','r','b','k']
 
@@ -989,10 +989,11 @@ for serie_or_map in serie_or_maps:
           if ke==1:
             ll=[]
           if hist_norm==1: 
-            ax[0].loglog(hdiv[1][0:-1],hdiv[0]/np.sum(hdiv[0][:]),#hdiv[0][0],
+            #ax[0].loglog(hdiv[1][0:-1],hdiv[0]/np.sum(hdiv[0][:]),#hdiv[0][0],
+            ax[0].loglog(hdiv[1][0:-1],hdiv[0]/hdiv[0][0],
             color=colors[ke-1])
           else:
-            ax[0].loglog(hdiv[1][0:-1],hdiv[0],#/hdiv[0][0],
+            ax[0].loglog(hdiv[1][0:-1],hdiv[0],
             color=colors[ke-1])
           #plt.ylim([0, 1E2])
           ax[0].set_title('Divergence')
@@ -1001,10 +1002,10 @@ for serie_or_map in serie_or_maps:
           if ke==1:
             ll=[]
           if hist_norm==1: 
-            ax[1].loglog(hcon[1][0:-1]*-1,hcon[0]/np.sum(hcon[0][:]),#hcon[0][-1],
+            ax[1].loglog(hcon[1][0:-1]*-1,hcon[0]/hcon[0][-1],
             color=colors[ke-1])
           else:
-            ax[1].loglog(hcon[1][0:-1]*-1,hcon[0],#/hcon[0][-1],
+            ax[1].loglog(hcon[1][0:-1]*-1,hcon[0],
             color=colors[ke-1])
           #plt.ylim([0, 1E2])
           ax[1].set_title('Convergence')
@@ -1012,10 +1013,10 @@ for serie_or_map in serie_or_maps:
 
           #ax[2].bar(hshe[1][0:-1],hshe[0]/hshe[0][0],
           if hist_norm==1: 
-            ax[2].loglog(hshe[1][0:-1],hshe[0]/np.sum(hshe[0][:]),#hshe[0][0],
+            ax[2].loglog(hshe[1][0:-1],hshe[0]/hshe[0][0],
             color=colors[ke-1])
           else:
-            ax[2].loglog(hshe[1][0:-1],hshe[0],#/hshe[0][0],
+            ax[2].loglog(hshe[1][0:-1],hshe[0],
             color=colors[ke-1])
             
           #plt.ylim([0, 1E2])
