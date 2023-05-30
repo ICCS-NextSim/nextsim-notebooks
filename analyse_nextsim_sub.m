@@ -4,11 +4,11 @@ close all
 %Time
 start_day  =1;
 start_month=1;
-start_year =2015;
+start_year =2016;
 end_day    =31;
 end_month  =12;
-end_year   =2021;
-%end_day    =29;
+end_year   =2016;
+%#end_day    =28;
 %end_month  =2;
 %end_year   =2016;
 
@@ -22,13 +22,13 @@ my_dates=1;
 inc_obs=1;
 
 % Plot types
-plot_scatter=0;
-plot_series =0;
+%plot_scatter=0;
+%plot_series =0;
 plot_psd    =1;
-plot_video  =0; 
+%plot_video  =0; 
 plot_map    =0;
-plot_anim   =0;
-save_fig    =1;
+%plot_anim   =0;
+save_fig    =0;
 plt_show    =1;
 interp_obs  =1 ;% only for SIE maps obs has 2x the model resolution
 
@@ -231,6 +231,8 @@ for ex = expt;
         display(['Saving: ',filepxx])
         save([filepxx],'pxx','f')
       end
+
+      inan=find(pxx==0); pxx(inan)=nan; 
       if ke==1
        pxxst=pxx; 
       else
@@ -302,22 +304,31 @@ for ex = expt;
 			  		fld = squeeze(vdatac(i,j,:)); 
 			  		if sum(isnan(fld)) == 0
 			  			[pxx(i,j,:),f] = pwelch(fld); 
+              % PSD witouth windowing or anything here (2 degrees of freedom):
+              [psd(i,j,:) fpsd] = PSD_ocen450(fld,4); % (time_mod(2)-time_mod(1)));
 			  		end
 			  	end
 			  end
         display(['Saving: ',filepxx])
-        save([filepxx],'pxx','f')
+        save([filepxx],'pxx','f','psd','fpsd')
       end
 			%% 
 			% Original delta t = 6 hr, so that means delta f is cycles/6 hr. 
 			% 1/f gives periods in 6hr/cylce. f/4 gives days/cycle
 			% 2*pi/f*4 gives days
 			T = 2*pi./(4*f); % (T is period in  days from the longest to the shortest period (longest = 256 days if input is 2 years. 1/2 day = 6h delta t ))
+			Tpsd = 1./(fpsd); % (T is period in  days from the longest to the shortest period (longest = 256 days if input is 2 years. 1/2 day = 6h delta t ))
 			ishort = find(T < 2,1); 
 			ilong = find(T(2:end)<60,1); 
       T=fliplr(T);
- 
+      Tpsd=fliplr(Tpsd);
+
+%return
+
+      inan=find(pxx==0); pxx(inan)=nan; 
+      inan=find(psd==0); psd(inan)=nan; 
       mpxx=nanmean(pxx,1); mpxx=nanmean(squeeze(mpxx),1); mpxx=flipud(mpxx);
+      mpsd=nanmean(psd,1); mpsd=nanmean(squeeze(mpsd),1); mpsd=flipud(mpsd);
       scrsz=[1 1 1366 768];
       scrsz=get(0,'screensize');
 
@@ -332,13 +343,17 @@ for ex = expt;
       end
       ll=[ll,{run}];
       loglog(T,mpxx,'color',colors(ke,:),'linewidth',2); 
+      loglog(Tpsd,mpsd,'color',colors(ke,:),'linewidth',2); 
       hold on
       wpxx=(squeeze(pxx(100,200,:))); % somewhere in the Weddell
+      wpsd=(squeeze(psd(100,200,:))); % somewhere in the Weddell
       loglog(T,wpxx,'--','color',colors(ke,:),'linewidth',2); hold on
+      loglog(Tpsd,wpsd,'--','color',colors(ke,:),'linewidth',2); hold on
       if ex==expt(end)
         set(gca,'fontsize',12,'fontweight','bold') 
         set(gca,'xdir','reverse') 
-        title(['Welch`s method PSD between ',datestr(time_mod(1),'yyyy-mm-dd'),' and ',datestr(time_mod(end),'yyyy-mm-dd')])
+        %title(['Welch`s method PSD between ',datestr(time_mod(1),'yyyy-mm-dd'),' and ',datestr(time_mod(end),'yyyy-mm-dd')])
+        title(['PSD between ',datestr(time_mod(1),'yyyy-mm-dd'),' and ',datestr(time_mod(end),'yyyy-mm-dd')])
         grid('on')
         legend(ll)
         xlabel('Period (day)')
@@ -361,5 +376,5 @@ for ex = expt;
 
 end % loop in expts
 
-%display('End of script')
+display('End of script')
 %%plt.close('all')

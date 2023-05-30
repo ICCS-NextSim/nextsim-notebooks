@@ -32,19 +32,19 @@ proj_info = projection_info.ProjectionInfo.sp_laea()
 proj      = proj_info.pyproj
 
 #Time
-start_day  =10 # 6 initial day
+start_day  =1 # 6 initial day
 start_month=1
-start_year =2013
-end_day    =28 #24 # bsie
+start_year =2015
+end_day    =30 #24 # bsie
 end_month  =12  #8 sit
-end_year   =2013
+end_year   =2015
 
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=18
 exptc=[12,19,18]#2,5,7,10]
 expt=exptc
-expt=[19,18,21,20,23,22]
+expt=[19,18,23,22]
 #expt=[exp]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
@@ -52,7 +52,7 @@ my_dates=1
 inc_obs=1
 
 #Variables
-vname ='divergence' #'sit_rmse' 
+vname ='ridge_ratio' #'divergence' #'sit_rmse' 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
@@ -73,10 +73,10 @@ interp_obs  =1 # only for SIE maps obs has 2x the model resolution
 hist_norm   =1
 ####################################################################
 # after BSOSE run (ocean boundary cond), runs are all mEVP
-runs=['50km_ocean_wind'     ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',
-      '50km_20Clab_20180102','50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',
+runs=['50km_ocean_wind'     ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',       # 5
+      '50km_20Clab_20180102','50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',     # 10
       '50km_glorys_20180102','BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',           # 15
-      '50km_hyle_20130102'  ,'50km_ckFFalse_20130102','BBM'                   ,'mEVP'                  ,'25km_bbm_20130102',
+      '50km_hyle_20130102'  ,'50km_ckFFalse_20130102','BBM'                   ,'mEVP'                  ,'25km_bbm_20130102',           # 20
       '25km_mevp_20130102'  ,'12km_bbm_20130102'     ,'12km_mEVP_20130102'] # last two are links to the original expts
 
 #Colors
@@ -459,7 +459,7 @@ for serie_or_map in serie_or_maps:
             figname=path_fig+run+'/serie_sit_domain_average_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
     
           elif inc_obs==1:
-            if ke==1: # if first expt load obs
+            if ke==1: # if first expt load obs - and plot lines preping for legend
               kc=0; 
               # Loading data
               filename=path_data+'sit_cs2wfa/'+str(2020)+'/CS2WFA_25km_'+str(2020)+'0'+str(1)+'.nc'
@@ -479,20 +479,36 @@ for serie_or_map in serie_or_maps:
                   sitc = data.variables['sea_ice_thickness']; #vdatac = data.variables[varray]#['sit']
                   sitc=np.where(sitc>0,sitc, np.nan)
                   sitc=np.where(sitc<10,sitc, np.nan)
+                  situ = data.variables['sea_ice_thickness_uncertainty']; #vdatac = data.variables[varray]#['sit']
+                  situ=np.where(sitc>0,situ, np.nan); situ=np.where(sitc<10,situ, np.nan)
                 else:
                   sit = data.variables['sea_ice_thickness']; sit=np.where(sit>0,sit, np.nan); sit=np.where(sit<10,sit, np.nan)
                   sitc = np.concatenate([sitc,sit],0) # 'time')
+                  sit = data.variables['sea_ice_thickness_uncertainty']; sit=np.where(sit>0,sit, np.nan); sit=np.where(sit<10,sit, np.nan)
+                  situ = np.concatenate([situ,sit],0) # 'time')
                 timec.append(datetime.datetime(y,m,1))
                 data.close()
               sicc_obs=sitc
+              sicu_obs=situ
+
               if vname=='sit': 
+                meau=np.nanmean(sicu_obs,axis=1); meau=np.nanmean(meau,axis=1)
                 mean=np.nanmean(sicc_obs,axis=1); mean=np.nanmean(mean,axis=1)
-                plt.plot(timec, mean, color=obs_colors[kc])   
+                # for legend
+                plt.plot(timec, mean,color=obs_colors[0])#,lw=2,alpha=0.5)   
+                for exx in range(0,len(expt)):
+                  plt.plot(timec, mean, colors[exx])   
+                plt.ylim([0,2])
+
+                plt.fill_between(timec,mean-meau,mean+meau,facecolor=obs_colors[kc],alpha=0.5,lw=2)
+                #plt.plot(timec, mean, alpha=0.5)#color=obs_colors[kc],lw=2,alpha=0.5)   
+                plt.plot(timec, mean,color=obs_colors[kc])#,lw=2,alpha=0.5)   
                 plt.grid('on')
                 ll=['CS2WFA mean = '+format(np.nanmean(sicc_obs),'.2f')]
               else:
                 ll=[]
-    
+            
+            vdatac=np.where(vdatac!=0,vdatac,np.nan)   
             sit_mod = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
             sic_mod = sicc #_output = datac.sit.to_masked_array() # Extract a given variable
             sicc_mod = np.zeros([ym_end-ym_start,np.shape(sicc_obs)[1],np.shape(sicc_obs)[2]])
@@ -958,7 +974,9 @@ for serie_or_map in serie_or_maps:
               vc_mod[t]=vc_modi
             else:
               #print('Cocatenating model drift results: '+time_obsix[t].strftime("%Y%m%d%HH:%MM"))
-              iday=np.where(time_obsixn[t]==time_mod)[0]
+              iday=np.where(time_obsixn[t]==time_mod)[0]; #exit()
+              iday=t # np.where(time_obsixn[t]==time_mod)[0]
+              
               uc_mod[t]=u_mod[iday,:,:]
               vc_mod[t]=v_mod[iday,:,:]
               #uc_mod[t]=func.interp_field(np.array(ucmod)) #,np.array(lon_obs),np.array(lat_obs))[0]
@@ -990,20 +1008,22 @@ for serie_or_map in serie_or_maps:
             ll=[]
           if hist_norm==1: 
             #ax[0].loglog(hdiv[1][0:-1],hdiv[0]/np.sum(hdiv[0][:]),#hdiv[0][0],
-            ax[0].loglog(hdiv[1][0:-1],hdiv[0]/hdiv[0][0],
+            #ax[0].loglog(hdiv[1][0:-1],hdiv[0]/hdiv[0][0],
+            ax[0].loglog(hdiv[1][1::],hdiv[0]/np.max(hdiv[0][:]),
             color=colors[ke-1])
+            #plt.ylim([0, 1])
           else:
             ax[0].loglog(hdiv[1][0:-1],hdiv[0],
             color=colors[ke-1])
-          #plt.ylim([0, 1E2])
           ax[0].set_title('Divergence')
           ax[0].set_xlabel('(d-1)')
           
           if ke==1:
             ll=[]
           if hist_norm==1: 
-            ax[1].loglog(hcon[1][0:-1]*-1,hcon[0]/hcon[0][-1],
+            ax[1].loglog(hcon[1][0:-1]*-1,hcon[0]/np.max(hcon[0][:]),
             color=colors[ke-1])
+            #plt.ylim([0, 1])
           else:
             ax[1].loglog(hcon[1][0:-1]*-1,hcon[0],
             color=colors[ke-1])
@@ -1013,8 +1033,9 @@ for serie_or_map in serie_or_maps:
 
           #ax[2].bar(hshe[1][0:-1],hshe[0]/hshe[0][0],
           if hist_norm==1: 
-            ax[2].loglog(hshe[1][0:-1],hshe[0]/hshe[0][0],
+            ax[2].loglog(hshe[1][1::],hshe[0]/np.max(hshe[0][:]),
             color=colors[ke-1])
+            #plt.ylim([0, 1])
           else:
             ax[2].loglog(hshe[1][0:-1],hshe[0],
             color=colors[ke-1])
@@ -1081,7 +1102,7 @@ for serie_or_map in serie_or_maps:
         print('Ploting map: '+vname+' '+run)
         plt.rcParams.update({'font.size': 12})
         fig=plt.figure(figsize = (9,8)) # square
-        if vname[0:5]=='vcorr': 
+        if vname[0:5]=='vcorr' or vname=='drift': 
           if ke==1 : # if first expt load obs
             ll=[]; k=0
             for t in time_obs:
@@ -1131,7 +1152,7 @@ for serie_or_map in serie_or_maps:
               uc_mod[t]=np.where(uc_mod[t]!=0.0,uc_mod[t],np.nan)
               vc_mod[t]=np.where(vc_mod[t]!=0.0,vc_mod[t],np.nan)
             else:
-              print('Computing model and obs vector complex correlation on day: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
+              print('Interping model to obs lonlat on day: '+time_obs[t].strftime("%Y%m%d%HH:%MM"))
               iday=np.where(time_obsni[t]==time_modi)[0]
               ucmod=np.nanmean(u_mod[iday,:,:],axis=0)
               vcmod=np.nanmean(v_mod[iday,:,:],axis=0)
@@ -1157,18 +1178,26 @@ for serie_or_map in serie_or_maps:
             uobs=np.concatenate((uc_obs[imonth1],uc_obs[imonth2],uc_obs[imonth3]),0)
             vobs=np.concatenate((vc_obs[imonth1],vc_obs[imonth2],vc_obs[imonth3]),0)
     
-            # loop for each grid point
-            mean = np.zeros([np.shape(uobs)[1],np.shape(uobs)[2]]); mean[:]=np.nan
-            for i in range(np.shape(uobs)[1]):
-              for ii in range(np.shape(uobs)[2]):
-               uc_mo=umod[::,i,ii]; vc_mo=vmod[::,i,ii]
-               uc_ob=uobs[::,i,ii]; vc_ob=vobs[::,i,ii]
-               x=np.isfinite(uc_ob+uc_mo)==1; 
-               if np.sum(x==True)>1: 
-               #if np.sum(np.isnan(uc_ob))+1<len(uc_ob) and np.sum(np.isnan(uc_mo))+1<len(uc_mo): 
-                 uc_ob=uc_ob[x]; vc_ob=vc_ob[x]; uc_mo=uc_mo[x]; vc_mo=vc_mo[x]
-                 vcorr,angle,X,Y=veccor1(uc_ob,vc_ob,uc_mo,vc_mo) 
-                 mean[i][ii]=vcorr
+            if vname=='drift': 
+              umean=umod[:,::v_spao,::v_spao]
+              vmean=vmod[:,::v_spao,::v_spao]
+              umean = np.nanmean(umean,axis=0) 
+              vmean = np.nanmean(vmean,axis=0) 
+              mean = np.sqrt(umod**2+vmod**2)
+              mean = np.nanmean(mean,axis=0) 
+            elif vname[0:5]=='vcorr': 
+              # loop for each grid point
+              mean = np.zeros([np.shape(uobs)[1],np.shape(uobs)[2]]); mean[:]=np.nan
+              for i in range(np.shape(uobs)[1]):
+                for ii in range(np.shape(uobs)[2]):
+                 uc_mo=umod[::,i,ii]; vc_mo=vmod[::,i,ii]
+                 uc_ob=uobs[::,i,ii]; vc_ob=vobs[::,i,ii]
+                 x=np.isfinite(uc_ob+uc_mo)==1; 
+                 if np.sum(x==True)>1: 
+                 #if np.sum(np.isnan(uc_ob))+1<len(uc_ob) and np.sum(np.isnan(uc_mo))+1<len(uc_mo): 
+                   uc_ob=uc_ob[x]; vc_ob=vc_ob[x]; uc_mo=uc_mo[x]; vc_mo=vc_mo[x]
+                   vcorr,angle,X,Y=veccor1(uc_ob,vc_ob,uc_mo,vc_mo) 
+                   mean[i][ii]=vcorr
 
             # computing difference between 2 expts
             if vname=='vcorr_diff':
@@ -1184,11 +1213,14 @@ for serie_or_map in serie_or_maps:
             if ex==expt[-1]:
               ax=fig.add_subplot(2,2,km+1)
               bm = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l')#,ax=ax[km])
-              # add wrap-around point in longitude.
-              #mean,lon_obs = addcyclic (mean,lon_obs)
               bm.drawcoastlines()
               bm.fillcontinents(color='grey',lake_color='aqua')
+              # add wrap-around point in longitude.
+              #mean,lon_obs = addcyclic (mean,lon_obs)
+              longr, latgr = bm([0,0],[-90,-70.5])#,inverse=True)
+              bm.plot(longr,latgr,color='grey',linewidth=2)
               lonp, latp = bm(lon_obs,lat_obs)#,inverse=True)
+              lonov, latov = bm(lon_obsv,lat_obsv)#,inverse=True)
               if vname=='vcorr_diff':
                 plt.title(tseason[km]+' '+runs[expt[0]]+' corr. - '+runs[expt[1]]+' corr.',loc='center')
                 cmap = cmocean.cm.balance
@@ -1197,7 +1229,7 @@ for serie_or_map in serie_or_maps:
                 ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
                 clevels=[0]# np.linspace(0,40,40,endpoint=False)
                 ic=bm.contour(lonp,latp,mean,clevels,colors=('k'),linewidths=(1.5,),origin='upper',linestyles='solid',extent=ext)
-              else:
+              elif vname=='vcorr':
                 plt.title(tseason[km]+' '+run+' vel. corr.',loc='center')
                 cmap = cmocean.cm.amp
                 im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=1)
@@ -1206,8 +1238,21 @@ for serie_or_map in serie_or_maps:
                 clevels=[.7,1.]# np.linspace(0,40,40,endpoint=False)
                 ic=bm.contour(lonp,latp,mean,clevels,colors=('k'),linewidths=(1.5,),origin='upper',linestyles='solid',extent=ext)
                 #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
+              elif vname=='drift':
+                plt.title(tseason[km]+' '+run+' vel. corr.',loc='center')
+                cmap = cmocean.cm.tempo
+                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=40)
+                # contour
+                #ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
+                #clevels=[.7,1.]# np.linspace(0,40,40,endpoint=False)
+                #ic=bm.contour(lonp,latp,mean,clevels,colors=('k'),linewidths=(1.5,),origin='upper',linestyles='solid',extent=ext)
+                #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
+                im11 = bm.quiver(lonov, latov, umean, vmean,color='black',width=0.002,scale=500.0)
+                qk=plt.quiverkey(im11,.1,.1,10,'10 km/day',labelpos='S',fontproperties={'size':8})
+
+
               # computing stats per subregion
-              text_fig=1
+              text_fig=0
               if text_fig==1:
                 lon_regions=[-150,-61,-20,34,90,160];
                 text_map_w_stats(mean,lon_obs,bm,lon_regions,'mean','','black')
@@ -1419,19 +1464,15 @@ for serie_or_map in serie_or_maps:
               bm = Basemap(projection='splaea',boundinglat=-52,lon_0=180,resolution='l')#,ax=ax[km])
               bm.drawcoastlines(linewidth=.5)
               bm.fillcontinents(color='grey',lake_color='aqua')
+              # add wrap-around point in longitude.
+              #mean,lon_obs = addcyclic (mean,lon_obs)
+              longr, latgr = bm([0,0],[-90,-70.5])#,inverse=True)
+              bm.plot(longr,latgr,color='grey',linewidth=2)
               #bm.drawparallels(np.arange(-90,-30,5))
               #bm.drawmeridians(np.arange(0,360,30))
               lonp, latp = bm(lon_mod,lat_mod)#,inverse=True)
               ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
-              if vname=='sit': 
-                plt.title(tseason[km]+' '+run+' '+vname,loc='center')
-                cmap = cmocean.cm.dense_r
-                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=3.0)#,vmin=0,vmax=.015)
-              elif vname=='sit_obs_rmse': 
-                plt.title(tseason[km]+' '+run+' rmse',loc='center')
-                cmap = cmocean.cm.amp
-                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=3.0)#,vmin=0,vmax=.015)
-              elif vname=='sie' or vname=='sic':
+              if vname=='sie' or vname=='sic':
                 plt.title(tseason[km]+' '+runs[expt[0]]+' - Obs.',loc='center')
                 cmap = cmocean.cm.balance
                 im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-2.,vmax=2.)
@@ -1468,7 +1509,7 @@ for serie_or_map in serie_or_maps:
         elif vname[0:3]=='sit':  
           #timec=time_obs
           #time_ob=dates.date2num(timec); time_obss=dates.num2date(time_ob); time_obsd=pd.DatetimeIndex(time_obss)
-          if vname[0:7]=='sit_obs': # _diff' or _rmse
+          if vname=='sit' or vname[0:7]=='sit_obs': # _diff' or _rmse
             if ke==1: # if first expt load obs
               kc=0; 
               # Loading data
@@ -1486,14 +1527,14 @@ for serie_or_map in serie_or_maps:
                 if k==1:
                   sitc = data.variables['sea_ice_thickness'][0]; #vdatac = data.variables[varray]#['sit']
                   sitc=np.where(sitc>0,sitc, np.nan); sitc=np.where(sitc<10,sitc, np.nan)
-                  if vname[0:12]=='sit_obs_rmse':
-                    sitc=func.interp_field(sitc)
-                    sitc=sitc.reshape(1,np.shape(sitc)[0],np.shape(sitc)[1])
+                  #if vname[0:12]=='sit_obs_rmse':
+                  sitc=func.interp_field(sitc)
+                  sitc=sitc.reshape(1,np.shape(sitc)[0],np.shape(sitc)[1])
                 else:
                   sit = data.variables['sea_ice_thickness'][0]; sit=np.where(sit>0,sit, np.nan); sit=np.where(sit<10,sit, np.nan)
-                  if vname[0:12]=='sit_obs_rmse':
-                    sit=func.interp_field(sit)
-                    sit=sit.reshape(1,np.shape(sit)[0],np.shape(sit)[1])
+                  #if vname[0:12]=='sit_obs_rmse':
+                  sit=func.interp_field(sit)
+                  sit=sit.reshape(1,np.shape(sit)[0],np.shape(sit)[1])
                   sitc = np.concatenate([sitc,sit],0) # 'time')
                 timec.append(datetime.datetime(y,m,1))
                 data.close()
@@ -1516,6 +1557,7 @@ for serie_or_map in serie_or_maps:
               sicc_mod[km]=np.where(sicc_mod[km]<10,sicc_mod[km] , np.nan)
             vdatac=sicc_mod
             time_mod=dates.date2num(time); time_mods=dates.num2date(time_mod); time_modd=pd.DatetimeIndex(time_mods)
+            exit()
 
           # loop in the four seasons
           km=-1; tseason=['JFM','AMJ','JAS','OND']
@@ -1545,6 +1587,13 @@ for serie_or_map in serie_or_maps:
                 for ii in range(np.shape(vdatas)[2]):
                   sit_mo=vdatas[::,i,ii]; sit_ob=sit_obss[::,i,ii]; 
                   mean[i,ii]=np.sqrt(np.nanmean(np.square(np.subtract(sit_ob,sit_mo))))
+            elif vname=='sit':
+              mobs=np.mean(sit_obss,0)
+              mobs=np.where(mobs!=0.0,mobs,np.nan)
+              #mean=np.where(mean!=0.0,mean,np.nan)
+              vdatas=np.where(vdatas!=0.0,vdatas,np.nan)
+              mean=np.nanmean(vdatas,0)
+              #exit()
             else:
               mobs=np.nanmean(sit_obss,0)
               mobs=np.where(mobs!=0.0,mobs,np.nan)
@@ -1569,6 +1618,10 @@ for serie_or_map in serie_or_maps:
               bm = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l')#,ax=ax[km])
               bm.drawcoastlines(linewidth=.5)
               bm.fillcontinents(color='grey',lake_color='aqua')
+              # add wrap-around point in longitude.
+              #mean,lon_obs = addcyclic (mean,lon_obs)
+              longr, latgr = bm([0,0],[-90,-70.5])#,inverse=True)
+              bm.plot(longr,latgr,color='grey',linewidth=2)
               #bm.drawparallels(np.arange(-90,-30,5))
               #bm.drawmeridians(np.arange(0,360,30))
               lonp, latp = bm(lon_mod,lat_mod)#,inverse=True)
@@ -1644,6 +1697,10 @@ for serie_or_map in serie_or_maps:
   
               bm.drawcoastlines(linewidth=.5)
               bm.fillcontinents(color='grey',lake_color='aqua')
+              # add wrap-around point in longitude.
+              #mean,lon_obs = addcyclic (mean,lon_obs)
+              longr, latgr = bm([0,0],[-90,-70.5])#,inverse=True)
+              bm.plot(longr,latgr,color='grey',linewidth=2)
               #bm.drawparallels(np.arange(-90,-30,5))
               #bm.drawmeridians(np.arange(0,360,30))
               lonp, latp = bm(lon_mod,lat_mod)#,inverse=True)
@@ -1956,6 +2013,10 @@ for serie_or_map in serie_or_maps:
           m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke-1])
           m.drawcoastlines()
           m.fillcontinents(color='grey',lake_color='aqua')
+          # add wrap-around point in longitude.
+          #mean,lon_obs = addcyclic (mean,lon_obs)
+          longr, latgr = m([0,0],[-90,-70.5])#,inverse=True)
+          m.plot(longr,latgr,color='grey',linewidth=2)
           lonp, latp = m(lon_obs,lat_obs)#,inverse=True)
           im1 = m.pcolormesh(lonp,latp,sicc_obs[0],cmap=cmap,vmin=0,vmax = 3.5)
           #Madrid; x,y = m([-3.703889],[40.4125]); m.plot(x,y, marker="o", color="blue", label="Madrid", ls="")

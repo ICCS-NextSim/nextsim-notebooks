@@ -8,14 +8,14 @@ start_year =2016;
 end_day    =31;
 end_month  =12;
 end_year   =2016;
-end_day    =28;
-end_month  =2;
-end_year   =2016;
+%#end_day    =28;
+%end_month  =2;
+%end_year   =2016;
 
 
 %Runs (names) or experiments (numbers - starts with 1)
 expt=[12,9,17,15];%2,5,7,10]
-expt=[19];
+expt=[19,18];
 
 serie_or_maps=[0]; % 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1;
@@ -28,7 +28,7 @@ plot_psd    =1;
 %plot_video  =0; 
 plot_map    =0;
 %plot_anim   =0;
-save_fig    =0;
+save_fig    =1;
 plt_show    =1;
 interp_obs  =1 ;% only for SIE maps obs has 2x the model resolution
 
