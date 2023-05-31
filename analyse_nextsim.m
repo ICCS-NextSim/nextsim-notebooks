@@ -338,24 +338,25 @@ for ex = expt;
         ll=[];
         figure('position',scrsz,'color',[1 1 1],'visible','on'); 
         for i=1:length(expt);
-          loglog(T,mpxx,'color',colors(i,:),'linewidth',2); hold on
+          %loglog(T,mpxx,'color',colors(i,:),'linewidth',2); hold on
         end
       end
       ll=[ll,{run}];
       loglog(T,mpxx,'color',colors(ke,:),'linewidth',2); 
-      loglog(Tpsd,mpsd,'color',colors(ke,:),'linewidth',2); 
+      %loglog(Tpsd,mpsd,'color',colors(ke,:),'linewidth',2); 
       hold on
       wpxx=(squeeze(pxx(100,200,:))); % somewhere in the Weddell
       wpsd=(squeeze(psd(100,200,:))); % somewhere in the Weddell
       loglog(T,wpxx,'--','color',colors(ke,:),'linewidth',2); hold on
-      loglog(Tpsd,wpsd,'--','color',colors(ke,:),'linewidth',2); hold on
+      %loglog(Tpsd,wpsd,'--','color',colors(ke,:),'linewidth',2); hold on
       if ex==expt(end)
         set(gca,'fontsize',12,'fontweight','bold') 
         set(gca,'xdir','reverse') 
         %title(['Welch`s method PSD between ',datestr(time_mod(1),'yyyy-mm-dd'),' and ',datestr(time_mod(end),'yyyy-mm-dd')])
         title(['PSD between ',datestr(time_mod(1),'yyyy-mm-dd'),' and ',datestr(time_mod(end),'yyyy-mm-dd')])
         grid('on')
-        legend(ll)
+        %legend([ll])
+        legend('BBM','BBM-Weddel','mEVP','mEVP-Weddel')
         xlabel('Period (day)')
         ylabel('New ice (m/day)^2')
         % saving fig

@@ -34,9 +34,9 @@ proj      = proj_info.pyproj
 #Time
 start_day  =1 # 6 initial day
 start_month=1
-start_year =2015
-end_day    =30 #24 # bsie
-end_month  =8  #8 sit
+start_year =2016
+end_day    =27 #24 # bsie
+end_month  =12  #8 sit
 end_year   =2021
 
 
@@ -44,15 +44,15 @@ end_year   =2021
 exp=18
 exptc=[12,19,18]#2,5,7,10]
 expt=exptc
-#expt=[19,18,23,22]
-#expt=[exp]
+expt=[19,18,23,22]
+expt=[exp]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1
 inc_obs=1
 
 #Variables
-vname ='sit' # 'divergence' #'sit_rmse' 
+vname ='sie'#'sit_obs_diff'# 'ridge_ratio' #'divergence' #'sit_rmse' 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
@@ -60,11 +60,11 @@ vname ='sit' # 'divergence' #'sit_rmse'
 
 # Plot types
 plot_scatter=0
-plot_series =1
+plot_series =0
 plot_hist   =0
 plot_video  =0
 plot_vchoice=0
-plot_map    =0 # seasonal maps
+plot_map    =1 # seasonal maps
 plot_maps   =0
 plot_anim   =0 # solo video
 save_fig    =1
@@ -73,10 +73,10 @@ interp_obs  =1 # only for SIE maps obs has 2x the model resolution
 hist_norm   =1
 ####################################################################
 # after BSOSE run (ocean boundary cond), runs are all mEVP
-runs=['50km_ocean_wind'     ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',
-      '50km_20Clab_20180102','50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',
+runs=['50km_ocean_wind'     ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',       # 5
+      '50km_20Clab_20180102','50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',     # 10
       '50km_glorys_20180102','BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',           # 15
-      '50km_hyle_20130102'  ,'50km_ckFFalse_20130102','BBM'                   ,'mEVP'                  ,'25km_bbm_20130102',
+      '50km_hyle_20130102'  ,'50km_ckFFalse_20130102','BBM'                   ,'mEVP'                  ,'25km_bbm_20130102',           # 20
       '25km_mevp_20130102'  ,'12km_bbm_20130102'     ,'12km_mEVP_20130102'] # last two are links to the original expts
 
 #Colors
@@ -974,7 +974,7 @@ for serie_or_map in serie_or_maps:
               vc_mod[t]=vc_modi
             else:
               #print('Cocatenating model drift results: '+time_obsix[t].strftime("%Y%m%d%HH:%MM"))
-              iday=np.where(time_obsixn[t]==time_mod)[0]; exit()
+              iday=np.where(time_obsixn[t]==time_mod)[0]; #exit()
               iday=t # np.where(time_obsixn[t]==time_mod)[0]
               
               uc_mod[t]=u_mod[iday,:,:]
@@ -1489,13 +1489,20 @@ for serie_or_map in serie_or_maps:
               #ic=bm.contour(lonp,latp,h_etopoi,clevels,colors=('magenta'),linewidths=(.5,),origin='upper',linestyles='solid',extent=ext)
               #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
               # computing stats per subregion
-              #lon_regions=[-150,-61,-20,34,90,160];
-              #text_map_w_stats(mean,lon_mod,bm,lon_regions,'mean','','black')
-              #plt.annotate('Total mean: '+format(np.nanmean(mean),'.2f')+' m', xy=(.3,.56), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
-              #dataf=np.where(h_etopoi>=-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
-              #plt.annotate('Shallow mean: '+dataf+' m', xy=(.3,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
-              #dataf=np.where(h_etopoi<-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
-              #plt.annotate('Deep mean: '+dataf+' m', xy=(.3,.46), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+              text_fig=1
+              if text_fig==1:
+                mean=np.where(mean<0,-1.*mean,mean); #mneg=np.where(mean<=0,mean,np.nan); 
+                mpos=np.where(mean>=0,mean,np.nan); mneg=np.where(mean<=0,mean,np.nan); 
+                mean=(mean*25.*25.)/1e6; mobs=(mobs*25.*25.)/1e6; mmod=(mmod*25.*25.)/1e6
+                mpos=(mpos*25.*25.)/1e6; mneg=(mneg*25.*25.)/1e6; #mmod=(mmod*25.*25.)/1e6
+                lon_regions=[-150,-61,-20,34,90,160];
+                text_map_w_stats(mean,lon_mod,bm,lon_regions,'sum','M $km^2$','black')
+                plt.annotate('Total obs.: '+format(np.nansum(mobs),'.2f')+r' M $km^2$', xy=(.3,.56), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+                plt.annotate('Total mod.: '+format(np.nansum(mmod),'.2f')+r' M $km^2$', xy=(.3,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+                dataf=np.where(h_etopoi>=-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
+                #plt.annotate('Shallow mean: '+dataf+'', xy=(.3,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+                dataf=np.where(h_etopoi<-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
+                #plt.annotate('Deep mean: '+dataf+'', xy=(.3,.46), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
 
               # including colorbar
               #divider = make_axes_locatable(ax)
@@ -1540,6 +1547,8 @@ for serie_or_map in serie_or_maps:
                 data.close()
               sit_obs=sitc
               time_ob=dates.date2num(timec); time_obss=dates.num2date(time_ob); time_obsd=pd.DatetimeIndex(time_obss)
+
+          vdatac=np.where(vdatac!=0,vdatac,np.nan)
 
           # computing monthly mean prior to rmse
           if vname[0:12]=='sit_obs_rmse': # _diff' or _rmse
@@ -1601,7 +1610,7 @@ for serie_or_map in serie_or_maps:
               mean=np.where(mean!=0.0,mean,np.nan)
 
             if vname=='sit_obs_diff':
-              mobs=func.interp_field(mobs)
+            #  mobs=func.interp_field(mobs)
               mean=mean-mobs
 
             # computing difference between 2 expts
