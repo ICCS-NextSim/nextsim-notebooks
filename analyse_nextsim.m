@@ -8,14 +8,14 @@ start_year =2016;
 end_day    =31;
 end_month  =12;
 end_year   =2016;
-%#end_day    =28;
-%end_month  =2;
-%end_year   =2016;
+end_day    =28;
+end_month  =2;
+end_year   =2016;
 
 
 %Runs (names) or experiments (numbers - starts with 1)
 expt=[12,9,17,15];%2,5,7,10]
-expt=[19,18];
+expt=[19];
 
 serie_or_maps=[0]; % 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1;
@@ -24,7 +24,8 @@ inc_obs=1;
 % Plot types
 %plot_scatter=0;
 %plot_series =0;
-plot_psd    =1;
+plot_pdf    =1;
+plot_psd    =0;
 %plot_video  =0; 
 plot_map    =0;
 %plot_anim   =0;
@@ -33,7 +34,7 @@ plt_show    =1;
 interp_obs  =1 ;% only for SIE maps obs has 2x the model resolution
 
 %Variables
-vname ='newice_mean_psd'; %'newice_perc'; % newice_perc 
+vname ='divergence'%'newice_mean_psd'; %'newice_perc'; % newice_perc 
 varim =''; % 'sit' for model solo videos  % video
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -52,6 +53,8 @@ obs_colors={'g','y','r'};
 % varrays according to vname
 if strncmp(vname,'newice',6) 
   varray='newice'; 
+elseif strncmp(vname,'divergence',10) 
+  varray='siv'; 
 end
 
 %trick to cover all months in runs longer than a year
@@ -374,6 +377,81 @@ for ex = expt;
 		end %  if strcmp(vname,'newice_mean_psd')
 
   end % if plot_psd==1;
+
+
+  if plot_pdf==1;
+
+		if strcmp(vname,'divergence')
+
+          uc_mod = udatac.*3.6.*24;  vc_mod = vdatac.*3.6.*24;
+          izero=find(uc_mod==0);uc_mod(izero)=nan; vc_mod(izero)=nan;
+
+          dudx=(uc_mod(2:end,:,:)-uc_mod(1:end-1,:,:))./25; 
+          dvdx=(vc_mod(2:end,:,:)-vc_mod(1:end-1,:,:))./25; 
+          dudy=(uc_mod(:,2:end,:)-uc_mod(:,1:end-1,:))./25; 
+          dvdy=(vc_mod(:,2:end,:)-vc_mod(:,1:end-1,:))./25; 
+
+          div_mod=dudx(:,1:end-1,:)+dvdy(1:end-1,:,:); 
+          shear_mod=sqrt( (dudx(:,1:end-1,:)+dvdy(1:end-1,:,:)).^2 + (dudy(2:end,:,:)+dvdx(:,2:end,:)).^2 );
+          con_mod=div_mod; inan=find(con_mod>0); con_mod(inan)=nan;
+          inan=find(div_mod<0); div_mod(inan)=nan;
+
+          hist_int=2E-2;
+
+          d=div_mod(:);
+          y=histogram(d,'Normalization','pdf');
+         
+
+    return
+
+		end %  if strcmp(vname,'bla')
+
+    % FIGURE
+    scrsz=[1 1 1366 768];
+    scrsz=get(0,'screensize');
+
+		%close all
+    colors=[0.8500 0.3250 0.0980; 0 0.4470 0.7410];
+    if ke==1;
+      ll=[];
+      figure('position',scrsz,'color',[1 1 1],'visible','on'); 
+      for i=1:length(expt);
+        %loglog(T,mpxx,'color',colors(i,:),'linewidth',2); hold on
+      end
+    end
+    ll=[ll,{run}];
+    loglog(T,mpxx,'color',colors(ke,:),'linewidth',2); 
+    %loglog(Tpsd,mpsd,'color',colors(ke,:),'linewidth',2); 
+    hold on
+    wpxx=(squeeze(pxx(100,200,:))); % somewhere in the Weddell
+    wpsd=(squeeze(psd(100,200,:))); % somewhere in the Weddell
+    loglog(T,wpxx,'--','color',colors(ke,:),'linewidth',2); hold on
+    %loglog(Tpsd,wpsd,'--','color',colors(ke,:),'linewidth',2); hold on
+    if ex==expt(end)
+      set(gca,'fontsize',12,'fontweight','bold') 
+      set(gca,'xdir','reverse') 
+      %title(['Welch`s method PSD between ',datestr(time_mod(1),'yyyy-mm-dd'),' and ',datestr(time_mod(end),'yyyy-mm-dd')])
+      title(['PSD between ',datestr(time_mod(1),'yyyy-mm-dd'),' and ',datestr(time_mod(end),'yyyy-mm-dd')])
+      grid('on')
+      %legend([ll])
+      legend('BBM','BBM-Weddel','mEVP','mEVP-Weddel')
+      xlabel('Period (day)')
+      ylabel('New ice (m/day)^2')
+
+      % saving fig
+      if save_fig==1
+        figname=[path_fig,run,'/psdw_',vname,'_',datestr(time_mod(1),'yyyy-mm-dd'),'_',datestr(time_mod(end),'yyyy-mm-dd'),'.png'];
+        display(['Saving: ',figname]);
+        %export_fig(gcf,figname,'-png','-r150' );
+        print('-dpng','-r300',figname)
+        %saveas(gcf,figname,'fig')
+        %clf('reset')
+        %set(gcf,'color',[1 1 1])
+      end
+
+    end
+
+  end % if plot_pdf==1;
 
 end % loop in expts
 

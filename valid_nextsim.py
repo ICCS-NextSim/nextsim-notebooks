@@ -36,8 +36,8 @@ start_day  =1 # 6 initial day
 start_month=1
 start_year =2016
 end_day    =27 #24 # bsie
-end_month  =12  #8 sit
-end_year   =2021
+end_month  =1  #8 sit
+end_year   =2016
 
 
 #Runs (names) or experiments (numbers - starts with 1)
@@ -52,7 +52,7 @@ my_dates=1
 inc_obs=1
 
 #Variables
-vname ='sie'#'sit_obs_diff'# 'ridge_ratio' #'divergence' #'sit_rmse' 
+vname ='divergence' #'sit_rmse' 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
@@ -61,7 +61,7 @@ vname ='sie'#'sit_obs_diff'# 'ridge_ratio' #'divergence' #'sit_rmse'
 # Plot types
 plot_scatter=0
 plot_series =0
-plot_hist   =0
+plot_hist   =1
 plot_video  =0
 plot_vchoice=0
 plot_map    =1 # seasonal maps
