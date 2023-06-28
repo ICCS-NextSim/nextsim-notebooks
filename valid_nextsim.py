@@ -32,12 +32,12 @@ proj_info = projection_info.ProjectionInfo.sp_laea()
 proj      = proj_info.pyproj
 
 #Time
-start_day  =1 # 6 initial day
+start_day  =1 # 6 vcorr serie initial day
 start_month=1
-start_year =2016
-end_day    =27 #24 # bsie
-end_month  =1  #8 sit
-end_year   =2016
+start_year =2013
+end_day    =26 #24 # bsie
+end_month  =9  #8 sit
+end_year   =2019
 
 
 #Runs (names) or experiments (numbers - starts with 1)
@@ -45,14 +45,15 @@ exp=18
 exptc=[12,19,18]#2,5,7,10]
 expt=exptc
 expt=[19,18,23,22]
-expt=[exp]
+expt=[19,18,24,27,28,29,30,31,32,33]
+#expt=[exp]
 
 serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1
 inc_obs=1
 
 #Variables
-vname ='divergence' #'sit_rmse' 
+vname ='sit_rmse' 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
@@ -60,11 +61,11 @@ vname ='divergence' #'sit_rmse'
 
 # Plot types
 plot_scatter=0
-plot_series =0
-plot_hist   =1
+plot_series =1
+plot_hist   =0
 plot_video  =0
 plot_vchoice=0
-plot_map    =1 # seasonal maps
+plot_map    =0 # seasonal maps
 plot_maps   =0
 plot_anim   =0 # solo video
 save_fig    =1
@@ -73,17 +74,19 @@ interp_obs  =1 # only for SIE maps obs has 2x the model resolution
 hist_norm   =1
 ####################################################################
 # after BSOSE run (ocean boundary cond), runs are all mEVP
-runs=['50km_ocean_wind'     ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',       # 5
-      '50km_20Clab_20180102','50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',     # 10
-      '50km_glorys_20180102','BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',           # 15
-      '50km_hyle_20130102'  ,'50km_ckFFalse_20130102','BBM'                   ,'mEVP'                  ,'25km_bbm_20130102',           # 20
-      '25km_mevp_20130102'  ,'12km_bbm_20130102'     ,'12km_mEVP_20130102'] # last two are links to the original expts
+runs=['50km_ocean_wind'      ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',       # 5
+      '50km_20Clab_20180102' ,'50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',     # 10
+      '50km_glorys_20180102' ,'BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',           # 15
+      '50km_hyle_20130102'   ,'50km_ckFFalse_20130102','BBM'                   ,'mEVP'                  ,'25km_bbm_20130102',           # 20
+      '25km_mevp_20130102'   ,'12km_bbm_20130102'     ,'12km_mEVP_20130102'    ,'50km_bWd016_20130102'  ,'50km_mCd01_20130102',         # 25 
+      '50km_bCd01_20130102'  ,'50km_mWd016_20130102'  ,'50km_10kPcom_20130102' ,'50km_mevp10kP_20130102','50km_b10kP2h_20130102']         # 30
+      '50km_m10kP2h_20130102','50km_b14kP1h_20130102' ,'50km_m14kP1h_20130102']# ,'50km_mevp10kP_20130102']#  ,'50km_bCd01_20130102']         # 33
 
 #Colors
 if expt[0]==19:
-  colors=['orange','b','pink','brown','yellow','g','r','k']
+  colors=['orange','b','pink','brown','g','r','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 else:
-  colors=['k','orange','b','pink','brown','yellow','g','r','b','k']
+  colors=['k','orange','b','pink','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 
 obs_colors=['g','y','orange'];
 

@@ -8,14 +8,15 @@ start_year =2016;
 end_day    =31;
 end_month  =12;
 end_year   =2016;
-end_day    =28;
-end_month  =2;
-end_year   =2016;
+%end_day    =28;
+%end_month  =2;
+%end_year   =2016;
 
 
 %Runs (names) or experiments (numbers - starts with 1)
 expt=[12,9,17,15];%2,5,7,10]
-expt=[19];
+expt=[19,18];
+%expt=[23,22];
 
 serie_or_maps=[0]; % 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1;
@@ -42,13 +43,18 @@ varim =''; % 'sit' for model solo videos  % video
 runs={'50km_ocean_wind'     ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',...   % 5
       '50km_20Clab_20180102','50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',... % 10
       '50km_glorys_20180102','BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',...       % 15
-      '50km_hyle_20130102'  ,'50km_ckFFalse_20130102','BBM'                   ,'mEVP'}; % ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102']
+      '50km_hyle_20130102'  ,'50km_ckFFalse_20130102','BBM'                   ,'mEVP'                  ,'25km_bbm_20130102',...       % 20
+      '25km_mevp_20130102'  ,'12km_bbm_20130102'     ,'12km_mEVP_20130102'}; % last two are links to the original expts
+
 
 expts=1:length(runs); %) #[0,1,2,3,4,5]
 
 %Colors
 colors={'r','b','k','r','m','b','y','g','r','b','k'};
 obs_colors={'g','y','r'};
+
+colorv=[0.8500 0.3250 0.0980; 0 0.4470 0.7410;
+        1 0 0; 0 0 1];
 
 % varrays according to vname
 if strncmp(vname,'newice',6) 
@@ -66,6 +72,9 @@ end_month=end_month-1;
 
 % SIE obs sources
 obs_sources={'OSISAFease2'};%,'OSISAF-ease'] %['NSIDC','OSISAF','OSISAF-ease','OSISAFease2']: 
+    
+scrsz=[1 1 1366 768];
+scrsz=get(0,'screensize');
 
 %paths
 %print('Hostname: '+socket.gethostname())
@@ -396,15 +405,89 @@ for ex = expt;
           con_mod=div_mod; inan=find(con_mod>0); con_mod(inan)=nan;
           inan=find(div_mod<0); div_mod(inan)=nan;
 
-          hist_int=2E-2;
+          %hist_int=2E-2;
 
-          d=div_mod(:);
-          y=histogram(d,'Normalization','pdf');
-         
+          %d=div_mod(:);
+          %y=histogram(d,'Normalization','pdf');
+          %close; 
+          %loglog(y.Data,'color',colors(ke,:),'linewidth',2); 
 
-    return
+          if ke==1;
+            ll=[];
+            figure('position',scrsz,'color',[1 1 1],'visible','on'); 
+            for i=1:length(expt);
+              %loglog(T,mpxx,'color',colors(i,:),'linewidth',2); hold on
+            end
+          end
+          ll=[ll,{run}];
+
+          nbins = 100; 
+          binedges = [0 logspace(-3,0,nbins)];
+          bincenters = binedges(1:end-1) + 0.5*diff(binedges); 
+          dx = diff(binedges); 
+          [a_div,~] = histcounts(div_mod(:),binedges);
+          [a_shear,~] = histcounts(shear_mod(:),binedges);
+          ndiv = nansum(a_div); 
+          nshear = nansum(a_shear);
+          ndiv2=a_div.*bincenters./dx;%,'reverse');
+
+
+
+          subplot(131)
+          loglog(bincenters,ndiv2,'color',colorv(ke,:),'linewidth',2); 
+          hold on
+          %loglog(bincenters,a_shear); 
+          title('$N\cdot f(x)\cdot dx$','Interpreter','latex')
+          grid on; box on; 
+          %xlim([1e-3 1])
+          %ylim([10 1e6])
+
+          subplot(132)
+          loglog(bincenters,a_div./dx,'color',colorv(ke,:),'linewidth',2); 
+          hold on
+          %loglog(bincenters,a_shear./dx); 
+          grid on; box on; 
+          %xlim([1e-3 1])
+          %ylim([1e2 1e9])
+          title('$N\cdot f(x)$','Interpreter','latex')
+          
+          subplot(133)
+          loglog(bincenters,a_div./dx./ndiv,'color',colorv(ke,:),'linewidth',2); 
+          hold on
+          %loglog(bincenters,a_shear./dx./nshear); 
+          grid on; box on; 
+          %xlim([1e-3 1])
+          %ylim([1e-3 4e2])
+          title('$f(x)$','Interpreter','latex')
+
+          if ex==expt(end)
+            %set(gca,'fontsize',12,'fontweight','bold') 
+            %set(gca,'xdir','reverse') 
+            %title(['Welch`s method PSD between ',datestr(time_mod(1),'yyyy-mm-dd'),' and ',datestr(time_mod(end),'yyyy-mm-dd')])
+            %title(['PSD between ',datestr(time_mod(1),'yyyy-mm-dd'),' and ',datestr(time_mod(end),'yyyy-mm-dd')])
+            %grid('on')
+            legend([ll])
+            %legend('mEVP','BBM')
+            %xlabel('Period (day)')
+            %ylabel('New ice (m/day)^2')
+
+            % saving fig
+            if save_fig==5
+              figname=[path_fig,run,'/psdw_',vname,'_',datestr(time_mod(1),'yyyy-mm-dd'),'_',datestr(time_mod(end),'yyyy-mm-dd'),'.png'];
+              display(['Saving: ',figname]);
+              %export_fig(gcf,figname,'-png','-r150' );
+              print('-dpng','-r300',figname)
+              %saveas(gcf,figname,'fig')
+              %clf('reset')
+              %set(gcf,'color',[1 1 1])
+            end
+
+          end
 
 		end %  if strcmp(vname,'bla')
+
+bla=1;
+if bla==2
 
     % FIGURE
     scrsz=[1 1 1366 768];
@@ -450,6 +533,8 @@ for ex = expt;
       end
 
     end
+
+end % if bla==2
 
   end % if plot_pdf==1;
 
