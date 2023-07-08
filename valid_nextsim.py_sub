@@ -32,11 +32,11 @@ proj_info = projection_info.ProjectionInfo.sp_laea()
 proj      = proj_info.pyproj
 
 #Time
-start_day  =29 # 6 vcorr serie initial day
+start_day  =31 # 6 vcorr serie initial day
 start_month=7
 start_year =2016
-end_day    =31 #24 # bsie
-end_month  =7  #8 sit
+end_day    =1 #24 # bsie
+end_month  =8  #8 sit
 end_year   =2016
 
 
@@ -54,7 +54,7 @@ my_dates=1
 inc_obs=1
 
 #Variables
-vname='sic' # 'sit_rmse' 
+vname='newice' # 'sit_rmse' 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
@@ -2399,7 +2399,7 @@ for serie_or_map in serie_or_maps:
         elif vname=='sit':
           cmap = cmocean.cm.dense_r; vmin=0; vmax=3.5
         elif vname=='newice':
-          cmap = cmocean.cm.matter; vmin=0; vmax=0.04
+          cmap = cmocean.cm.matter; vmin=0; vmax=0.03
         elif vname=='divergence':
           cmap = cmocean.cm.balance; vmin=-0.2; vmax=0.2
 
@@ -2410,7 +2410,7 @@ for serie_or_map in serie_or_maps:
 
           fig, ax = plt.subplots(1, 1 ,figsize=(8,8))
           ax.set_title(run+' '+vname,loc='left')
-          ax.set_title(format(time[t].strftime('%Y/%m/%d %H:%M')), loc = 'right')
+          ax.set_title(time[t].strftime('%Y/%m/%d %H:%M')[0], loc = 'right')
 
           m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax)
           lonp, latp = m(lon_mod,lat_mod)#,inverse=True)
@@ -2430,7 +2430,8 @@ for serie_or_map in serie_or_maps:
       
           #variable = sit_output;
           #anim=make_animation_util(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
-      
+     
+          #exit() 
           ##Save animation 
           figname=path_fig+run+'/map_solo_'+vname+'_'+format(time[t[0]].strftime('%Y_%m_%d_%H_%M'))+'.png'
           if save_fig==1:
@@ -2462,7 +2463,7 @@ for serie_or_map in serie_or_maps:
         elif vname=='sit':
           cmap = cmocean.cm.dense_r; vmin=0; vmax=3.5
         elif vname=='newice':
-          cmap = cmocean.cm.matter; vmin=0; vmax=0.04
+          cmap = cmocean.cm.matter; vmin=0; vmax=0.03
 
         ax.set_title(run,loc='right')
         m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax)
