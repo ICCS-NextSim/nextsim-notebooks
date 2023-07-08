@@ -11,6 +11,8 @@
 echo Remember to load python for nextsim
 echo 'load-python-nextsim'
 
-python valid_nextsim.py_sub
+echo Running ${1}
+
+python ${1} # valid_nextsim.py_sub2
 
 

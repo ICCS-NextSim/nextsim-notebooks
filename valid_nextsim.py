@@ -32,28 +32,29 @@ proj_info = projection_info.ProjectionInfo.sp_laea()
 proj      = proj_info.pyproj
 
 #Time
-start_day  =1 # 6 vcorr serie initial day
-start_month=1
-start_year =2013
-end_day    =26 #24 # bsie
-end_month  =9  #8 sit
-end_year   =2019
+start_day  =29 # 6 vcorr serie initial day
+start_month=7
+start_year =2016
+end_day    =31 #24 # bsie
+end_month  =7  #8 sit
+end_year   =2016
 
 
 #Runs (names) or experiments (numbers - starts with 1)
-exp=18
-exptc=[12,19,18]#2,5,7,10]
+exp=18 # 30
+exptc=[12,31,exp] # if serie_or_map!=0
 expt=exptc
-expt=[19,18,23,22]
-expt=[19,18,24,27,28,29,30,31,32,33]
-#expt=[exp]
+#expt=[19,18,24,27,28,29,30,31,33,32]
+#expt=[19,18,24,27,28,30,33,34]
+#expt=[24,28,30,34]
+expt=[exp]
 
-serie_or_maps=[0] # 1 for serie, 2 for video, 3 for map, 0 for neither
+serie_or_maps=[0]#[1,2,3] # 1 for serie, 2 for video, and 3 for map, 0 for neither
 my_dates=1
 inc_obs=1
 
 #Variables
-vname ='sit_rmse' 
+vname='sic' # 'sit_rmse' 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
@@ -61,12 +62,13 @@ vname ='sit_rmse'
 
 # Plot types
 plot_scatter=0
-plot_series =1
+plot_series =0
 plot_hist   =0
 plot_video  =0
 plot_vchoice=0
 plot_map    =0 # seasonal maps
 plot_maps   =0
+plot_smap   =1 # solo map
 plot_anim   =0 # solo video
 save_fig    =1
 plt_show    =1
@@ -79,8 +81,8 @@ runs=['50km_ocean_wind'      ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102',
       '50km_glorys_20180102' ,'BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',           # 15
       '50km_hyle_20130102'   ,'50km_ckFFalse_20130102','BBM'                   ,'mEVP'                  ,'25km_bbm_20130102',           # 20
       '25km_mevp_20130102'   ,'12km_bbm_20130102'     ,'12km_mEVP_20130102'    ,'50km_bWd016_20130102'  ,'50km_mCd01_20130102',         # 25 
-      '50km_bCd01_20130102'  ,'50km_mWd016_20130102'  ,'50km_10kPcom_20130102' ,'50km_mevp10kP_20130102','50km_b10kP2h_20130102']         # 30
-      '50km_m10kP2h_20130102','50km_b14kP1h_20130102' ,'50km_m14kP1h_20130102']# ,'50km_mevp10kP_20130102']#  ,'50km_bCd01_20130102']         # 33
+      '50km_bCd01_20130102'  ,'50km_mWd016_20130102'  ,'50km_10kPcom_20130102' ,'50km_mevp10kP_20130102','50km_b10kP2h_20130102',       # 30
+      '50km_m10kP2h_20130102','50km_b14kP1h_20130102' ,'50km_m14kP1h_20130102' ,'50km_b14kP2h_20130102' ,'50km_m14kP2h_20130102']# ,'50km_mevp10kP_20130102']#  ,'50km_bCd01_20130102']         # 33
 
 #Colors
 if expt[0]==19:
@@ -208,8 +210,8 @@ for serie_or_map in serie_or_maps:
   if serie_or_map==1: # series
     expt=exptc
     plot_series=1; plot_video=0; plot_map=0;
-    vnames=[ 'sie','bsie','sit','siv','drift','vcorr'] # sie,bsie,sit,siv,drift,vcorr processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
-    varrays=['sic','sic' ,'sit','sit','siv' ,'siv'] # netcdf variable for each type of plot (raw variable used in xarray)
+    vnames=[ 'sie','bsie','sit','sit_rmse','siv','drift','vcorr'] # sie,bsie,sit,siv,drift,vcorr processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
+    varrays=['sic','sic' ,'sit','sit'     ,'sit','siv'  ,'siv'] # netcdf variable for each type of plot (raw variable used in xarray)
   elif serie_or_map==2: # video
     expt=[exp]
     plot_series=0; plot_video=1; plot_map=0;
@@ -258,7 +260,7 @@ for serie_or_map in serie_or_maps:
     time_obsd=pd.DatetimeIndex(time_obs)
     time_obsni=[int(time_obsn[ii]) for ii in range(len(time_obsn))] # integer time for daily search
     time_obsni=np.array(time_obsni)
-    timesix=pd.date_range(dates.num2date(time_ini), periods=int(time_fin-time_ini)*24/6, freq=('%dH' % int(6)))
+    timesix=pd.date_range(dates.num2date(time_ini), periods=int(time_fin-time_ini)*24/6, freq=('%dH' % int(6))) # time obs every 6h
     time_obsixn=dates.date2num(timesix)
     time_obsix=dates.num2date(time_obsixn)
     time_obsixd=pd.DatetimeIndex(time_obsix)
@@ -864,8 +866,8 @@ for serie_or_map in serie_or_maps:
               time=time_obs
               plt.plot(time, mean, obs_colors[ke-1])   
             if vname=='drift':
-              #ll=['OSI-455']; 
-              ll=['OSI-455 mean = '+format(np.nanmean(mean),'.2f')]
+              ll=['OSI-455']; 
+              #ll=['OSI-455 mean = '+format(np.nanmean(mean),'.2f')]
             else:
               ll=[]; 
     
@@ -930,8 +932,8 @@ for serie_or_map in serie_or_maps:
         plt.plot(time, mean, colors[ke-1])   
         plt.grid('on')
         if ex==expt[-1]:
-          #for i in expt:
-            #ll.append(runs[i]+' - mean = '+str(np.nanmean(mean)))
+          for i in expt:
+            ll.append(runs[i])#+' - mean = '+str(np.nanmean(mean)))
     
           plt.legend(ll)
           date_form = dates.DateFormatter("%b/%y")
@@ -2380,7 +2382,65 @@ for serie_or_map in serie_or_maps:
           plt.xlabel('SST (oC)'); plt.ylabel('SIT (m)'); plt.title('SST x SIC (>.15)')
           figname=path_fig+run+'/sst_x_sic_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
       
+      ### Make animation of solo model output
+      if plot_smap==1:
+        print('Ploting solo exp maps: '+vname+' '+run)
+    
+        fps=24
+        plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
+        time = time_modd # datac.time.indexes['time']
       
+        variable = vdatac;
+        variable=np.where(variable!=0,variable,np.nan)
+        interval=10 #len(time))
+
+        if vname=='sic':
+          cmap = cmocean.cm.ice; vmin=0; vmax=1.
+        elif vname=='sit':
+          cmap = cmocean.cm.dense_r; vmin=0; vmax=3.5
+        elif vname=='newice':
+          cmap = cmocean.cm.matter; vmin=0; vmax=0.04
+        elif vname=='divergence':
+          cmap = cmocean.cm.balance; vmin=-0.2; vmax=0.2
+
+
+        for ts in range(0,len(time_obsixn)):  
+
+          t=np.where(time_obsixn[ts]==time_mod)[0]; #exit()
+
+          fig, ax = plt.subplots(1, 1 ,figsize=(8,8))
+          ax.set_title(run+' '+vname,loc='left')
+          ax.set_title(format(time[t].strftime('%Y/%m/%d %H:%M')), loc = 'right')
+
+          m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax)
+          lonp, latp = m(lon_mod,lat_mod)#,inverse=True)
+          lonv, latv = m(lon_modv,lat_modv)#,inverse=True)
+          im1 = m.pcolormesh(lonp, latp, variable[t[0]], cmap=cmap, vmin=vmin, vmax=vmax)
+          divider = make_axes_locatable(ax)
+          cax = divider.append_axes('right', size='5%', pad=0.05)
+          fig.colorbar(im1, cax=cax, orientation='vertical')
+          #im22 = m.quiver(lonov, latov, uc_mod[0], vc_mod[0],color='black',width=0.002,scale=500.0) 
+          #qk=plt.quiverkey(im22,.5,.5,10,'10 km/day',labelpos='S',fontproperties={'size':8})
+          m.drawcoastlines()
+          m.fillcontinents(color='grey',lake_color='aqua')
+      
+          #plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
+          #sit_output = vdatac # .sit.to_masked_array() # Extract a given variable
+          #time = time_modd # datac.time.indexes['time']
+      
+          #variable = sit_output;
+          #anim=make_animation_util(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
+      
+          ##Save animation 
+          figname=path_fig+run+'/map_solo_'+vname+'_'+format(time[t[0]].strftime('%Y_%m_%d_%H_%M'))+'.png'
+          if save_fig==1:
+            if os.path.exists(path_fig+run)==False:
+              os.mkdir(path_fig+run)
+            print('Saving: '+figname)
+            plt.savefig(figname,dpi=300,bbox_inches='tight')
+            plt.close('all') 
+     
+ 
       ### Make animation of solo model output
       if plot_anim==1:
         print('Ploting anim: '+vname+' '+run)
