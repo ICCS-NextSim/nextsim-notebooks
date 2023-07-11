@@ -32,12 +32,19 @@ proj_info = projection_info.ProjectionInfo.sp_laea()
 proj      = proj_info.pyproj
 
 #Time
-start_day  =31 # 6 vcorr serie initial day
-start_month=5
+start_day  =24 # 6 vcorr serie initial day
+start_month=7
 start_year =2016
-end_day    =1 #24 # bsie
-end_month  =10  #8 sit
+end_day    =25 #24 # bsie
+end_month  =7  #8 sit
 end_year   =2016
+
+start_day  =1 # 6 vcorr serie initial day
+start_month=1
+start_year =2015
+end_day    =28 #24 # bsie
+end_month  =8  #8 sit
+end_year   =2021
 
 
 #Runs (names) or experiments (numbers - starts with 1)
@@ -46,15 +53,16 @@ exptc=[12,31,exp] # if serie_or_map!=0
 expt=exptc
 #expt=[19,18,24,27,28,29,30,31,33,32]
 #expt=[19,18,24,27,28,30,33,34]
-#expt=[24,28,30,34]
-expt=[exp]
+expt=[19,18,30,34]
+#expt=[19,18]
+#expt=[exp]
 
 serie_or_maps=[0]#[1,2,3] # 1 for serie, 2 for video, and 3 for map, 0 for neither
 my_dates=1
 inc_obs=1
 
 #Variables
-vname='sic' # 'sit_rmse' 
+vname='sit' 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_map) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
@@ -62,14 +70,14 @@ vname='sic' # 'sit_rmse'
 
 # Plot types
 plot_scatter=0
-plot_series =0
+plot_series =1
 plot_hist   =0
 plot_video  =0
 plot_vchoice=0
+plot_anim   =0 # solo video
 plot_map    =0 # seasonal maps
 plot_maps   =0
-plot_smap   =1 # solo map
-plot_anim   =0 # solo video
+plot_smap   =0 # solo map
 save_fig    =1
 plt_show    =1
 interp_obs  =1 # only for SIE maps obs has 2x the model resolution
@@ -2383,66 +2391,6 @@ for serie_or_map in serie_or_maps:
           figname=path_fig+run+'/sst_x_sic_'+str(start_year)+'-'+str(start_month)+'_'+str(end_year)+'-'+str(end_month)+'.png'
       
       ### Make animation of solo model output
-      if plot_smap==1:
-        print('Ploting solo exp maps: '+vname+' '+run)
-    
-        fps=24
-        plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
-        time = time_modd # datac.time.indexes['time']
-      
-        variable = vdatac;
-        variable=np.where(variable!=0,variable,np.nan)
-        interval=10 #len(time))
-
-        if vname=='sic':
-          cmap = cmocean.cm.ice; vmin=0; vmax=1.
-        elif vname=='sit':
-          cmap = cmocean.cm.dense_r; vmin=0; vmax=3.5
-        elif vname=='newice':
-          cmap = cmocean.cm.matter; vmin=0; vmax=0.03
-        elif vname=='divergence':
-          cmap = cmocean.cm.balance; vmin=-0.2; vmax=0.2
-
-
-        for ts in range(0,len(time_obsixn)):  
-
-          t=np.where(time_obsixn[ts]==time_mod)[0]; #exit()
-
-          fig, ax = plt.subplots(1, 1 ,figsize=(8,8))
-          ax.set_title(run+' '+vname,loc='left')
-          ax.set_title(time[t].strftime('%Y/%m/%d %H:%M')[0], loc = 'right')
-
-          m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax)
-          lonp, latp = m(lon_mod,lat_mod)#,inverse=True)
-          lonv, latv = m(lon_modv,lat_modv)#,inverse=True)
-          im1 = m.pcolormesh(lonp, latp, variable[t[0]], cmap=cmap, vmin=vmin, vmax=vmax)
-          divider = make_axes_locatable(ax)
-          cax = divider.append_axes('right', size='5%', pad=0.05)
-          fig.colorbar(im1, cax=cax, orientation='vertical')
-          #im22 = m.quiver(lonov, latov, uc_mod[0], vc_mod[0],color='black',width=0.002,scale=500.0) 
-          #qk=plt.quiverkey(im22,.5,.5,10,'10 km/day',labelpos='S',fontproperties={'size':8})
-          m.drawcoastlines()
-          m.fillcontinents(color='grey',lake_color='aqua')
-      
-          #plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
-          #sit_output = vdatac # .sit.to_masked_array() # Extract a given variable
-          #time = time_modd # datac.time.indexes['time']
-      
-          #variable = sit_output;
-          #anim=make_animation_util(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
-     
-          #exit() 
-          ##Save animation 
-          figname=path_fig+run+'/map_solo_'+vname+'_'+format(time[t[0]].strftime('%Y_%m_%d_%H_%M'))+'.png'
-          if save_fig==1:
-            if os.path.exists(path_fig+run)==False:
-              os.mkdir(path_fig+run)
-            print('Saving: '+figname)
-            plt.savefig(figname,dpi=300,bbox_inches='tight')
-            plt.close('all') 
-     
- 
-      ### Make animation of solo model output
       if plot_anim==1:
         print('Ploting anim: '+vname+' '+run)
     
@@ -2459,7 +2407,7 @@ for serie_or_map in serie_or_maps:
         ax.set_title('Date : {} '.format(time[0].strftime('%Y.%m.%d')), loc = 'left')
       
         if vname=='sic':
-          cmap = cmocean.cm.ice; vmin=0; vmax=1.
+          cmap = cmocean.cm.ice; vmin=0.0; vmax=1.
         elif vname=='sit':
           cmap = cmocean.cm.dense_r; vmin=0; vmax=3.5
         elif vname=='newice':
@@ -2503,6 +2451,91 @@ for serie_or_map in serie_or_maps:
           print('Saving: '+figname)
           anim.save(figname, writer=FFwriter, dpi = 150)
       
+      ### Make plots of model(s) output
+      if plot_smap==1:
+        print('Ploting solo exp maps: '+vname+' '+run)
+    
+        fps=24
+        plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
+        time = time_modd # datac.time.indexes['time']
+      
+          #mean,lon_obs = addcyclic (mean,lon_obs)
+
+        if vname=='divergence':
+          print('CHANGE dx IF YOU CHANGE MODEL RESOLUTION. run: '+run)
+          uc_mod = udatac*3.6*24;  vc_mod = vdatac*3.6*24;
+          dudx=(uc_mod[::,::,1::]-uc_mod[::,::,0:-1])/25.
+          dvdx=(vc_mod[::,::,1::]-vc_mod[::,::,0:-1])/25.
+          dudy=(uc_mod[::,1::,::]-uc_mod[::,0:-1,::])/25.
+          dvdy=(vc_mod[::,1::,::]-vc_mod[::,0:-1,::])/25.
+          div_mod=dudx[::,0:-1,::]+dvdy[::,::,0:-1]
+          shear_mod=np.sqrt( np.square(dudx[::,0:-1,::]+dvdy[::,::,0:-1]) + np.square(dudy[::,0::,1::]+dvdx[::,1::,0::]) )
+          lon_mod=lon_mod[0:-1,0:-1]; lat_mod=lat_mod[0:-1,0:-1]
+          variable = div_mod;
+          variable=np.where(variable!=0,variable,np.nan)
+        else:
+          variable = vdatac;
+          variable=np.where(variable!=0,variable,np.nan)
+
+        if vname=='sic':
+          cmap = cmocean.cm.ice; vmin=0.2; vmax=1.
+        elif vname=='sit':
+          cmap = cmocean.cm.dense_r; vmin=0; vmax=3.5
+        elif vname=='newice':
+          cmap = cmocean.cm.matter; vmin=0; vmax=0.03
+        elif vname=='divergence':
+          cmap = cmocean.cm.balance; vmin=-0.2; vmax=0.2
+
+        if ke==1:
+          variables=np.zeros((len(expt),np.shape(variable)[0],np.shape(variable)[1],np.shape(variable)[2]))
+        variables[ke-1]=variable
+
+        # if expt is last plot
+        if ex==expt[-1]:
+          for ts in range(0,len(time_obsixn)):  
+            ke=-1
+            fig, ax = plt.subplots(1, len(expt) ,figsize=(16,8))
+            for ex in expt:
+              ke+=1
+              variable=variables[ke]
+              t=np.where(time_obsixn[ts]==time_mod)[0]; #exit()
+
+              run=runs[expts[ex]]
+              ax[ke].set_title(run+' '+vname,loc='left')
+              ax[ke].set_title(time[t].strftime('%Y/%m/%d %H:%M')[0], loc = 'right')
+
+              m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke])
+              lonp, latp = m(lon_mod,lat_mod)#,inverse=True)
+              lonv, latv = m(lon_modv,lat_modv)#,inverse=True)
+              im1 = m.pcolormesh(lonp, latp, variable[t[0]], cmap=cmap, vmin=vmin, vmax=vmax)
+              divider = make_axes_locatable(ax[ke])
+              cax = divider.append_axes('right', size='5%', pad=0.05)
+              fig.colorbar(im1, cax=cax, orientation='vertical')
+              #im22 = m.quiver(lonov, latov, uc_mod[0], vc_mod[0],color='black',width=0.002,scale=500.0) 
+              #qk=plt.quiverkey(im22,.5,.5,10,'10 km/day',labelpos='S',fontproperties={'size':8})
+              m.drawcoastlines()
+              m.fillcontinents(color='grey',lake_color='aqua')
+              # add wrap-around point in longitude.
+              longr, latgr = m([0,0],[-90,-70.5])#,inverse=True)
+              m.plot(longr,latgr,color='grey',linewidth=2)
+      
+              #plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
+              #sit_output = vdatac # .sit.to_masked_array() # Extract a given variable
+              #time = time_modd # datac.time.indexes['time']
+      
+              #variable = sit_output;
+              #anim=make_animation_util(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
+     
+            ##Save animation 
+            figname=path_fig+run+'/map_solo_'+vname+'_'+format(time[t[0]].strftime('%Y_%m_%d_%H_%M'))+'.png'
+            if save_fig==1:
+              if os.path.exists(path_fig+run)==False:
+                os.mkdir(path_fig+run)
+              print('Saving: '+figname)
+              plt.savefig(figname,dpi=300,bbox_inches='tight')
+              plt.close('all') 
+     
+ 
       
     
       #fig=plt.subplots(); plt.pcolormesh(datac.sit[0,:,:]); plt.colorbar(); plt.title(time[0]); plt.show()
