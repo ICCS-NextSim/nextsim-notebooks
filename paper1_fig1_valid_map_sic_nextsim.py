@@ -40,12 +40,12 @@ end_day    =25 #24 # bsie
 end_month  =7  #8 sit
 end_year   =2016
 
-start_day  =1 # 6 vcorr serie initial day
-start_month=1
-start_year =2015
-end_day    =31 #24 # bsie
-end_month  =12  #8 sit
-end_year   =2020
+#start_day  =1 # 6 vcorr serie initial day
+#start_month=1
+#start_year =2016
+#end_day    =29 #24 # bsie
+#end_month  =12  #8 sit
+#end_year   =2016
 
 
 #Runs (names) or experiments (numbers - starts with 1)
@@ -55,8 +55,7 @@ expt=exptc
 #expt=[19,18,24,27,28,29,30,31,33,32]
 #expt=[19,18,24,27,28,30,33,34]
 expt=[19,18,30,34]
-expt=[19,18,27]#,36,37]
-expt=[30,31,19,12] # 19,36,37]
+expt=[31,30]
 #expt=[exp]
 
 serie_or_maps=[0]#[1,2,3] # 1 for serie, 2 for video, and 3 for map, 0 for neither
@@ -64,7 +63,7 @@ my_dates=1
 inc_obs=1
 
 #Variables
-vname='drift'  # sit_obs_remse_diff 
+vname='sic'  # sit_obs_remse_diff 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_maps) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
@@ -72,32 +71,32 @@ vname='drift'  # sit_obs_remse_diff
 
 # Plot types
 plot_scatter=0
-plot_series =1
+plot_series =0
 plot_hist   =0
 plot_video  =0
 plot_vchoice=0 # not working yet. it will for my webpage
 plot_anim   =0 # solo video
 plot_maps   =0 # seasonal maps
 plot_mapo   =0 # maps with obs / based on plot_video and plot_smap
-plot_smap   =0 # solo map
+plot_smap   =1 # model maps
 
 save_fig    =1
 plt_show    =1
 interp_obs  =1 # only for SIE maps obs has 2x the model resolution
 hist_norm   =0
 ####################################################################
-# after BSOSE run (ocean boundary cond), m = mEVP, b = BBM
+# after BSOSE run (ocean boundary cond), runs are all mEVP
 runs=['50km_ocean_wind'      ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',       # 5
       '50km_20Clab_20180102' ,'50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',     # 10
       '50km_glorys_20180102' ,'BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',           # 15
       '50km_hyle_20130102'   ,'50km_ckFFalse_20130102','50km_bWd020_20130102'  ,'mEVP+'                 ,'25km_bbm_20130102',           # 20
-      '25km_mevp_20130102'   ,'12km_bbm_20130102'     ,'12km_mEVP_20130102'    ,'50km_bWd016_20130102'  ,'50km_mCd01_20130102',         # 25
+      '25km_mevp_20130102'   ,'12km_bbm_20130102'     ,'12km_mEVP_20130102'    ,'50km_bWd016_20130102'  ,'50km_mCd01_20130102',         # 25 
       '50km_bCd01_20130102'  ,'50km_mWd016_20130102'  ,'50km_10kPcom_20130102' ,'50km_mevp10kP_20130102','BBM', # '50km_b10kP2h_20130102',       # 30
       'mEVP'                 ,'50km_b14kP1h_20130102' ,'50km_m14kP1h_20130102' ,'50km_b14kP2h_20130102' ,'50km_m14kP2h_20130102',       # 35
       '50km_mWd022_20130102' ,'50km_mWd024_20130102']       # ,'50km_mevp10kP_20130102']#  ,'50km_bCd01_20130102']         # 33
 
 #Colors
-if expt[0]==31:
+if expt[0]==19:
   colors=['orange','b','pink','brown','g','r','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 else:
   colors=['k','orange','b','pink','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
@@ -3054,8 +3053,8 @@ for serie_or_map in serie_or_maps:
 
               run=runs[expts[ex]]
               if ex==expt[-1]:
-                ax[ke].set_title(time[t].strftime('%Y/%m/%d %H:%M')[0], loc = 'right')
-                ax[ke].set_title(run,loc='left')
+                #ax[ke].set_title(time[t].strftime('%Y/%m/%d %H:%M')[0], loc = 'right')
+                ax[ke].set_title(run+' '+vnamee+'at '+time[t].strftime('%Y/%m/%d %H:%M')[0],loc='left')
               else:
                 ax[ke].set_title(run+' '+vnamee,loc='left')
 
@@ -3073,30 +3072,36 @@ for serie_or_map in serie_or_maps:
               # add wrap-around point in longitude.
               longr, latgr = m([0,0],[-90,-70.5])#,inverse=True)
               m.plot(longr,latgr,color='grey',linewidth=2)
-      
+              #anim=make_animation_util(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
+
+              #m.drawparallels(np.arange(-90,-30,5))
+              #m.drawmeridians(np.arange(0,360,30))
+
+              lon_regions=[-150,-61,-20,34  ,90,160];
+              lat_regions=[ -77,-75,-73,-68.5,-67,-70];
+              text_map_w_stats( variable[t[0]], lon_mod, m, lon_regions, lat_regions, '', '', 'magenta')
+ 
               #plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
               #sit_output = vdatac # .sit.to_masked_array() # Extract a given variable
               #time = time_modd # datac.time.indexes['time']
       
-              #variable = sit_output;
-              #anim=make_animation_util(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
      
-            ##Save figure 
-            fig.tight_layout()
-            fig.subplots_adjust(right=0.825)
-            cax = fig.add_axes([0.85, 0.105, 0.02, 0.785]) # [left, bottom, width, height]
-            cbar=fig.colorbar(im1, cax=cax)
-            cbar.ax.tick_params(labelsize=16)
-            figname=path_fig+run+'/map_solo_'+vname+'_'+format(time[t[0]].strftime('%Y_%m_%d_%H_%M'))+'.png'
-            if save_fig==1:
-              if os.path.exists(path_fig+run)==False:
-                os.mkdir(path_fig+run)
-              print('Saving: '+figname)
-              plt.savefig(figname,dpi=300,bbox_inches='tight')
-              plt.close('all') 
+            if ts==len(time_obsixn)-1:  
+              ##Save figure 
+              fig.tight_layout()
+              fig.subplots_adjust(right=0.825)
+              cax = fig.add_axes([0.85, 0.105, 0.02, 0.785]) # [left, bottom, width, height]
+              cbar=fig.colorbar(im1, cax=cax)
+              cbar.ax.tick_params(labelsize=16)
+              run='paper_1'
+              figname=path_fig+run+'/fig1_map_sic.png'#_'+vname+'_'+format(time[t[0]].strftime('%Y_%m_%d_%H_%M'))+'.png'
+              if save_fig==1:
+                if os.path.exists(path_fig+run)==False:
+                  os.mkdir(path_fig+run)
+                print('Saving: '+figname)
+                plt.savefig(figname,dpi=300,bbox_inches='tight')
+                plt.close('all') 
      
- 
-      
     
       #fig=plt.subplots(); plt.pcolormesh(datac.sit[0,:,:]); plt.colorbar(); plt.title(time[0]); plt.show()
 

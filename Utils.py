@@ -69,15 +69,15 @@ def veccor1(u1,v1,u2,v2):
     
     return ac,theta,X,Y 
 
-def text_map_w_stats(data,lon_mod,bm,lon_regions,oper,unit,colort):
+def text_map_w_stats(data,lon_mod,bm,lon_regions,lat_regions,oper,unit,colort):
     ''' 
-    text_maps_w_stats(lon_regions,bm,oper,unit)
+    text_maps_w_stats(data,lon_mod,bm,lon_regions,oper,unit,colort)
     data = input 2D data
     lon_mod = model longitude
     bm = Basemap() output
     lon_regions = longitudinal sections to compute stats
     starting from the smallest e.g. -179
-    oper = operation, e.g.: sum, mean
+    oper = operation, e.g.: sum, mean, ... if '' (no operation nor texting)
     unit = m, m3, etc
     
     This function computes and writes stats in the regions between
@@ -90,11 +90,15 @@ def text_map_w_stats(data,lon_mod,bm,lon_regions,oper,unit,colort):
     from sys import exit
 
     lon_regions=np.array(lon_regions);
+    lat_regions=np.array(lat_regions);
+    rnames=np.array(['Ross','AB Seas','Weddell','Atlantic','Indian','Pacific']);
     lon_r360=np.where(lon_regions>=0,lon_regions,lon_regions+360); # lon 0-360
 
     for kl in range(0,len(lon_regions)):
       lsec=lon_regions[kl]
-      x,y = bm([lsec,lsec],[-75, -50]); bm.plot(x,y,'k',linewidth=1,)
+      lasec=lat_regions[kl]
+      # plotting lines
+      x,y = bm([lsec,lsec],[lasec, -50]); bm.plot(x,y,color=colort,linewidth=1,)
 
       if lsec==lon_regions[0]: # values crossing the 180E/W line
         dataf=np.where(lon_mod<lon_regions[0],data,0); dataf2=np.where(lon_mod>lon_regions[-1],data,0); dataf=dataf+dataf2
@@ -112,9 +116,14 @@ def text_map_w_stats(data,lon_mod,bm,lon_regions,oper,unit,colort):
       else:
         lon_r=lon_regions
 
-      x,y = bm(np.nanmean([lon_r[kl-1],lon_r[kl]])-0,-63);
-      plt.annotate(dataf+' '+unit, xy=(x, y), xycoords='data', xytext=(x, y),fontsize=9,color=colort,fontweight='bold')#, textcoords='offset points',
-      #color='r', arrowprops=dict(arrowstyle="->")) #"fancy", color='g')
+      # texting sections
+      if oper=='':
+        x,y = bm(np.nanmean([lon_r[kl-1],lon_r[kl]])-0,-63);
+        plt.annotate(rnames[kl], xy=(x, y), xycoords='data', xytext=(x, y),fontsize=9,color=colort,fontweight='bold')#, textcoords='offset points',
+      else:
+        x,y = bm(np.nanmean([lon_r[kl-1],lon_r[kl]])-0,-63);
+        plt.annotate(dataf+' '+unit, xy=(x, y), xycoords='data', xytext=(x, y),fontsize=9,color=colort,fontweight='bold')#, textcoords='offset points',
+        #color='r', arrowprops=dict(arrowstyle="->")) #"fancy", color='g')
 
 def format_map(ax):
     ax.gridlines(zorder=2,linewidth=0.25,linestyle="--",color="darkgrey")
