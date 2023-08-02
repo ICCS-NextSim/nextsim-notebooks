@@ -7,6 +7,34 @@ import cartopy
 import cartopy.crs as ccrs
 from matplotlib.animation import FuncAnimation
 from matplotlib import animation, rc
+from matplotlib import dates
+import pandas as pd
+import datetime
+
+def daily_clim(time_obsd,mean):
+
+  # climatological time
+  time_ini = dates.date2num(datetime.datetime(2015,1,1,3,0,0))
+  time_fin = dates.date2num(datetime.datetime(2015,12,31,3,0,0))
+  freqobs  = 1; # daily data
+  times=pd.date_range(dates.num2date(time_ini), periods=int(time_fin-time_ini)*freqobs, freq=('%dD' % int(1/freqobs)))
+  time_clin=dates.date2num(times)
+  time_cli=dates.num2date(time_clin)
+  time_clid=pd.DatetimeIndex(time_cli)
+
+  mean_cli=[]
+  for t in range(len(time_clid)): # (np.shape(sicc_mod)[0]):
+    m=time_clid[t].month; d=time_clid[t].day
+    if d==29 and m==2:
+      print('NOT COMPUTING FOR 29/2 '+str(d)+'/'+str(m).zfill(2))
+    else:
+      print('computing daily longterm mean for '+str(d)+'/'+str(m).zfill(2))
+      iday=time_obsd.day==d
+      imonth=time_obsd.month==m; iym=np.where(iday*imonth==True)
+      #time_cli.append(time[iym[0][0]])
+      mean_cli.append(np.nanmean(mean[iday*imonth],axis=0)) # month average
+  
+  return time_cli, mean_cli
 
 def veccor1(u1,v1,u2,v2):
     ''' 

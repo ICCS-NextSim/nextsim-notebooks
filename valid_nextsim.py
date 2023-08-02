@@ -43,21 +43,17 @@ end_year   =2016
 start_day  =1 # 6 vcorr serie initial day
 start_month=1
 start_year =2015
-end_day    =31 #24 # bsie
-end_month  =12  #8 sit
-end_year   =2020
+end_day    =28 #24 # bsie
+end_month  =3  #8 sit
+end_year   =2016
 
 
 #Runs (names) or experiments (numbers - starts with 1)
-exp=18 # 30
+exp=30 # 30
 exptc=[12,31,exp] # if serie_or_map!=0
 expt=exptc
-#expt=[19,18,24,27,28,29,30,31,33,32]
-#expt=[19,18,24,27,28,30,33,34]
-expt=[19,18,30,34]
-expt=[19,18,27]#,36,37]
-expt=[30,31,19,12] # 19,36,37]
-#expt=[exp]
+expt=[12,31,19,30] # final expts (bsose, mevp, mevp+, bbm)
+expt=[exp]
 
 serie_or_maps=[0]#[1,2,3] # 1 for serie, 2 for video, and 3 for map, 0 for neither
 my_dates=1
@@ -81,6 +77,7 @@ plot_maps   =0 # seasonal maps
 plot_mapo   =0 # maps with obs / based on plot_video and plot_smap
 plot_smap   =0 # solo map
 
+plot_cli    =1
 save_fig    =1
 plt_show    =1
 interp_obs  =1 # only for SIE maps obs has 2x the model resolution
@@ -99,6 +96,8 @@ runs=['50km_ocean_wind'      ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102',
 #Colors
 if expt[0]==31:
   colors=['orange','b','pink','brown','g','r','k','yellow','orange','b','pink','brown','g','r','k','yellow']
+elif expt[0]==12:
+  colors=['pink','orange','b','black','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 else:
   colors=['k','orange','b','pink','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 
@@ -214,6 +213,16 @@ if save_etopod==1:
   print('Saving: '+filename)
   h.to_netcdf(filename)
   exit()
+
+## climatological time
+#time_ini = dates.date2num(datetime.datetime(2015,1,1,3,0,0))
+#time_fin = dates.date2num(datetime.datetime(2015,12,31,3,0,0)) 
+#freqobs  = 1; # daily data
+#times=pd.date_range(dates.num2date(time_ini), periods=int(time_fin-time_ini)*freqobs, freq=('%dD' % int(1/freqobs)))
+#time_clin=dates.date2num(times)
+#time_cli=dates.num2date(time_clin)
+#time_clid=pd.DatetimeIndex(time_cli)
+
 
 for serie_or_map in serie_or_maps:
   print(str(serie_or_map))
@@ -473,7 +482,7 @@ for serie_or_map in serie_or_maps:
                 mean[t] = np.mean((sit[t]*sic[t])/sic[t])
             plt.ylabel('SIT (m)'); plt.title('Domain average sea ice thickness (SIT)')
             ll.append(run+' mean = '+format(np.nanmean(mean),".2f"))
-            figname=path_fig+run+'/serie_sit_domain_average_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+            figname='serie_sit_domain_average_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
     
           elif inc_obs==1:
             if ke==1: # if first expt load obs - and plot lines preping for legend
@@ -570,7 +579,7 @@ for serie_or_map in serie_or_maps:
               timec=time; 
               plt.ylabel('Sea ice thickness rmse (m)'); plt.title('Sea ice thickness rmse [Model interp to Obs]')
 
-            figname=path_fig+run+'/serie_'+vname+'_month_mean_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+            figname='serie_'+vname+'_month_mean_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
     
         elif vname=='sie':
           sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
@@ -607,7 +616,7 @@ for serie_or_map in serie_or_maps:
             mean[k] = np.sum(meant)
     
           plt.ylabel('Sea ice extent (km\^2)'); plt.title('Sea ice extent [sum(area[sic>.15])]')
-          figname=path_fig+run+'/serie_sie_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+          figname='serie_sie_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
           time=timec[ifirst:ilast] 
     
         elif vname=='bsie': # binary sea ice extent
@@ -775,7 +784,7 @@ for serie_or_map in serie_or_maps:
             #plt.title('Accurate (-), over- (.-) and underestimated (--) ice coverage')
             plt.title('Accurate (-) and underestimated (--) ice coverage')
             plt.grid('on')
-            figname=path_fig+run+'/serie_bsie_total_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+            figname='serie_bsie_total_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
           
     
         elif vname=='siv':
@@ -845,7 +854,7 @@ for serie_or_map in serie_or_maps:
           #    mean[t] = np.sum((siv[t]*sic[t]))
           plt.xlim([time_obs[0],time_obs[-1]])
           plt.ylabel('SIV (km3)'); plt.title('Antarctic total sea ice volume (km3)')
-          figname=path_fig+run+'/serie_siv_total_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+          figname='serie_siv_total_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
     
         elif vname=='vcorr' or vname=='drift':
           if ke==1:
@@ -876,6 +885,8 @@ for serie_or_map in serie_or_maps:
               magc_obs=np.sqrt(uc_obs**2+vc_obs**2)
               mean=np.nanmean(magc_obs,1); mean=np.nanmean(mean,1)
               time=time_obs
+              if plot_cli==1:
+                time,mean=daily_clim(time_obsd,mean)
               plt.plot(time, mean, obs_colors[ke-1])   
             if vname=='drift':
               ll=['OSI-455'+' - mean = '+format(np.nanmean(mean),".2f")]; 
@@ -933,15 +944,19 @@ for serie_or_map in serie_or_maps:
             ll.append(run+' - mean = '+format(np.nanmean(mean),".2f"))
             plt.ylabel('Complex correlation'); plt.title('Ice drift complex correlation between model and obs (OSI-455)')
             plt.ylim([0,1]) 
-            figname=path_fig+run+'/serie_vector_complex_correlation_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+            figname='serie_vector_complex_correlation_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
           elif vname=='drift':
             ll.append(run+' - mean = '+format(np.nanmean(mean),".2f"))
             plt.ylabel('Drift speed (km/day)'); plt.title('Antarctic sea-ice average drift speed (km/day)') 
             #plt.ylim([0,1]) 
-            figname=path_fig+run+'/serie_velocity_speed_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
+            figname='serie_velocity_speed_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
     
           time=time_obs
-     #zzz 
+
+        if plot_cli==1:
+          time,mean=daily_clim(time_obsd,mean)
+          figname='cli_'+figname
+
         plt.plot(time, mean, colors[ke-1])   
         plt.grid('on')
         if ex==expt[-1]:
@@ -950,12 +965,18 @@ for serie_or_map in serie_or_maps:
           #    ll.append(runs[i]+' - mean = '+str(np.nanmean(mean)))
           plt.legend(ll)
 
-          date_form = dates.DateFormatter("%b/%y")
+          if plot_cli==1:
+            date_form = dates.DateFormatter("%b")
+          else:
+            date_form = dates.DateFormatter("%b/%y")
+
           ax.xaxis.set_major_formatter(date_form)
           plt.tight_layout()
           if save_fig==1:
             if os.path.exists(path_fig+run)==False:
               os.mkdir(path_fig+run)
+
+            figname=path_fig+run+'/'+figname
             print('Saving: '+figname)
             plt.savefig(figname)
           if plt_show==1:
@@ -1120,7 +1141,6 @@ for serie_or_map in serie_or_maps:
             plt.savefig(figname,dpi=300,bbox_inches='tight')
           if plt_show==1:
             plt.show()
-    
       
       ### Plot maps (seasonal) 
       if plot_maps==1:
