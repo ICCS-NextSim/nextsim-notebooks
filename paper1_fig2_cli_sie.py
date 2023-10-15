@@ -1027,7 +1027,7 @@ for serie_or_map in serie_or_maps:
             if os.path.exists(path_fig+run)==False:
               os.mkdir(path_fig+run)
 
-            figname=path_fig+run+'/'+figname
+            figname=path_fig+'paper_1'+'/fig2_cli_sie.png'#+figname
             print('Saving: '+figname)
             plt.savefig(figname)
           if plt_show==1:

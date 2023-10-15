@@ -43,28 +43,26 @@ end_year   =2016
 
 start_day  =1 # 6 vcorr serie initial day
 start_month=1
-start_year =2016
-end_day    =30 #24 # bsie
+start_year =2015
+end_day    =31 # bsie
 end_month  =12  #8 sit
-end_year   =2021
+end_year   =2020
 
 #Runs (names) or experiments (numbers - starts with 1)
-exp=12 # 30
+exp=30
 exptc=[12,31,exp] # if serie_or_map!=0
 expt=exptc
 expt=[12,31,19,30,18] # final expts (bsose, mevp, mevp+, bbm, bbm+)
-#expt=[12,31,30] # final expts (bsose, mevp, bbm)
+expt=[31,30] # final expts (bsose, mevp, bbm)
 expt=[12,31,19,30] # final expts (bsose, mevp, mevp+, bbm)
-expt=[12,31,30] # final expts (bsose, mevp, mevp+, bbm)
 #expt=[exp]
-
 
 serie_or_maps=[0]#[1,2,3] # 1 for serie, 2 for video, and 3 for map, 0 for neither
 my_dates=1
 inc_obs=1
 
 #Variables
-vname='sie'  # sit_obs_remse_diff 
+vname='drift' # 'divergence'  # sit_obs_remse_diff 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_maps) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
@@ -102,8 +100,8 @@ runs=['50km_ocean_wind'      ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102',
 if expt[0]==31:
   colors=['orange','b','pink','brown','g','r','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 elif expt[0]==12:
-  colors=['k','orange','b','black','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
-  #colors=['red','orange','b','k','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
+  colors=['pink','orange','b','black','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
+  colors=['r','orange','b','k','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 else:
   colors=['k','orange','r','b','pink','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 
@@ -152,7 +150,8 @@ if socket.gethostname()[0:8]=='SC442555' or socket.gethostname()[0:10]=='wifi-st
   #path_bsose='/Volumes/LaCie/mahuika/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/bsose/'
 elif socket.gethostname()[0]=='w' or socket.gethostname()=='mahuika01' or socket.gethostname()=='mahuika':
   path_runs='/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/' # ''~/'
-  path_fig ='/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/figures/' 
+  #path_fig ='/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/figures/' 
+  path_fig='/scale_wlg_persistent/filesets/home/rsan613/figure/'
   path_data ='/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/'
   path_bsose='/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/bsose/'
 else:
@@ -475,8 +474,8 @@ for serie_or_map in serie_or_maps:
               mean=mean/1E6	
               if plot_cli==1:
                 time,mean,std=daily_clim(time_obsd,mean)
-                # for legend
                 plt.plot(time, mean, color=obs_colors[kc-1])#,lw=2,alpha=0.5)   
+                # plot randon points with colours for legend
                 for exx in range(0,len(expt)):
                   plt.plot(time, mean, colors[exx])   
                 plt.fill_between(time,mean-std,mean+std,facecolor=obs_colors[kc-1],alpha=0.5,lw=2)
@@ -611,7 +610,6 @@ for serie_or_map in serie_or_maps:
           sicc_mo=np.zeros((len(time_mod[ifirst:ilast+1]),np.shape(sic_mod)[1],np.shape(sic_mod)[2]))
 
           #exit()
-          #zzz
           # GIVING BSOSE A DAILY DATASET
           if plot_cli==1 and run=='BSOSE':
             sicc_mo=np.zeros((len(time_obsni),np.shape(sic_mod)[1],np.shape(sic_mod)[2]))
@@ -898,7 +896,7 @@ for serie_or_map in serie_or_maps:
     
         elif vname=='vcorr' or vname=='drift':
           if ke==1:
-            k=0
+            k=0; kc=1;
             for t in time_obs:
               k+=1 # drift_osisaf_ease2
               file=path_data+'/drift_osisaf_ease2/'+t.strftime("%Y")+'/ice_drift_sh_ease2-750_cdr-v1p0_24h-'+t.strftime("%Y%m%d")+'1200.nc'; 
@@ -925,11 +923,21 @@ for serie_or_map in serie_or_maps:
               magc_obs=np.sqrt(uc_obs**2+vc_obs**2)
               mean=np.nanmean(magc_obs,1); mean=np.nanmean(mean,1)
               time=time_obs
-              if plot_cli==1:
-                time,mean,std=daily_clim(time_obsd,mean)
+
+            if plot_cli==1:
+              mean=uniform_filter1d(mean,10)
+              time,mean,std=daily_clim(time_obsd,mean)
               plt.plot(time, mean, obs_colors[ke-1])   
+              # plot randon points with colours for legend
+              for exx in range(0,len(expt)):
+                plt.plot(time, mean, colors[exx])   
+              plt.fill_between(time,mean-std,mean+std,facecolor=obs_colors[kc-1],alpha=0.5,lw=2)
+#zzz
+            plt.plot(time, mean, obs_colors[ke-1])   
+
             if vname=='drift':
-              ll=['Obs: OSI-455'+', mean='+format(np.nanmean(mean),".2f")]; 
+              #ll=['Obs: OSISAF-ease2']
+              ll=['Obs: OSISAF-ease2'+', mean='+format(np.nanmean(mean),".2f")]; 
               #ll=['OSI-455 mean = '+format(np.nanmean(mean),'.2f')]
             else:
               ll=[]; 
@@ -1002,13 +1010,23 @@ for serie_or_map in serie_or_maps:
             ll.append(run)#+' - mean = '+format(np.nanmean(mean),".2f"))
             plt.ylim([0,25])
             plt.fill_between(time,mean-std,mean+std,facecolor=colors[ke-1],alpha=0.5,lw=2)
+          elif vname=='drift' or vname=='vcorr':
+            #if run=='BSOSE':
+            mean=uniform_filter1d(mean,10)
+            #exit() 
+# zzz
+            time,mean,std=daily_clim(time_obsd[0:len(mean)],mean)
+            ll.append(run+', mean = '+format(np.nanmean(mean),".2f"))
+            plt.ylim([2.5,20])
+            #plt.fill_between(time,mean-std,mean+std,facecolor=colors[ke-1],alpha=0.5,lw=2)
           else:
-            time,mean=daily_clim(time_obsd,mean)
+            time,mean,std=daily_clim(time_obsd,mean)
             ll.append(run+' - mean = '+format(np.nanmean(mean),".2f"))
           figname='cli_'+figname
+          plt.plot(time, mean, colors[ke-1],linewidth=2)
+        else:
+          plt.plot(time, mean, colors[ke-1])   
 
-
-        plt.plot(time, mean, colors[ke-1])   
         plt.grid('on')
         if ex==expt[-1]:
           #if vname!='sit':
@@ -1027,7 +1045,7 @@ for serie_or_map in serie_or_maps:
             if os.path.exists(path_fig+run)==False:
               os.mkdir(path_fig+run)
 
-            figname=path_fig+run+'/'+figname
+            figname=path_fig+'paper_1/'+figname
             print('Saving: '+figname)
             plt.savefig(figname)
           if plt_show==1:
@@ -3097,8 +3115,8 @@ for serie_or_map in serie_or_maps:
           variable=np.where(variable!=0,variable,np.nan)
 
         if vname=='sic':
-          cmap = cmocean.cm.ice; vmin=0.4; vmax=1.
-          vnamee='ice coverage '
+          cmap = cmocean.cm.ice; vmin=0.8; vmax=1.
+          vnamee='ice concentration '
         elif vname=='sit':
           cmap = cmocean.cm.dense_r; vmin=0; vmax=3.5
           vnamee='ice thickness (m) '
@@ -3115,7 +3133,8 @@ for serie_or_map in serie_or_maps:
 
         # if expt is last plot
         if ex==expt[-1]:
-          for ts in range(0,len(time_obsixn)):  
+          for ts in [len(time_obsixn)-1]:  
+          #for ts in range(0,len(time_obsixn)):  
             ke=-1
             fig, ax = plt.subplots(1, len(expt) ,figsize=(16,8))
             for ex in expt:
@@ -3124,11 +3143,12 @@ for serie_or_map in serie_or_maps:
               t=np.where(time_obsixn[ts]==time_mod)[0]; #exit()
 
               run=runs[expts[ex]]
-              if ex==expt[-1]:
-                ax[ke].set_title(time[t].strftime('%Y/%m/%d %H:%M')[0], loc = 'right')
-                ax[ke].set_title(run,loc='left')
-              else:
-                ax[ke].set_title(run+' '+vnamee,loc='left')
+              #if ex==expt[-1]:
+              #  ax[ke].set_title(time[t].strftime('%Y/%m/%d %H:%M')[0], loc = 'right')
+              #  ax[ke].set_title('Brittle model ice coverage',loc='center')
+              #else:
+              #  ax[ke].set_title('Viscous-elastic model ice coverage',loc='center')
+              ax[ke].set_title(run+' '+vnamee,loc='left')
 
               m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke])
               lonp, latp = m(lon_mod,lat_mod)#,inverse=True)
@@ -3140,10 +3160,19 @@ for serie_or_map in serie_or_maps:
               #im22 = m.quiver(lonov, latov, uc_mod[0], vc_mod[0],color='black',width=0.002,scale=500.0) 
               #qk=plt.quiverkey(im22,.5,.5,10,'10 km/day',labelpos='S',fontproperties={'size':8})
               m.drawcoastlines()
+              #m.drawparallels(np.arange(-90,-30,5))
+              #m.drawmeridians(np.arange(0,360,30))
+
               m.fillcontinents(color='grey',lake_color='aqua')
               # add wrap-around point in longitude.
               longr, latgr = m([0,0],[-90,-70.5])#,inverse=True)
               m.plot(longr,latgr,color='grey',linewidth=2)
+
+              # circle around the storm
+              if ex==expt[-1]:
+                longr, latgr = m([-33.0],[-69.5])#,inverse=True)
+                #m.plot(longr,latgr,marker='o',color='magenta')#,markersize=4,linewidth=.02)
+                m.scatter(longr,latgr,s=20000,facecolors='none', edgecolors='magenta',linewidth=2)
       
               #plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
               #sit_output = vdatac # .sit.to_masked_array() # Extract a given variable

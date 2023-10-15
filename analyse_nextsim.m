@@ -3,20 +3,22 @@ close all
 
 %Time
 start_day  =1;
-start_month=1;
-start_year =2016;
+start_month=2;
+start_year =2017;
+
 end_day    =31;
 end_month  =12;
-end_year   =2016;
-%end_day    =28;
-%end_month  =2;
-%end_year   =2016;
+end_year   =2017;
+
+%end_day    =1;
+%end_month  =12;
+%end_year   =2017;
 
 
 %Runs (names) or experiments (numbers - starts with 1)
 expt=[12,9,17,15];%2,5,7,10]
 expt=[19,18];
-%expt=[23,22];
+expt=[30];
 
 serie_or_maps=[0]; % 1 for serie, 2 for video, 3 for map, 0 for neither
 my_dates=1;
@@ -24,8 +26,8 @@ inc_obs=1;
 
 % Plot types
 %plot_scatter=0;
-%plot_series =0;
-plot_pdf    =1;
+plot_series =1;
+plot_pdf    =0;
 plot_psd    =0;
 %plot_video  =0; 
 plot_map    =0;
@@ -35,16 +37,21 @@ plt_show    =1;
 interp_obs  =1 ;% only for SIE maps obs has 2x the model resolution
 
 %Variables
-vname ='divergence'%'newice_mean_psd'; %'newice_perc'; % newice_perc 
-varim =''; % 'sit' for model solo videos  % video
+vname ='sit_ross_sea'; %divergence'%'newice_mean_psd'; %'newice_perc'; % newice_perc 
+varim =''; % unused 'sit' for model solo videos  % video
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % after 'BSOSE' run (ocean boundary cond), runs are all mEVP
-runs={'50km_ocean_wind'     ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',...   % 5
-      '50km_20Clab_20180102','50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',... % 10
-      '50km_glorys_20180102','BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',...       % 15
-      '50km_hyle_20130102'  ,'50km_ckFFalse_20130102','BBM'                   ,'mEVP'                  ,'25km_bbm_20130102',...       % 20
-      '25km_mevp_20130102'  ,'12km_bbm_20130102'     ,'12km_mEVP_20130102'}; % last two are links to the original expts
+runs={'50km_ocean_wind'      ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',...       # 5
+      '50km_20Clab_20180102' ,'50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',...    # 10
+      '50km_glorys_20180102' ,'BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',    ...       # 15
+      '50km_hyle_20130102'   ,'50km_ckFFalse_20130102','50km_bWd020_20130102'  ,'mEVP+'                 ,'25km_bbm_20130102',   ...        # 20
+      '25km_mevp_20130102'   ,'12km_bbm_20130102'     ,'12km_mEVP_20130102'    ,'50km_bWd016_20130102'  ,'50km_mCd01_20130102', ...        # 25
+      '50km_bCd01_20130102'  ,'50km_mWd016_20130102'  ,'50km_10kPcom_20130102' ,'50km_mevp10kP_20130102','BBM',...    # '50km_b10kP2h_20130102', ...      # 30
+      'mEVP'                 ,'50km_b14kP1h_20130102' ,'50km_m14kP1h_20130102' ,'50km_b14kP2h_20130102' ,'50km_m14kP2h_20130102',...       # 35
+      '50km_mWd022_20130102' ,'50km_mWd024_20130102'}; %      # ,'50km_mevp10kP_20130102']#  ,'50km_bCd01_20130102']         # 33
 
 
 expts=1:length(runs); %) #[0,1,2,3,4,5]
@@ -61,6 +68,8 @@ if strncmp(vname,'newice',6)
   varray='newice'; 
 elseif strncmp(vname,'divergence',10) 
   varray='siv'; 
+elseif strncmp(vname,'sit',3) 
+  varray='sit'; 
 end
 
 %trick to cover all months in runs longer than a year
@@ -74,7 +83,7 @@ end_month=end_month-1;
 obs_sources={'OSISAFease2'};%,'OSISAF-ease'] %['NSIDC','OSISAF','OSISAF-ease','OSISAFease2']: 
     
 scrsz=[1 1 1366 768];
-scrsz=get(0,'screensize');
+%scrsz=get(0,'screensize');
 
 %paths
 %print('Hostname: '+socket.gethostname())
@@ -97,8 +106,8 @@ run=runs{8}; %expt[0]] % 'data_glorys'
 
 
 ncfile = strcat(path_runs,run,'/output/Moorings_2018m01.nc');
-lon_mod = ncread(ncfile,'longitude'); %sit.to_masked_array() % Extract a given variable
-lat_mod = ncread(ncfile,'latitude'); %sit.to_masked_array() % Extract a given variable
+lon_mod = double(ncread(ncfile,'longitude')); %sit.to_masked_array() % Extract a given variable
+lat_mod = double(ncread(ncfile,'latitude')); %sit.to_masked_array() % Extract a given variable
 %lon_mod=np.where(lon_mod!=np.max(lon_mod),lon_mod,179.99999999999)%180.01)
 %lon_mod=np.where(lon_mod!=np.min(lon_mod),lon_mod,-179.99999999999)%-180.01)
 lon_nex = lon_mod; 
@@ -220,6 +229,59 @@ for ex = expt;
 %%
 %%    %datac.data_vars
 %  
+
+
+  if plot_series==1;
+
+		if strcmp(vname,'sit_ross_sea') %|| strcmp(vname,'newice_mean_psd')
+
+      % reading p-skrips data
+      psk=open('/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/ross_sea/ross-sea-timeseries_daily_14_1.mat');
+      pskfile='/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/ross_sea/mean_SIHEFF-2017-winter_runCase14.nc';
+      lon_psk=double(ncread(pskfile,'XLONG'));
+      lat_psk=double(ncread(pskfile,'XLAT'));
+      time_psk=datenum(2017,2,1):datenum(2017,12,31);
+
+ 
+      filepxx=[path_runs,run,'/output/ross_sea_sit_series_',datestr(time_mod(1),'yyyy-mm-dd'),'_',datestr(time_mod(end),'yyyy-mm-dd'),'.mat'];
+
+      if exist(filepxx)==2
+        display(['Loading: ',filepxx])
+        load([filepxx])
+
+      else
+			  %% power spectrum analysis
+			  display(['Computing ','daily average SIT from the Ross Sea'])
+        k=0;
+			  for i = times 
+			    id=find(time_modi==i); k=k+1;
+          mean_sit=squeeze(nanmean(vdatac(:,:,id),3));
+			    display(['Interpolating ','daily average SIT from neXtSIM to the Ross Sea, day: ',datestr(i)])
+          ross_sit=griddata(lon_nex,lat_nex,mean_sit,lon_psk,lat_psk);
+          ross_sit_series(k)=nanmean(ross_sit(:));
+        end
+
+        display(['Saving: ',filepxx])
+        save([filepxx],'ross_sit_series','times')
+
+      end
+
+      ross_sit_psk=nanmean(nanmean(psk.daily_all_thick_14,2),3);
+
+			%close all
+      figure('position',scrsz,'color',[1 1 1],'visible','on');  
+      hold on
+      plot(times,ross_sit_series,'k','linewidth',2)
+      plot(time_psk,ross_sit_psk,'b','linewidth',2)
+      legend('BBM','P-SKRIPS','location','best')
+      datetick('x')
+
+		end %  if strcmp(vname,'sit_ross_sea')
+
+  end % plot_series
+
+
+
   if plot_map==1;
 
 		if strcmp(vname,'newice_perc') || strcmp(vname,'newice_mean_psd')
@@ -295,9 +357,101 @@ for ex = expt;
         title('Energy difference in periods shorter than 2 days')
       end
 
-		end %  if strcmp(vname,'newice_perc')
+
+		elseif strcmp(vname,'sit_ross_sea') %|| strcmp(vname,'newice_mean_psd')
+
+      % reading p-skrips data
+      psk=open('/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/ross_sea/ross-sea-timeseries_daily_14_1.mat');
+      pskfile='/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/ross_sea/mean_SIHEFF-2017-winter_runCase14.nc';
+      lon_psk=ncread(pskfile,'XLONG');
+      lat_psk=ncread(pskfile,'XLAT');
+      time_psk=datenum(2017,2,1):datenum(2017,12,31);
+ 
+			display(['Computing ','daily average SIT from the Ross Sea'])
+      k=0;
+
+      figure('position',scrsz,'color',[1 1 1],'visible','on');  
+      load coastlines
+
+			for i = times 
+			  id=find(time_modi==i); k=k+1;
+        mean_sit(:,:,k)=squeeze(nanmean(vdatac(:,:,id),3));
+
+        exs=[1 2];
+        for ex=exs
+
+          if ex==3 % osisaf
+
+          elseif ex==1 % p-skryps
+            ip=find(time_psk==i); 
+            model=squeeze(psk.daily_all_thick_14(ip,:,:))';
+            lon_mod=lon_psk; lat_mod=lat_psk;
+            mname='P-SKRIPS';
+          elseif ex==2
+            model=squeeze(mean_sit(:,:,k));
+            lon_mod=lon_nex; lat_mod=lat_nex;
+            mname=[run,' neXtSIM-Ant'];
+          end
+          model(model==0)=nan;
+
+			    %close all
+			    ax=subplot(1,2,ex);
+          hold on; 
+			    worldmap([-90 -60],[150 -130])
+
+          projection = gcm;
+          latlim = projection.maplatlimit;
+          lonlim = [-130 150]; % projection.maplonlimit;
+          if ~exist('gshhs_f.i', 'file');
+              gshhs('gshhs_f.b', 'createindex');
+          end
+          % Load the GSHHG coastal polygon data version 2.3.7 - Full Resolution
+          antarctica = gshhs('gshhs_f.b', latlim, lonlim);
+          levels          = [antarctica.Level];
+          land            = (levels == 1);
+          lake            = (levels == 2);
+          island          = (levels == 3); % island in a lake
+          pond            = (levels == 4); % pond in an island in a lake
+          ice_front       = (levels == 5); % ice shelves around Antarctica
+          grounding_line  = (levels == 6); % land of Antarctica
+
+          geoshow([antarctica(ice_front).Lat],      [antarctica(ice_front).Lon],      'DisplayType', 'Line', 'Color',[0 0 1]); % [230/255 230/255 230/255]); % gray
+          %geoshow([antarctica(ice_front).Lat],      [antarctica(ice_front).Lon],      'DisplayType', 'Polygon', 'FaceColor',[0 0 1]); % [230/255 230/255 230/255]); % gray
+          %geoshow([antarctica(grounding_line).Lat], [antarctica(grounding_line).Lon], 'DisplayType', 'Line',    'Color', [0 0 0]) %   [255/255 105/255 180/255]); % hot pink
+          %geoshow([antarctica(land).Lat],           [antarctica(land).Lon],           'DisplayType', 'Polygon', 'FaceColor', [  0/255 100/255   0/255]); % forest green
+          %geoshow([antarctica(lake).Lat],           [antarctica(lake).Lon],           'DisplayType', 'Polygon', 'FaceColor', [  0/255   0/255 128/255]); % navy blue
+          %geoshow([antarctica(island).Lat],         [antarctica(island).Lon],         'DisplayType', 'Polygon', 'FaceColor', [210/255 105/255  30/255]); % chocolate
+          %geoshow([antarctica(pond).Lat],           [antarctica(pond).Lon],           'DisplayType', 'Polygon', 'FaceColor', [ 84/255  84/255  84/255]); % light steel blue
+          %setm(gca, 'FFaceColor', [.7 .7 .7]); % set background color (should be seas, oceans, bays, etc.)
+
+			    pcolorm(double(lat_mod),double(lon_mod),model); 
+			    set(gca,'clim',[0 3])
+			    colormap(ax,cmocean('dense_r')); 
+          colorbar
+          h=title(['Sea ice thickness from ',mname,' on ',datestr(i,'YYYY-mm-dd')]);
+          h.Position(2)=-6200000.36852015;
+          plotm(coastlat,coastlon,'k')
+
+        end
+
+        if save_fig==1
+          figname=[path_fig,run,'/map_',vname,'_',datestr(i,'yyyy-mm-dd'),'.png'];
+          display(['Saving: ',figname]);
+          export_fig(gcf,figname,'-png','-r150' );
+          %print('-dpng','-r300',figname)
+          %saveas(gcf,figname,'fig')
+          clf('reset')
+          set(gcf,'color',[1 1 1])
+        end
+
+      end % for i = times
+
+		end %  if strcmp(vname,
+
 
   end % plot_map
+
+
 
   if plot_psd==1;
 

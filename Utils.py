@@ -22,19 +22,23 @@ def daily_clim(time_obsd,mean):
   time_cli=dates.num2date(time_clin)
   time_clid=pd.DatetimeIndex(time_cli)
 
-  mean_cli=[]
+  mean_cli=[]; std_cli=[]
   for t in range(len(time_clid)): # (np.shape(sicc_mod)[0]):
     m=time_clid[t].month; d=time_clid[t].day
     if d==29 and m==2:
       print('NOT COMPUTING FOR 29/2 '+str(d)+'/'+str(m).zfill(2))
     else:
-      print('computing daily longterm mean for '+str(d)+'/'+str(m).zfill(2))
+      #print('computing daily longterm mean for '+str(d)+'/'+str(m).zfill(2))
       iday=time_obsd.day==d
       imonth=time_obsd.month==m; iym=np.where(iday*imonth==True)
       #time_cli.append(time[iym[0][0]])
       mean_cli.append(np.nanmean(mean[iday*imonth],axis=0)) # month average
-  
-  return time_cli, mean_cli
+      std_cli.append(np.nanstd(mean[iday*imonth],axis=0)) # month average
+
+  mean_cli=np.array(mean_cli)  
+  std_cli=np.array(std_cli)  
+
+  return time_cli, mean_cli, std_cli
 
 def veccor1(u1,v1,u2,v2):
     ''' 
@@ -97,7 +101,7 @@ def veccor1(u1,v1,u2,v2):
     
     return ac,theta,X,Y 
 
-def text_map_w_stats(data,lon_mod,bm,lon_regions,lat_regions,oper,unit,colort):
+def text_map_w_stats(ax,data,lon_mod,bm,lon_regions,lat_regions,latn,oper,unit,colort):
     ''' 
     text_maps_w_stats(data,lon_mod,bm,lon_regions,oper,unit,colort)
     data = input 2D data
@@ -125,8 +129,6 @@ def text_map_w_stats(data,lon_mod,bm,lon_regions,lat_regions,oper,unit,colort):
     for kl in range(0,len(lon_regions)):
       lsec=lon_regions[kl]
       lasec=lat_regions[kl]
-      # plotting lines
-      x,y = bm([lsec,lsec],[lasec, -50]); bm.plot(x,y,color=colort,linewidth=1,)
 
       if lsec==lon_regions[0]: # values crossing the 180E/W line
         dataf=np.where(lon_mod<lon_regions[0],data,0); dataf2=np.where(lon_mod>lon_regions[-1],data,0); dataf=dataf+dataf2
@@ -146,12 +148,15 @@ def text_map_w_stats(data,lon_mod,bm,lon_regions,lat_regions,oper,unit,colort):
 
       # texting sections
       if oper=='':
-        x,y = bm(np.nanmean([lon_r[kl-1],lon_r[kl]])-0,-63);
-        plt.annotate(rnames[kl], xy=(x, y), xycoords='data', xytext=(x, y),fontsize=9,color=colort,fontweight='bold')#, textcoords='offset points',
+        x,y = bm(np.nanmean([lon_r[kl-1],lon_r[kl]])-0,latn);
+        ax.annotate(rnames[kl], xy=(x, y), xycoords='data', xytext=(x, y),fontsize=9,color=colort,fontweight='bold')#, textcoords='offset points',
       else:
-        x,y = bm(np.nanmean([lon_r[kl-1],lon_r[kl]])-0,-63);
-        plt.annotate(dataf+' '+unit, xy=(x, y), xycoords='data', xytext=(x, y),fontsize=9,color=colort,fontweight='bold')#, textcoords='offset points',
+        x,y = bm(np.nanmean([lon_r[kl-1],lon_r[kl]])-0,latn);
+        ax.annotate(dataf+' '+unit, xy=(x, y), xycoords='data', xytext=(x, y),fontsize=9,color=colort,fontweight='bold')#, textcoords='offset points',
         #color='r', arrowprops=dict(arrowstyle="->")) #"fancy", color='g')
+
+      # plotting lines
+      x,y = bm([lsec,lsec],[lasec, -50]); bm.plot(x,y,color=colort,linewidth=1,)
 
 def format_map(ax):
     ax.gridlines(zorder=2,linewidth=0.25,linestyle="--",color="darkgrey")
