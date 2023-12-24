@@ -44,7 +44,7 @@ end_year   =2016
 start_day  =1 # 6 vcorr serie initial day
 start_month=1
 start_year =2016
-end_day    =27 # bsie 27/12/2021 = last day
+end_day    =31 # bsie 27/12/2021 = last day
 end_month  =12  #8 sit
 end_year   =2021
 
@@ -98,12 +98,12 @@ runs=['50km_ocean_wind'      ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102',
 
 #Colors
 if expt[0]==31:
-  colors=['orange','b','pink','brown','g','r','k','yellow','orange','b','pink','brown','g','r','k','yellow']
+  colors=['orange','c','pink','brown','g','r','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 elif expt[0]==12:
-  colors=['pink','orange','b','black','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
-  colors=['r','orange','b','k','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
+  colors=['pink','orange','c','black','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
+  colors=['r','orange','c','k','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 else:
-  colors=['k','orange','r','b','pink','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
+  colors=['k','orange','r','c','pink','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 
 obs_colors=['g','y','orange'];
 
@@ -749,7 +749,8 @@ for serie_or_map in serie_or_maps:
             sicc_mo=np.zeros((len(time_mod[ifirst:ilast])+1,np.shape(sic_mod)[1],np.shape(sic_mod)[2]))
             k=-1
             #Processing model SIC to get extent 
-            for t in range(ifirst,ilast+1,1): # (np.shape(sicc_mod)[0]):
+            #for t in range(ifirst,ilast+1,1): # (np.shape(sicc_mod)[0]):
+            for t in range(ifirst,ilast,1): # (np.shape(sicc_mod)[0]):
               k+=1
               print('Processing model SIC to get extent time: '+time_mods[t].strftime("%Y%m%d%HH:%MM"))
               sicct=sic_mod[t];

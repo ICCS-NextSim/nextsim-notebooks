@@ -103,15 +103,18 @@ def veccor1(u1,v1,u2,v2):
 
 def text_map_w_stats(ax,data,lon_mod,bm,lon_regions,lat_regions,latn,oper,unit,colort):
     ''' 
-    text_maps_w_stats(data,lon_mod,bm,lon_regions,oper,unit,colort)
+    text_map_w_stats(ax,data,lon_mod,bm,lon_regions,lat_regions,latn,oper,unit,colort):
+    ax = fig ax
     data = input 2D data
     lon_mod = model longitude
     bm = Basemap() output
-    lon_regions = longitudinal sections to compute stats
-    starting from the smallest e.g. -179
+    lon_regions = longitudinal sections to compute stats. starting from the smallest e.g. -179
+    lat_regions = latitudinal sections to compute stats
+    latn = latitude that receives text
     oper = operation, e.g.: sum, mean, ... if '' (no operation nor texting)
     unit = m, m3, etc
-    
+    colort = color of text
+
     This function computes and writes stats in the regions between
     two lon_regions longitudes. Operations available are sum and mean
      

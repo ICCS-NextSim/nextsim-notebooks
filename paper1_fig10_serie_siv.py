@@ -34,39 +34,53 @@ proj_info = projection_info.ProjectionInfo.sp_laea()
 proj      = proj_info.pyproj
 
 #Time
-start_day  =24 # 6 vcorr serie initial day
+start_day  =24 # 6 vcorr serie initial dayi, if year 2013
 start_month=7
 start_year =2016
 end_day    =25 #24 # bsie
 end_month  =7  #8 sit
 end_year   =2016
 
+#start_day  =1 # 6 vcorr serie initial day
+#start_month=1
+#start_year =2016
+#end_day    =31 # bsie 27/12/2021 = last day
+#end_month  =12  #8 sit
+#end_year   =2016
+
 start_day  =1 # 6 vcorr serie initial day
 start_month=1
 start_year =2015
-end_day    =31 # bsie
+end_day    =31 # bsie 27/12/2021 = last day
 end_month  =12  #8 sit
-end_year   =2020
+end_year   =2021
+
 
 #Runs (names) or experiments (numbers - starts with 1)
-exp=30
+exp=12
 exptc=[12,31,exp] # if serie_or_map!=0
 expt=exptc
 expt=[12,31,19,30,18] # final expts (bsose, mevp, mevp+, bbm, bbm+)
-expt=[31,30] # final expts (bsose, mevp, bbm)
+expt=[31,30] # final expts (mevp, bbm)
+expt=[31,19] # final expts (mevp, bbm)
 expt=[12,31,19,30] # final expts (bsose, mevp, mevp+, bbm)
+#expt=[12,31,19,30,24] # final expts (bsose, mevp, mevp+, bbm)
+#expt=[31,19,30,24,28] # final expts (bsose, mevp, mevp+, bbm)
+#exptc=expt
 #expt=[exp]
 
-serie_or_maps=[0]#[1,2,3] # 1 for serie, 2 for video, and 3 for map, 0 for neither
-my_dates=1
-inc_obs=1
-
 #Variables
-vname='drift' # 'divergence'  # sit_obs_remse_diff 
+vname='siv'  # sit_obs_rmse_diff 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_maps) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
 # newice, newice_diff 'ridge_ratio' 'divergence' 
+
+serie_or_maps=[0]#[1:4] # 1=serie, 2=video, and 3=map, 4=smap, 5=hist; 0 for neither
+my_dates=0
+inc_obs=0
+kmm=-1; # marker for seasonal maps 
+kmv=-1
 
 # Plot types
 plot_scatter=0
@@ -79,11 +93,15 @@ plot_maps   =0 # seasonal maps
 plot_mapo   =0 # maps with obs / based on plot_video and plot_smap
 plot_smap   =0 # solo map
 
-plot_cli    =1
+plot_cli    =0
 save_fig    =1
 plt_show    =1
 interp_obs  =1 # only for SIE maps obs has 2x the model resolution
 hist_norm   =0
+plot_atm    =0
+eraname='msl' 
+# msl = air pressure at mea sea level
+
 ####################################################################
 # after BSOSE run (ocean boundary cond), m = mEVP, b = BBM
 print(expt)
@@ -92,18 +110,18 @@ runs=['50km_ocean_wind'      ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102',
       '50km_glorys_20180102' ,'BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',           # 15
       '50km_hyle_20130102'   ,'50km_ckFFalse_20130102','50km_bWd020_20130102'  ,'mEVP+'                 ,'25km_bbm_20130102',           # 20
       '25km_mevp_20130102'   ,'12km_bbm_20130102'     ,'12km_mEVP_20130102'    ,'50km_bWd016_20130102'  ,'50km_mCd01_20130102',         # 25
-      '50km_bCd01_20130102'  ,'50km_mWd016_20130102'  ,'50km_10kPcom_20130102' ,'50km_mevp10kP_20130102','BBM', # '50km_b10kP2h_20130102',       # 30
+      '50km_bCd01_20130102'  ,'50km_mWd016_20130102'  ,'50km_10kPcom_20130102' ,'50km_mevp10kP_20130102','BBM', #'50km_b10kP2h_20130102',       # 30
       'mEVP'                 ,'50km_b14kP1h_20130102' ,'50km_m14kP1h_20130102' ,'50km_b14kP2h_20130102' ,'50km_m14kP2h_20130102',       # 35
       '50km_mWd022_20130102' ,'50km_mWd024_20130102']       # ,'50km_mevp10kP_20130102']#  ,'50km_bCd01_20130102']         # 33
 
 #Colors
 if expt[0]==31:
-  colors=['orange','b','pink','brown','g','r','k','yellow','orange','b','pink','brown','g','r','k','yellow']
+  colors=['orange','c','k','brown','g','r','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 elif expt[0]==12:
   colors=['pink','orange','b','black','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
-  colors=['r','orange','b','k','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
+  colors=['r','orange','c','k','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 else:
-  colors=['k','orange','r','b','pink','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
+  colors=['k','orange','r','c','pink','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 
 obs_colors=['g','y','orange'];
 
@@ -125,16 +143,6 @@ ym_start= 12*start_year + start_month - 1
 ym_end  = 12*end_year + end_month - 1
 end_month=end_month-1
 
-# series
-params=[9,14];
-# maps
-paramm=[15];  
-# profiles
-parampr=[1, 2]; 
-# time depth
-paramtd=[9, 10, 11, 12]; 
-# eddy stats
-parame=[3, 4, 2, 5, 6, 8]; 
 
 # SIE obs sources
 obs_sources=['NSIDC','OSISAF-ease2'];
@@ -175,6 +183,18 @@ inan_mod=ma.getmaskarray(sit_output[0]);
 mask = ma.getmaskarray(sit_output[0]) #Get mask
 lon_mod360=np.where(lon_mod>=0,lon_mod,lon_mod+360)
 
+if plot_atm==1:
+  path_era5='/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/era5/'
+  filename=path_era5+'ERA5_'+eraname+'_y2016'+'.nc' 
+  print(filename)
+  data = xr.open_dataset(filename)
+  lon_era = data.variables['longitude'] 
+  lat_era = data.variables['latitude']; 
+  #exit()
+  #lon_era=lon_era-180. 
+  lon_era=np.where(lon_era<=180,lon_era,lon_era-360.)
+  lon_eram,lat_eram=np.meshgrid(lon_era,lat_era)
+
 #ETOPO
 filename=path_data+'etopo/ETOPO_Antarctic_10arcmin.nc'
 print('Reading: '+filename)
@@ -184,16 +204,29 @@ lat_etopo=ds.variables['lat'][:]
 h_etopo=ds.variables['z'][:]
 ds.close()
 lon_etopo,lat_etopo=np.meshgrid(lon_etopo,lat_etopo)
-filename=path_data+'etopo/ETOPO_Antarctic_50km_nextsim.nc'
-print('Loading: '+filename)
-ds=xr.open_dataset(filename)
-h_etopoi=ds.variables['__xarray_dataarray_variable__'][:]
-ds.close()
-filename=path_data+'etopo/ETOPO_Antarctic_drift.nc'
-print('Loading: '+filename)
-ds=xr.open_dataset(filename)
-h_etopod=ds.variables['__xarray_dataarray_variable__'][:]
-ds.close()
+
+save_etopoe=0 
+if save_etopoe==1: 
+  print('Interpolating etopo bathy to ERA5 grid')
+  #lon_etopo=lon_
+  #func=myInterp.IrregularGridInterpolator(np.array(lon_etopo),np.array(lat_etopo),np.array(lon_eram),np.array(lat_eram))
+  #h_etopoi=func.interp_field(np.array(h_etopo))
+  #exit()
+  h_etopoi=seapy.oasurf(np.array(lon_etopo),np.array(lat_etopo),h_etopo,np.array(lon_eram),np.array(lat_eram))[0]
+  #siccz=seapy.oasurf(np.array(lon_mod),np.array(lat_mod),np.array(sicc_mo[iday]),np.array(lon_nex),np.array(lat_nex))[0]
+  h=xr.DataArray(h_etopoi) #,coords={'y': lat_e,'x': lon_e},dims=["y", "x"])
+  filename=path_data+'etopo/ETOPO_Antarctic_ERA5.nc'
+  print('Saving: '+filename)
+  h.to_netcdf(filename)
+  exit()
+else:
+  filename=path_data+'etopo/ETOPO_Antarctic_ERA5.nc'
+  print('Loading: '+filename)
+  ds=xr.open_dataset(filename)
+  h_etopoe=ds.variables['__xarray_dataarray_variable__'][:]
+  ds.close()
+  #h=h_etopoe
+  #exit()
 
 save_etopoi=0 
 if save_etopoi==1: 
@@ -204,6 +237,13 @@ if save_etopoi==1:
   filename=path_data+'etopo/ETOPO_Antarctic_50km_nextsim.nc'
   print('Saving: '+filename)
   h.to_netcdf(filename)
+else:
+  filename=path_data+'etopo/ETOPO_Antarctic_50km_nextsim.nc'
+  print('Loading: '+filename)
+  ds=xr.open_dataset(filename)
+  h_etopoi=ds.variables['__xarray_dataarray_variable__'][:]
+  ds.close()
+
 save_etopod=0
 if save_etopod==1: 
   file=path_data+'/drift_osisaf_ease2/2016'+'/ice_drift_sh_ease2-750_cdr-v1p0_24h-20160101'+'1200.nc'; 
@@ -218,6 +258,13 @@ if save_etopod==1:
   print('Saving: '+filename)
   h.to_netcdf(filename)
   exit()
+else:
+  filename=path_data+'etopo/ETOPO_Antarctic_drift.nc'
+  print('Loading: '+filename)
+  ds=xr.open_dataset(filename)
+  h_etopod=ds.variables['__xarray_dataarray_variable__'][:]
+  ds.close()
+
 
 ## climatological time
 #time_ini = dates.date2num(datetime.datetime(2015,1,1,3,0,0))
@@ -235,24 +282,29 @@ for serie_or_map in serie_or_maps:
   # variables to be plotted vary with type (map or series)
   if serie_or_map==1: # series
     expt=exptc
-    plot_series=1; plot_video=0; plot_maps=0;
+    plot_series=1; plot_video=0; plot_maps=0;plot_hist=0;
     vnames=[ 'sie','bsie','sit','sit_rmse','siv','drift','vcorr'] # sie,bsie,sit,siv,drift,vcorr processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
     varrays=['sic','sic' ,'sit','sit'     ,'sit','siv'  ,'siv'] # netcdf variable for each type of plot (raw variable used in xarray)
   elif serie_or_map==2: # video
     expt=[exp]
-    plot_series=0; plot_video=1; plot_maps=0;
+    plot_series=0; plot_video=1; plot_maps=0;plot_hist=0;
     vnames=[ 'sie','sit','drift'] 
     varrays=['sic','sit','siv'  ] 
   elif serie_or_map==3: # map
     expt=[exp]
-    plot_series=0; plot_video=0; plot_maps=1;
+    plot_series=0; plot_video=0; plot_maps=1;plot_hist=0;
     vnames=[ 'vcorr','sit'] 
     varrays=['siv'  ,'sit'] 
-  elif serie_or_map==4: # video of choice
+  elif serie_or_map==4: # smap
     expt=[exp]
-    plot_series=0; plot_video=0; plot_maps=0; plot_vchoice=1;
-    vnames=[ 'vcorr','sit'] 
-    varrays=['siv'  ,'sit'] 
+    plot_series=0; plot_video=0; plot_maps=0; plot_smap=1;plot_hist=0;
+    vnames=[ 'divergence','newice','ridge_ratio'] 
+    varrays=['siv'       ,'newice','ridge_ratio'] 
+  elif serie_or_map==5: # hist
+    expt=[exp]
+    plot_series=0; plot_video=0; plot_maps=0; plot_smap=0; plot_hist=1;
+    vnames=[ 'divergence','newice','convergence','ridge_ratio'] 
+    varrays=['siv'       ,'newice','siv'        ,'ridge_ratio'] 
   else:
     vnames=[vname]; varrays=[varray]
   
@@ -261,16 +313,32 @@ for serie_or_map in serie_or_maps:
 
   # loop in all variables to be plotted
   for nvar in range(len(vnames)):
+    kmv+=1
     vname=vnames[nvar]
     varray=varrays[nvar]
     # time will vary with type of variables
-    if my_dates==0: 
+    if my_dates==1: 
       if varray=='sic':
-        timedsdfsfdsf=1;
+        start_day  =1 # 6 vcorr serie initial day, if year 2013
+        start_month=1
+        start_year =2016
+        end_day    =27 # bsie 27/12/2021 = last day
+        end_month  =12  #8 sit
+        end_year   =2016#21
       elif varray=='sit':
-        timedsdfsfdsf=1;
+        start_day  =1 # 6 vcorr serie initial day, if year 2013
+        start_month=1
+        start_year =2015
+        end_day    =31 # bsie 27/12/2021 = last day
+        end_month  =8  #8 sit
+        end_year   =2015#21
       elif varray=='siv':
-        timedsdfsfdsf=1;
+        start_day  =1 # 6 vcorr serie initial day
+        start_month=1
+        start_year =2015
+        end_day    =31 # bsie 27/12/2021 = last day
+        end_month  =12  #8 sit
+        end_year   =2015#20
         # monthly sit
         #1/2013-8/2021
         #vcorr
@@ -577,12 +645,13 @@ for serie_or_map in serie_or_maps:
             if vname=='sit': 
               # masking mod where there is no obs
               sicc_diff=sicc_obs+(sicc_mod-sicc_obs)
+              #zzz
               #sicc_diff=sicc_mod
               mean=np.nanmean(sicc_diff,axis=1); mean=np.nanmean(mean,axis=1)
               print(run+' mean = '+format(np.nanmean(mean),".2f"))
               ll.append(run+' mean = '+format(np.nanmean(mean),".2f"))
               timec=time; 
-              plt.ylabel('Sea ice thickness (m)'); plt.title('Sea ice thickness [Model interp to Obs]')
+              plt.ylabel('Sea ice thickness (m)'); plt.title('Monthly mean sea ice thickness')
             elif vname=='sit_rmse':
               # masking mod where there is no obs
               sicc_mod=sicc_obs+(sicc_mod-sicc_obs)
@@ -812,10 +881,24 @@ for serie_or_map in serie_or_maps:
               mean[t]=100.*(ontarget/total); mneg[t]=100.*(under/total); mpos[t]=100.*(over/total)
               mtotal[t]=100.*((ontarget+over)/total); 
     
+
             time=time_obs
+
+            if plot_cli==1:
+              if run=='BSOSE':
+                mneg=uniform_filter1d(mneg,10)
+              time,mneg,std=daily_clim(time_obsd,mneg)
+              #plt.plot(time, mean, obs_colors[ke-1])   
+              # plot randon points with colours for legend
+              #for exx in range(0,len(expt)):
+              #  plt.plot(time, mean, colors[exx])   
+              #plt.fill_between(time,mean-std,mean+std,facecolor=obs_colors[kc-1],alpha=0.5,lw=2)
+
             #plt.plot(time, mtotal, colors[ke-1],linestyle=':')   
             plt.plot(time, mneg, colors[ke-1],linestyle='--')   
             #plt.plot(time, mpos, colors[ke-1],linestyle='-',marker='.')   
+
+
             plt.ylabel('(%)'); 
             #plt.title('True positive (-), false positive (.-) and false negative (--) model-obs comparison')
             #plt.title('Accurate (-), over- (.-) and underestimated (--) ice coverage')
@@ -890,8 +973,9 @@ for serie_or_map in serie_or_maps:
           time=time_mods
           #for t in range(T):
           #    mean[t] = np.sum((siv[t]*sic[t]))
+          ll.append(run)#+' - mean = '+format(np.nanmean(mean),".2f"))
           plt.xlim([time_obs[0],time_obs[-1]])
-          plt.ylabel('SIV (km3)'); plt.title('Antarctic total sea ice volume (km3)')
+          plt.ylabel('S ice volume ($\mathrm{km^{3}}$)'); plt.title('Antarctic total sea ice volume ($\mathrm{km^{3}}$)')
           figname='serie_siv_total_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
     
         elif vname=='vcorr' or vname=='drift':
@@ -924,19 +1008,18 @@ for serie_or_map in serie_or_maps:
               mean=np.nanmean(magc_obs,1); mean=np.nanmean(mean,1)
               time=time_obs
 
-            if plot_cli==1:
-              mean=uniform_filter1d(mean,10)
-              time,mean,std=daily_clim(time_obsd,mean)
+              if plot_cli==1:
+                mean=uniform_filter1d(mean,10)
+                time,mean,std=daily_clim(time_obsd,mean)
+                plt.plot(time, mean, obs_colors[ke-1])   
+                # plot randon points with colours for legend
+                for exx in range(0,len(expt)):
+                  plt.plot(time, mean, colors[exx])   
+                plt.fill_between(time,mean-std,mean+std,facecolor=obs_colors[kc-1],alpha=0.5,lw=2)
               plt.plot(time, mean, obs_colors[ke-1])   
-              # plot randon points with colours for legend
-              for exx in range(0,len(expt)):
-                plt.plot(time, mean, colors[exx])   
-              plt.fill_between(time,mean-std,mean+std,facecolor=obs_colors[kc-1],alpha=0.5,lw=2)
-#zzz
-            plt.plot(time, mean, obs_colors[ke-1])   
 
             if vname=='drift':
-              #ll=['Obs: OSISAF-ease2']
+              #ll=['Obs: OSISAF-ease2']#+', mean='+format(np.nanmean(mean),".2f")]; 
               ll=['Obs: OSISAF-ease2'+', mean='+format(np.nanmean(mean),".2f")]; 
               #ll=['OSI-455 mean = '+format(np.nanmean(mean),'.2f')]
             else:
@@ -989,12 +1072,12 @@ for serie_or_map in serie_or_maps:
               #magc_mod=np.where(magc_mod<=80.0,magc_mod,np.nan)
               mean[t]=np.nanmean(magc_mod)
           if vname=='vcorr':
-            #ll.append(run+' - mean = '+format(np.nanmean(mean),".2f"))
-            plt.ylabel('Complex correlation'); plt.title('Ice drift complex correlation between model and obs (OSI-455)')
+            ll.append(run+' - mean = '+format(np.nanmean(mean),".2f"))
+            plt.ylabel('Complex correlation coef.'); plt.title('Complex correlation between modelled and obsverved sea ice drift')
             plt.ylim([0,1]) 
             figname='serie_vector_complex_correlation_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
           elif vname=='drift':
-            #ll.append(run+' - mean = '+format(np.nanmean(mean),".2f"))
+            ll.append(run+' - mean = '+format(np.nanmean(mean),".2f"))
             plt.ylabel('Drift speed (km/day)'); plt.title('Antarctic sea-ice average drift speed (km/day)') 
             #plt.ylim([0,1]) 
             figname='serie_velocity_speed_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
@@ -1006,18 +1089,29 @@ for serie_or_map in serie_or_maps:
             if run=='BSOSE':
               mean=uniform_filter1d(mean,10)
             mean=mean/1E6	
-            time,mean,std=daily_clim(time_modd[0:len(mean)],mean)
+            time,mean,std=daily_clim(time_modd,mean)
             ll.append(run)#+' - mean = '+format(np.nanmean(mean),".2f"))
             plt.ylim([0,25])
             plt.fill_between(time,mean-std,mean+std,facecolor=colors[ke-1],alpha=0.5,lw=2)
+
+          elif vname=='bsie':
+            if run=='BSOSE':
+              mean=uniform_filter1d(mean,10)
+            time,mean,std=daily_clim(time_obsd,mean)
+            plt.ylim([0,100])
+            ll.append(run)#+' - mean = '+format(np.nanmean(mean),".2f"))
+
           elif vname=='drift' or vname=='vcorr':
             #if run=='BSOSE':
             mean=uniform_filter1d(mean,10)
             #exit() 
-# zzz
             time,mean,std=daily_clim(time_obsd[0:len(mean)],mean)
-            ll.append(run+', mean = '+format(np.nanmean(mean),".2f"))
-            plt.ylim([2.5,20])
+            if vname=='drift':
+              plt.ylim([2.5,20])
+              ll.append(run)#+' - mean = '+format(np.nanmean(mean),".2f"))
+            elif vname=='drift' or vname=='vcorr':
+              plt.ylim([0,1])
+              ll.append(run+' - mean = '+format(np.nanmean(mean),".2f"))
             #plt.fill_between(time,mean-std,mean+std,facecolor=colors[ke-1],alpha=0.5,lw=2)
           else:
             time,mean,std=daily_clim(time_obsd,mean)
@@ -1025,6 +1119,7 @@ for serie_or_map in serie_or_maps:
           figname='cli_'+figname
           plt.plot(time, mean, colors[ke-1],linewidth=2)
         else:
+          #ll.append(run+' - mean = '+format(np.nanmean(mean),".2f"))
           plt.plot(time, mean, colors[ke-1])   
 
         plt.grid('on')
@@ -1045,7 +1140,7 @@ for serie_or_map in serie_or_maps:
             if os.path.exists(path_fig+run)==False:
               os.mkdir(path_fig+run)
 
-            figname=path_fig+'paper_1/'+figname
+            figname=path_fig+'/paper_1/'+figname
             print('Saving: '+figname)
             plt.savefig(figname)
           if plt_show==1:
@@ -1053,13 +1148,15 @@ for serie_or_map in serie_or_maps:
 
       if plot_hist==1:
         print('Ploting histogram: '+vname+' '+run)
-        plt.rcParams.update({'font.size': 22})
+        plt.rcParams.update({'font.size': 12})
+        print('kmv='+str(kmv))
+        if kmv==0 and ex==expt[0]:
+          fig=plt.figure(figsize = (8,9)) 
         # Plotting time series
         # Ice divergence
-        if vname[0:10]=='divergence': # if first expt load obs
-          if ke==1:
-            #fig=plt.figure(figsize = (16,8)) 
-            fig, ax = plt.subplots(1, 3, figsize = (16,8)) # landscape
+        if vname[0:10]=='divergence' or vname=='convergence': # if first expt load obs
+          #if ke==1:
+            #fig, ax = plt.subplots(1, 3, figsize = (16,8)) # landscape
           time_obs=time_obsix
           u_mod = udatac*3.6*24;  v_mod = vdatac*3.6*24;
          
@@ -1114,50 +1211,56 @@ for serie_or_map in serie_or_maps:
           #a=norm.pdf(div_mod.flatten(), loc=np.nanmean(div_mod.flatten()), scale=np.nanstd(div_mod.flatten()))
           
           if ke==1:
+            ax = fig.add_subplot(2,2, kmv+1) # landscape
             ll=[]
 
-          if hist_norm==1: 
-            #ax[0].loglog(hdiv[1][0:-1],hdiv[0]/np.sum(hdiv[0][:]),#hdiv[0][0],
-            #ax[0].loglog(hdiv[1][0:-1],hdiv[0]/hdiv[0][0],
-            ax[0].loglog(hdiv[1][1::],hdiv[0]/np.max(hdiv[0][:]),
-            color=colors[ke-1])
-            #plt.ylim([0, 1])
-          else:
-            ax[0].loglog(hdiv[1][0:-1],hdiv[0],
-            color=colors[ke-1])
-          ax[0].set_title('Divergence')
-          ax[0].set_xlabel('(d-1)')
+          if vname[0:10]=='divergence': # if first expt load obs
+            if hist_norm==1: 
+              #ax[0].loglog(hdiv[1][0:-1],hdiv[0]/np.sum(hdiv[0][:]),#hdiv[0][0],
+              #ax[0].loglog(hdiv[1][0:-1],hdiv[0]/hdiv[0][0],
+              #ax.loglog(hdiv[1][1::],hdiv[0]/np.max(hdiv[0][:]),
+              ax.plot(hdiv[1][1::],hdiv[0]/np.max(hdiv[0][:]),
+              color=colors[ke-1])
+              #plt.ylim([0, 1])
+            else:
+              ax.semilogx(hdiv[1][0:-1],hdiv[0],
+              color=colors[ke-1])
+            ax.set_title('Divergence')
+            ax.set_xlabel('(1/day)')
           
-          if ke==1:
-            ll=[]
-          if hist_norm==1: 
-            ax[1].loglog(hcon[1][0:-1]*-1,hcon[0]/np.max(hcon[0][:]),
-            color=colors[ke-1])
-            #plt.ylim([0, 1])
-          else:
-            ax[1].loglog(hcon[1][0:-1]*-1,hcon[0],
-            color=colors[ke-1])
-          #plt.ylim([0, 1E2])
-          ax[1].set_title('Convergence')
-          ax[1].set_xlabel('(d-1)')
+          elif vname=='convergence': # if first expt load obs
+            #if ke==1:
+            #  ll=[]
+            if hist_norm==1: 
+              ax.loglog(hcon[1][0:-1]*-1,hcon[0]/np.max(hcon[0][:]),
+              color=colors[ke-1])
+              #plt.ylim([0, 1])
+            else:
+              ax.loglog(hcon[1][0:-1]*-1,hcon[0],
+              color=colors[ke-1])
+            #plt.ylim([0, 1E2])
+            ax.set_title('Convergence')
+            ax.set_xlabel('(i1/day)')
 
-          #ax[2].bar(hshe[1][0:-1],hshe[0]/hshe[0][0],
-          if hist_norm==1: 
-            ax[2].loglog(hshe[1][1::],hshe[0]/np.max(hshe[0][:]),
-            color=colors[ke-1])
-            #plt.ylim([0, 1])
-          else:
-            ax[2].loglog(hshe[1][0:-1],hshe[0],
-            color=colors[ke-1])
-            
-          #plt.ylim([0, 1E2])
-          ax[2].set_title('Shear')
-          ax[2].set_xlabel('(d-1)')
+          elif vname=='shear': # if first expt load obs
+            #ax[2].bar(hshe[1][0:-1],hshe[0]/hshe[0][0],
+            if hist_norm==1: 
+              ax.loglog(hshe[1][1::],hshe[0]/np.max(hshe[0][:]),
+              color=colors[ke-1])
+              #plt.ylim([0, 1])
+            else:
+              ax.loglog(hshe[1][0:-1],hshe[0],
+              color=colors[ke-1])
+              
+            #plt.ylim([0, 1E2])
+            ax.set_title('Shear')
+            ax.set_xlabel('(d-1)')
 
         if vname=='newice' or vname=='ridge_ratio': # if first expt load obs
-          if ke==1:
+          #if ke==1:
             #fig=plt.figure(figsize = (16,8)) 
-            fig, ax = plt.subplots(1, 3, figsize = (16,8)) # landscape
+            #fig, ax = plt.subplots(1, 3, figsize = (16,8)) # landscape
+            #ax = fig.add_subplot(int(len(vnames)/2), int(len(vnames)/2), kmv+1) # landscape
           time_obs=time_obsix
           model=vdatac
           if vname=='newice':# or vname=='ridge_ratio': # if first expt load obs
@@ -1173,33 +1276,38 @@ for serie_or_map in serie_or_maps:
           #a=norm.pdf(div_mod.flatten(), loc=np.nanmean(div_mod.flatten()), scale=np.nanstd(div_mod.flatten()))
           
           if ke==1:
+            ax = fig.add_subplot(2,2, kmv+1) # landscape
             #ax1=fig.add_subplot(1,3,1)
             ll=[]
           #ax[0].bar(hdiv[1][0:-1],hdiv[0]/hdiv[0][0],
 
           if vname=='ridge_ratio': # if first expt load obs
-            ax[0].semilogy(hdiv[1][0:-1],hdiv[0],#/hdiv[0][0],
+            ax.semilogy(hdiv[1][0:-1],hdiv[0],#/hdiv[0][0],
             color=colors[ke-1])
+            #ax.grid('on')
           else:
-            ax[0].loglog(hdiv[1][0:-1],hdiv[0],#/hdiv[0][0],
+            ax.loglog(hdiv[1][0:-1],hdiv[0],#/hdiv[0][0],
             color=colors[ke-1])
-          ax[0].grid('on')
+            #ax.grid('on')
           #plt.ylim([0, 1E2])
           if vname=='newice':# or vname=='ridge_ratio': # if first expt load obs
-            ax[0].set_title('Ice growth')
-            ax[0].set_xlabel('(m/day)')
+            ax.set_title('Ice growth')
+            ax.set_xlabel('(m/day)')
           elif vname=='ridge_ratio': # if first expt load obs
-            ax[0].set_title('Ridging ratio')
-            ax[0].set_xlabel('(Ridged ice) / (Total ice)')
+            ax.set_title('Ridging ratio')
+            ax.set_xlabel('(Ridged ice) / (Total ice)')
 
+        ax.set_ylabel('N. of occurrences')
         if ex==expt[-1]:
           for i in expt:
             ll.append(runs[i])
     
           #ax1=fig.add_subplot(1,3,1)
-          ax[0].legend(ll)
-          plt.tight_layout()
+          ax.legend(ll)
+          #plt.tight_layout()
 
+        #if kmv==len(vnames)-1:
+        #run=''
         figname=path_fig+run+'/histogram_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
         fig.tight_layout() 
         if ex==expt[-1]:
@@ -1215,7 +1323,8 @@ for serie_or_map in serie_or_maps:
       if plot_maps==1:
         print('Ploting map: '+vname+' '+run)
         plt.rcParams.update({'font.size': 12})
-        fig=plt.figure(figsize = (9,8)) # square
+        if ex==expt[0]:
+          fig=plt.figure(figsize = (9,8)) # square
         if vname[0:5]=='vcorr' or vname=='drift': 
           if ke==1 : # if first expt load obs
             ll=[]; k=0
@@ -1275,14 +1384,15 @@ for serie_or_map in serie_or_maps:
               uc_mod[t]=np.where(uc_mod[t]!=0.0,uc_mod[t],np.nan)
               vc_mod[t]=np.where(vc_mod[t]!=0.0,vc_mod[t],np.nan)
           # loop in the four seasons
-          km=-1; tseason=['JFM','AMJ','JAS','OND']
-          for m in [1,4,7,10]:
+          km=-1; tseason=['JFM','ASO','JAS','OND']
+          for m in [1,4]:
             km+=1; 
+            kmm+=1; 
             print(run+': computing seasonal complex vector correlation starting in month '+str(m).zfill(2))
             if m==1:
               imonth1=time_obsd.month==1; imonth2=time_obsd.month==2; imonth3=time_obsd.month==3; 
             if m==4: 
-              imonth1=time_obsd.month==4; imonth2=time_obsd.month==5; imonth3=time_obsd.month==6; 
+              imonth1=time_obsd.month==8; imonth2=time_obsd.month==9; imonth3=time_obsd.month==10; 
             if m==7: 
               imonth1=time_obsd.month==7; imonth2=time_obsd.month==8; imonth3=time_obsd.month==9; 
             if m==10: 
@@ -1324,8 +1434,8 @@ for serie_or_map in serie_or_maps:
                   means=np.zeros((4,np.shape(mean)[0],np.shape(mean)[1]))
                 means[km,:,:]=mean
 
-            if ex==expt[-1]:
-              ax=fig.add_subplot(2,2,km+1)
+            if ex==ex:#pt[-1]:
+              ax=fig.add_subplot(2,2,kmm+1)
               bm = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l')#,ax=ax[km])
               bm.drawcoastlines()
               bm.fillcontinents(color='grey',lake_color='aqua')
@@ -1366,13 +1476,15 @@ for serie_or_map in serie_or_maps:
 
 
               # computing stats per subregion
-              text_fig=0
+              text_fig=1
               if text_fig==1:
-                lon_regions=[-150,-61,-20,34,90,160];
-                text_map_w_stats(mean,lon_obs,bm,lon_regions,'mean','','black')
+                lon_regions=[-150,-61,-20,34,90,160]; lat_regions=[ -77,-75,-73,-68.5,-67,-70];
+                #def text_map_w_stats(ax,data,lon_mod,bm,lon_regions,lat_regions,latn,oper,unit,colort):
+                print('writing stats on figure')
+                text_map_w_stats(ax,mean,lon_obs,bm,lon_regions,lat_regions,-60,'mean','','black')
                 plt.annotate('Total mean: '+format(np.nanmean(mean),'.2f')+'', xy=(.3,.56), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
                 dataf=np.where(h_etopod>=-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
-                plt.annotate('Shallow mean: '+dataf+'', xy=(.3,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+                plt.annotate('Coastal mean: '+dataf+'', xy=(.3,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
                 dataf=np.where(h_etopod<-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
                 plt.annotate('Deep mean: '+dataf+'', xy=(.3,.46), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
               # including colorbar
@@ -1539,14 +1651,15 @@ for serie_or_map in serie_or_maps:
           #sicc_diff=sicc_mod-sicc_obs 
 
           # loop in the four seasons
-          km=-1; tseason=['JFM','AMJ','JAS','OND']
-          for m in [1,4,7,10]:
+          km=-1; tseason=['JFM','ASO','JAS','OND']
+          for m in [1,4]:
             km+=1; 
+            kmm+=1; 
             print(run+': computing seasonal complex vector correlation starting in month '+str(m).zfill(2))
             if m==1:
               imonth1=time_obsd.month==1; imonth2=time_obsd.month==2; imonth3=time_obsd.month==3; 
             if m==4: 
-              imonth1=time_obsd.month==4; imonth2=time_obsd.month==5; imonth3=time_obsd.month==6; 
+              imonth1=time_obsd.month==8; imonth2=time_obsd.month==9; imonth3=time_obsd.month==10; 
             if m==7: 
               imonth1=time_obsd.month==7; imonth2=time_obsd.month==8; imonth3=time_obsd.month==9; 
             if m==10: 
@@ -1572,9 +1685,9 @@ for serie_or_map in serie_or_maps:
 
             mean=mmod-mobs
             mean=np.where(mean!=0,mean,np.nan)
-
-            if ex==expt[-1]:
-              ax=fig.add_subplot(2,2,km+1)
+            #exit()
+            if ex==ex: # pt[-1]:
+              ax=fig.add_subplot(2,2,kmm+1)
               bm = Basemap(projection='splaea',boundinglat=-52,lon_0=180,resolution='l')#,ax=ax[km])
               bm.drawcoastlines(linewidth=.5)
               bm.fillcontinents(color='grey',lake_color='aqua')
@@ -1587,15 +1700,11 @@ for serie_or_map in serie_or_maps:
               lonp, latp = bm(lon_mod,lat_mod)#,inverse=True)
               ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
               if vname=='sie' or vname=='sic':
-                plt.title(tseason[km]+' '+runs[expt[0]]+' - Obs.',loc='center')
+                plt.title(tseason[km]+' '+runs[ex]+' - Obs.',loc='center')
                 cmap = cmocean.cm.balance
                 im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-2.,vmax=2.)
                 #ic=bm.contour(lonp,latp,mmod,[1.],colors=('magenta'),linewidths=(.5,),origin='upper',linestyles='solid',extent=ext)
                 ic=bm.contour(lonp,latp,mobs,[1.],colors=('green'),linewidths=(1.,),origin='upper',linestyles='solid',extent=ext)
-              elif vname=='sisdfsfds':
-                plt.title(tseason[km]+' '+runs[expt[0]]+' - '+runs[expt[1]]+' rmse',loc='center')
-                cmap = cmocean.cm.balance
-                im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-2.,vmax=2.)
               # contour
               lone, late = bm(lon_etopo,lat_etopo)#,inverse=True)
               ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
@@ -1609,12 +1718,12 @@ for serie_or_map in serie_or_maps:
                 mpos=np.where(mean>=0,mean,np.nan); mneg=np.where(mean<=0,mean,np.nan); 
                 mean=(mean*25.*25.)/1e6; mobs=(mobs*25.*25.)/1e6; mmod=(mmod*25.*25.)/1e6
                 mpos=(mpos*25.*25.)/1e6; mneg=(mneg*25.*25.)/1e6; #mmod=(mmod*25.*25.)/1e6
-                lon_regions=[-150,-61,-20,34,90,160];
-                text_map_w_stats(mean,lon_mod,bm,lon_regions,'sum','M $km^2$','black')
+                lon_regions=[-150,-61,-20,34,90,160]; lat_regions=[ -77,-75,-73,-68.5,-67,-70];
+                text_map_w_stats(mean,lon_mod,bm,lon_regions,lat_regions,'sum','M $km^2$','black')
                 plt.annotate('Total obs.: '+format(np.nansum(mobs),'.2f')+r' M $km^2$', xy=(.3,.56), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
                 plt.annotate('Total mod.: '+format(np.nansum(mmod),'.2f')+r' M $km^2$', xy=(.3,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
                 dataf=np.where(h_etopoi>=-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
-                #plt.annotate('Shallow mean: '+dataf+'', xy=(.3,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+                #plt.annotate('Coastal mean: '+dataf+'', xy=(.3,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
                 dataf=np.where(h_etopoi<-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
                 #plt.annotate('Deep mean: '+dataf+'', xy=(.3,.46), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
 
@@ -1683,16 +1792,17 @@ for serie_or_map in serie_or_maps:
             exit()
 
           # loop in the four seasons
-          km=-1; tseason=['JFM','AMJ','JAS','OND']
-          for m in [1,4,7,10]:
+          km=-1; tseason=['JFM','ASO','JAS','OND']
+          for m in [1,4]:
             km+=1; 
+            kmm+=1; 
             print(run+': computing 3-month mean starting in month '+str(m).zfill(2))
             if m==1:
               imonth1o=time_obsd.month==1; imonth2o=time_obsd.month==2; imonth3o=time_obsd.month==3; 
               imonth1=time_modd.month==1; imonth2=time_modd.month==2; imonth3=time_modd.month==3; 
             if m==4: 
-              imonth1o=time_obsd.month==4; month2o=time_obsd.month==5; imonth3o=time_obsd.month==6; 
-              imonth1=time_modd.month==4; imonth2=time_modd.month==5; imonth3=time_modd.month==6; 
+              imonth1o=time_obsd.month==8; month2o=time_obsd.month==9; imonth3o=time_obsd.month==10; 
+              imonth1=time_modd.month==8; imonth2=time_modd.month==9; imonth3=time_modd.month==10; 
             if m==7: 
               imonth1o=time_obsd.month==7; month2o=time_obsd.month==8; imonth3o=time_obsd.month==9; 
               imonth1=time_modd.month==7; imonth2=time_modd.month==8; imonth3=time_modd.month==9; 
@@ -1736,8 +1846,8 @@ for serie_or_map in serie_or_maps:
                   means=np.zeros((4,np.shape(mean)[0],np.shape(mean)[1]))
                 means[km,:,:]=mean
 
-            if ex==expt[-1]:
-              ax=fig.add_subplot(2,2,km+1)
+            if ex==ex: # pt[-1]:
+              ax=fig.add_subplot(2,2,kmm+1)
               bm = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l')#,ax=ax[km])
               bm.drawcoastlines(linewidth=.5)
               bm.fillcontinents(color='grey',lake_color='aqua')
@@ -1757,11 +1867,11 @@ for serie_or_map in serie_or_maps:
                 cmap = cmocean.cm.amp
                 im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=0,vmax=3.0)#,vmin=0,vmax=.015)
               elif vname=='sit_obs_diff':
-                plt.title(tseason[km]+' '+runs[expt[0]]+' - Obs.',loc='center')
+                plt.title(tseason[km]+' '+runs[ex]+' - Obs.',loc='center')
                 cmap = cmocean.cm.balance
                 im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-2.,vmax=2.)
               elif vname=='sit_obs_rmse_diff':
-                plt.title(tseason[km]+' '+runs[expt[0]]+' - '+runs[expt[1]]+' rmse',loc='center')
+                plt.title(tseason[km]+' '+runs[ex]+' - '+runs[expt[1]]+' rmse',loc='center')
                 cmap = cmocean.cm.balance
                 im1 = bm.pcolormesh(lonp,latp,mean,cmap=cmap,vmin=-2.,vmax=2.)
               # contour
@@ -1771,13 +1881,14 @@ for serie_or_map in serie_or_maps:
               ic=bm.contour(lonp,latp,h_etopoi,clevels,colors=('magenta'),linewidths=(.5,),origin='upper',linestyles='solid',extent=ext)
               #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
               # computing stats per subregion
-              lon_regions=[-150,-61,-20,34,90,160];
-              text_map_w_stats(mean,lon_mod,bm,lon_regions,'mean','m','black')
-              plt.annotate('Total mean: '+format(np.nanmean(mean),'.2f')+' m', xy=(.3,.56), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
-              dataf=np.where(h_etopoi>=-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
-              plt.annotate('Shallow mean: '+dataf+' m', xy=(.3,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
-              dataf=np.where(h_etopoi<-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
-              plt.annotate('Deep mean: '+dataf+' m', xy=(.3,.46), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+              lon_regions=[-150,-61,-20,34,90,160]; 
+              lat_regions=[ -77,-75,-73,-68.5,-67,-70];
+              text_map_w_stats(mean,lon_mod,bm,lon_regions,lat_regions,'mean','m','black')
+              plt.annotate('Obs. total mean: '+format(np.nanmean(mobs),'.2f')+' m', xy=(.26,.56), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+              dataf=np.where(h_etopoi>=-800,mobs,np.nan); dataf=format(np.nanmean(dataf),'.2f')
+              plt.annotate('Obs. coastal mean: '+dataf+' m', xy=(.26,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
+              dataf=np.where(h_etopoi<-800,mobs,np.nan); dataf=format(np.nanmean(dataf),'.2f')
+              plt.annotate('Obs. deep mean: '+dataf+' m', xy=(.26,.46), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
 
               # including colorbar
               divider = make_axes_locatable(ax)
@@ -1844,10 +1955,11 @@ for serie_or_map in serie_or_maps:
               #ic.clabel(clevels,fmt='%2.1f',colors='w',fontsize=20)
               # computing stats per subregion
               lon_regions=[-150,-61,-20,34,90,160];
-              text_map_w_stats(mean,lon_mod,bm,lon_regions,'sum','m')
+              lat_regions=[ -77,-75,-73,-68.5,-67,-70];
+              text_map_w_stats(mean,lon_mod,bm,lon_regions,lat_regions,'sum','m')
               plt.annotate('Total int. diff.: '+format(np.nansum(mean),'.2f')+' m', xy=(.3,.56), xycoords='axes fraction',fontsize=9)#, textcoords='offset points',
               dataf=np.where(h_etopoi>=-300,mean,np.nan); dataf=format(np.nansum(dataf),'.2f')
-              plt.annotate('Shallow int. diff.: '+dataf+' m', xy=(.3,.51), xycoords='axes fraction',fontsize=9)#, textcoords='offset points',
+              plt.annotate('Coastal int. diff.: '+dataf+' m', xy=(.3,.51), xycoords='axes fraction',fontsize=9)#, textcoords='offset points',
               dataf=np.where(h_etopoi<-300,mean,np.nan); dataf=format(np.nansum(dataf),'.2f')
               plt.annotate('Deep int. diff.: '+dataf+' m', xy=(.3,.46), xycoords='axes fraction',fontsize=9)#, textcoords='offset points',
               # including colorbar
@@ -3036,35 +3148,45 @@ for serie_or_map in serie_or_maps:
         if ex==expt[-1]:
           for t in range(len(time_obs)):
  
-            fig, ax = plt.subplots(1,1+len(expt), figsize = (16,8)) # landscape
-
-            for l in range(1+len(expt)): 
+            #fig, ax = plt.subplots(1,1+len(expt), figsize = (16,8)) # landscape
+            #fig, ax = plt.subplots(2,2, figsize = (9,8)) # landscape
+            fig = plt.figure(figsize = (9,8)) # landscape
+#zzz
+            for l in range(1+len(expt)):
+ 
+              ax=fig.add_subplot(2,2,l+1)
 
               if l==0: #obs
                 magc=magc_obs; uc=uc_obs; vc=vc_obs
                 lon=lon_obs; lat=lat_obs
                 lonv=lon_obsv; latv=lat_obsv
-                ax[l].set_title('Observed drift ',loc='left')
+                ax.set_title('Obs. drift (km/day) ',loc='left')
+                ax.set_title(time[0].strftime('%Y/%m/%d'), loc = 'right')
+                #plt.title('Observed drift ',loc='left')
+                cmap = cmocean.cm.tempo
+                vmin=0; vmax=80
               else: # mod
-                magc=magc_mods[l-1]; uc=uc_mods[l-1]; vc=vc_mods[l-1]
+                magc=magc_mods[l-1]-magc_obs; uc=uc_mods[l-1]; vc=vc_mods[l-1]
                 #lon=lon_mod,lat=lat_mod
                 #lonv=lon_modv,latv=lat_modv
                 run=runs[expts[expt[l-1]]]
-                ax[l].set_title(run+' drift (km/day)',loc='left')
+                ax.set_title(run+' drift diff. (mod-obs)',loc='left')
+                #plt.title(run+' drift (km/day)',loc='left')
+                cmap = cmocean.cm.balance
+                vmin=-40; vmax=40
 
-              ax[l].set_title(time[0].strftime('%Y/%m/%d'), loc = 'right')
-              cmap = cmocean.cm.tempo
+              #plt.title(time[0].strftime('%Y/%m/%d'), loc = 'right')
 
-              m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[l])
+              m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax)
               m.drawcoastlines()
               m.fillcontinents(color='grey',lake_color='aqua')
               lonop, latop = m(lon,lat)#,inverse=True)
               lonov, latov = m(lonv,latv)#,inverse=True)
-              im1 = m.pcolormesh(lonop,latop,magc[t],cmap=cmap,vmin=0,vmax =80)
+              im1 = m.pcolormesh(lonop,latop,magc[t],cmap=cmap,vmin=vmin,vmax=vmax)
               # including colorbar
-              #divider = make_axes_locatable(ax[l])
-              #cax = divider.append_axes('right', size='5%', pad=0.05)
-              #fig.colorbar(im1, cax=cax, orientation='vertical')
+              divider = make_axes_locatable(ax)
+              cax = divider.append_axes('right', size='5%', pad=0.05)
+              fig.colorbar(im1, cax=cax, orientation='vertical')
               # add wrap-around point in longitude.
               longr, latgr = m([0,0],[-90,-70.5])#,inverse=True)
               m.plot(longr,latgr,color='grey',linewidth=2)
@@ -3073,9 +3195,9 @@ for serie_or_map in serie_or_maps:
 
           fig.tight_layout()
           fig.subplots_adjust(right=0.825)
-          cax = fig.add_axes([0.83, 0.238, 0.02, 0.525]) # [left, bottom, width, height]
-          cbar=fig.colorbar(im1, cax=cax)
-          cbar.ax.tick_params(labelsize=16)
+          #cax = fig.add_axes([0.83, 0.138, 0.02, 0.725]) # [left, bottom, width, height]
+          #cbar=fig.colorbar(im1, cax=cax)
+          #cbar.ax.tick_params(labelsize=16)
           ##Save figure 
           figname=path_fig+run+'/map_obs_mod_'+vname+'_'+format(time[t].strftime('%Y_%m_%d_%H_%M'))+'.png'
           if save_fig==1:
@@ -3126,17 +3248,28 @@ for serie_or_map in serie_or_maps:
         elif vname=='divergence':
           cmap = cmocean.cm.balance; vmin=-0.2; vmax=0.2
           vnamee='divergence (1/day) '
+        elif vname=='ridge_ratio':
+          cmap = cmocean.cm.amp; vmin=0.0; vmax=100.0
+          vnamee='(%) Ridged ice/Total ice '
+          variable = variable*100;
 
         if ke==1:
           variables=np.zeros((len(expt),np.shape(variable)[0],np.shape(variable)[1],np.shape(variable)[2]))
         variables[ke-1]=variable
 
+        print('kmv='+str(kmv))
         # if expt is last plot
         if ex==expt[-1]:
           for ts in [len(time_obsixn)-1]:  
           #for ts in range(0,len(time_obsixn)):  
             ke=-1
-            fig, ax = plt.subplots(1, len(expt) ,figsize=(16,8))
+            if kmv==0:
+              print('Creating figure')
+              if len(vnames)==1:
+                fig, ax = plt.subplots(1, len(expt) ,figsize=(16,8))
+              else:
+                fig, ax = plt.subplots(len(vnames), len(expt) ,figsize=(10,12)) # portrait
+  
             for ex in expt:
               ke+=1
               variable=variables[ke]
@@ -3148,15 +3281,28 @@ for serie_or_map in serie_or_maps:
               #  ax[ke].set_title('Brittle model ice coverage',loc='center')
               #else:
               #  ax[ke].set_title('Viscous-elastic model ice coverage',loc='center')
-              ax[ke].set_title(run+' '+vnamee,loc='left')
+              if len(vnames)==1:
+                ax[ke].set_title(run+' '+vnamee,loc='left')
+              else:
+                ax[kmv-1][ke].set_title(run+' '+vnamee,loc='left')
 
-              m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke])
+              if len(vnames)==1:
+                m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke])
+              else:
+                m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[kmv-1][ke])
               lonp, latp = m(lon_mod,lat_mod)#,inverse=True)
               lonv, latv = m(lon_modv,lat_modv)#,inverse=True)
               im1 = m.pcolormesh(lonp, latp, variable[t[0]], cmap=cmap, vmin=vmin, vmax=vmax)
-              divider = make_axes_locatable(ax[ke])
-              #cax = divider.append_axes('right', size='5%', pad=0.05)
-              #fig.colorbar(im1, cax=cax, orientation='vertical')
+
+              if ex==expt[-1]:
+                if len(vnames)==1:
+                  divider = make_axes_locatable(ax[ke])
+                else:
+                  divider = make_axes_locatable(ax[kmv-1][ke])
+
+                cax = divider.append_axes('right', size='5%', pad=0.05)
+                fig.colorbar(im1, cax=cax, orientation='vertical')
+
               #im22 = m.quiver(lonov, latov, uc_mod[0], vc_mod[0],color='black',width=0.002,scale=500.0) 
               #qk=plt.quiverkey(im22,.5,.5,10,'10 km/day',labelpos='S',fontproperties={'size':8})
               m.drawcoastlines()
@@ -3169,34 +3315,53 @@ for serie_or_map in serie_or_maps:
               m.plot(longr,latgr,color='grey',linewidth=2)
 
               # circle around the storm
-              if ex==expt[-1]:
-                longr, latgr = m([-33.0],[-69.5])#,inverse=True)
-                #m.plot(longr,latgr,marker='o',color='magenta')#,markersize=4,linewidth=.02)
-                m.scatter(longr,latgr,s=20000,facecolors='none', edgecolors='magenta',linewidth=2)
+              #longr, latgr = m([-33.0],[-69.5])#,inverse=True)
+              #m.scatter(longr,latgr,s=20000,facecolors='none', edgecolors='magenta',linewidth=2)
+
+              text_maps=0
+              if text_maps==1:
+                if ex==expt[0]:
       
-              #plt.rcParams['animation.ffmpeg_path'] = 'ffmpeg'
-              #sit_output = vdatac # .sit.to_masked_array() # Extract a given variable
-              #time = time_modd # datac.time.indexes['time']
-      
-              #variable = sit_output;
-              #anim=make_animation_util(time=time , mask =1- mask, variable = sit_output,interval=10)#len(time))
+                  lon_regions=[-150,-61,-20,34  ,90,160];
+                  lat_regions=[ -77,-75,-73,-68.5,-67,-70];
+                  #text_map_w_stats(data,lon_mod,bm,lon_regions,lat_regions,oper,unit,colort):
+                  print('Annotating '+run)
+                  text_map_w_stats(ax[kmv-1][ke], variable[t[0]], lon_mod, m, lon_regions, lat_regions, -60	, '', '', 'magenta')
+
+                else: # if ex==2: #expt[0]:
+                  filename=path_era5+'ERA5_'+eraname+'_y'+time_mods[t[0]].strftime("%Y")+'.nc' 
+                  print(filename)
+                  #data = xr.open_dataset(filename,eraname,chunks={'time':time_mods[t[0]]})
+                  data = xr.open_dataset(filename)
+                  time_era = data.variables['time']; 
+                  time_eran=dates.date2num(time_era)
+                  ta=np.where(time_mod[t[0]]==time_eran)[0]; 
+                  data_era=data.variables[eraname]; data_era=np.squeeze(data_era[ta])/100.
+                  #data_era=np.where(h_etopoe<=0,data_era,np.nan); #dataf=format(np.nanmean(dataf),'.2f')
+                  lone, late = m(lon_eram,lat_eram)#,inverse=True)
+                  ext=[np.nanmin(lone),np.nanmax(lone),np.nanmin(late),np.nanmax(late)]
+                  clevels=np.linspace(900,1020,12,endpoint=False)
+                  ic=m.contour(lone,late,data_era,clevels,colors=('black'),linewidths=(.5,),origin='upper',linestyles='solid',extent=ext)
+                  ic.clabel(clevels,fmt='%2.0f',colors='k',fontsize=10)
+
+
+            if ts==len(time_obsixn)-1 and kmv==len(vnames)-1:  
+              ##Save figure 
+              fig.tight_layout()
+              fig.subplots_adjust(right=0.825)
+              #cax = fig.add_axes([0.85, 0.105, 0.02, 0.785]) # [left, bottom, width, height]
+              #cbar=fig.colorbar(im1, cax=cax)
+              #cbar.ax.tick_params(labelsize=16)
+              #run='paper_1'
+              #figname=path_fig+run+'/fig1_map_sic.png'#_'+vname+'_'+format(time[t[0]].strftime('%Y_%m_%d_%H_%M'))+'.png'
+              figname=path_fig+run+'/map_solo_'+vname+'_'+format(time[t[0]].strftime('%Y_%m_%d_%H_%M'))+'.png'
+              if save_fig==1:
+                if os.path.exists(path_fig+run)==False:
+                  os.mkdir(path_fig+run)
+                print('Saving: '+figname)
+                plt.savefig(figname,dpi=300,bbox_inches='tight')
+                plt.close('all') 
      
-            ##Save figure 
-            fig.tight_layout()
-            fig.subplots_adjust(right=0.825)
-            cax = fig.add_axes([0.85, 0.105, 0.02, 0.785]) # [left, bottom, width, height]
-            cbar=fig.colorbar(im1, cax=cax)
-            cbar.ax.tick_params(labelsize=16)
-            figname=path_fig+run+'/map_solo_'+vname+'_'+format(time[t[0]].strftime('%Y_%m_%d_%H_%M'))+'.png'
-            if save_fig==1:
-              if os.path.exists(path_fig+run)==False:
-                os.mkdir(path_fig+run)
-              print('Saving: '+figname)
-              plt.savefig(figname,dpi=300,bbox_inches='tight')
-              plt.close('all') 
-     
- 
-      
     
       #fig=plt.subplots(); plt.pcolormesh(datac.sit[0,:,:]); plt.colorbar(); plt.title(time[0]); plt.show()
 

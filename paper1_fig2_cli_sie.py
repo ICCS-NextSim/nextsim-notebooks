@@ -55,7 +55,7 @@ expt=exptc
 expt=[12,31,19,30,18] # final expts (bsose, mevp, mevp+, bbm, bbm+)
 #expt=[12,31,30] # final expts (bsose, mevp, bbm)
 expt=[12,31,19,30] # final expts (bsose, mevp, mevp+, bbm)
-expt=[12,31,30] # final expts (bsose, mevp, mevp+, bbm)
+#expt=[12,31,30] # final expts (bsose, mevp, mevp+, bbm)
 #expt=[exp]
 
 
@@ -100,12 +100,12 @@ runs=['50km_ocean_wind'      ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102',
 
 #Colors
 if expt[0]==31:
-  colors=['orange','b','pink','brown','g','r','k','yellow','orange','b','pink','brown','g','r','k','yellow']
+  colors=['orange','c','pink','brown','g','r','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 elif expt[0]==12:
-  colors=['k','orange','b','black','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
+  colors=['red','orange','c','black','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
   #colors=['red','orange','b','k','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 else:
-  colors=['k','orange','r','b','pink','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
+  colors=['k','orange','r','c','pink','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 
 obs_colors=['g','y','orange'];
 
@@ -152,7 +152,8 @@ if socket.gethostname()[0:8]=='SC442555' or socket.gethostname()[0:10]=='wifi-st
   #path_bsose='/Volumes/LaCie/mahuika/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/bsose/'
 elif socket.gethostname()[0]=='w' or socket.gethostname()=='mahuika01' or socket.gethostname()=='mahuika':
   path_runs='/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/runs/' # ''~/'
-  path_fig ='/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/figures/' 
+  path_fig ='/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/figures/'
+  path_fig ='/scale_wlg_persistent/filesets/home/rsan613/figure/' 
   path_data ='/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/'
   path_bsose='/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/bsose/'
 else:

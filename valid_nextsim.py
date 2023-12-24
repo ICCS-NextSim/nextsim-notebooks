@@ -34,7 +34,7 @@ proj_info = projection_info.ProjectionInfo.sp_laea()
 proj      = proj_info.pyproj
 
 #Time
-start_day  =24 # 6 vcorr serie initial day
+start_day  =24 # 6 vcorr serie initial dayi, if year 2013
 start_month=7
 start_year =2016
 end_day    =25 #24 # bsie
@@ -48,6 +48,13 @@ end_year   =2016
 #end_month  =12  #8 sit
 #end_year   =2016
 
+start_day  =1 # 6 vcorr serie initial day
+start_month=1
+start_year =2015
+end_day    =31 # bsie 27/12/2021 = last day
+end_month  =8  #8 sit
+end_year   =2015
+
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=12
@@ -55,32 +62,35 @@ exptc=[12,31,exp] # if serie_or_map!=0
 expt=exptc
 expt=[12,31,19,30,18] # final expts (bsose, mevp, mevp+, bbm, bbm+)
 expt=[31,30] # final expts (mevp, bbm)
-expt=[31,19,30] # final expts (mevp, bbm)
-#%expt=[12,31,19,30] # final expts (bsose, mevp, mevp+, bbm)
+expt=[31,19] # final expts (mevp, bbm)
+expt=[12,31,19,30] # final expts (bsose, mevp, mevp+, bbm)
+#expt=[12,31,19,30,24] # final expts (bsose, mevp, mevp+, bbm)
+#expt=[31,19,30,24,28] # final expts (bsose, mevp, mevp+, bbm)
+#exptc=expt
 #expt=[exp]
 
 #Variables
-vname='drift' # 'divergence'  # sit_obs_remse_diff 
+vname='sit'  # sit_obs_rmse_diff 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_maps) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
 # newice, newice_diff 'ridge_ratio' 'divergence' 
 
-serie_or_maps=[0]#[1:4] # 1=serie, 2=video, and 3=map, 4=smap, 0 for neither
-my_dates=1
-inc_obs=0
+serie_or_maps=[0]#[1:4] # 1=serie, 2=video, and 3=map, 4=smap, 5=hist; 0 for neither
+my_dates=0
+inc_obs=1
 kmm=-1; # marker for seasonal maps 
 kmv=-1
 
 # Plot types
 plot_scatter=0
-plot_series =0
+plot_series =1
 plot_hist   =0
 plot_video  =0
 plot_vchoice=0 # not working yet. it will for my webpage
 plot_anim   =0 # solo video
 plot_maps   =0 # seasonal maps
-plot_mapo   =1 # maps with obs / based on plot_video and plot_smap
+plot_mapo   =0 # maps with obs / based on plot_video and plot_smap
 plot_smap   =0 # solo map
 
 plot_cli    =0
@@ -88,7 +98,7 @@ save_fig    =1
 plt_show    =1
 interp_obs  =1 # only for SIE maps obs has 2x the model resolution
 hist_norm   =0
-plot_atm    =1
+plot_atm    =0
 eraname='msl' 
 # msl = air pressure at mea sea level
 
@@ -106,7 +116,7 @@ runs=['50km_ocean_wind'      ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102',
 
 #Colors
 if expt[0]==31:
-  colors=['orange','b','pink','brown','g','r','k','yellow','orange','b','pink','brown','g','r','k','yellow']
+  colors=['orange','b','k','brown','g','r','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 elif expt[0]==12:
   colors=['pink','orange','b','black','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
   colors=['r','orange','b','k','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
@@ -133,16 +143,6 @@ ym_start= 12*start_year + start_month - 1
 ym_end  = 12*end_year + end_month - 1
 end_month=end_month-1
 
-# series
-params=[9,14];
-# maps
-paramm=[15];  
-# profiles
-parampr=[1, 2]; 
-# time depth
-paramtd=[9, 10, 11, 12]; 
-# eddy stats
-parame=[3, 4, 2, 5, 6, 8]; 
 
 # SIE obs sources
 obs_sources=['NSIDC','OSISAF-ease2'];
@@ -282,24 +282,29 @@ for serie_or_map in serie_or_maps:
   # variables to be plotted vary with type (map or series)
   if serie_or_map==1: # series
     expt=exptc
-    plot_series=1; plot_video=0; plot_maps=0;
+    plot_series=1; plot_video=0; plot_maps=0;plot_hist=0;
     vnames=[ 'sie','bsie','sit','sit_rmse','siv','drift','vcorr'] # sie,bsie,sit,siv,drift,vcorr processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
     varrays=['sic','sic' ,'sit','sit'     ,'sit','siv'  ,'siv'] # netcdf variable for each type of plot (raw variable used in xarray)
   elif serie_or_map==2: # video
     expt=[exp]
-    plot_series=0; plot_video=1; plot_maps=0;
+    plot_series=0; plot_video=1; plot_maps=0;plot_hist=0;
     vnames=[ 'sie','sit','drift'] 
     varrays=['sic','sit','siv'  ] 
   elif serie_or_map==3: # map
     expt=[exp]
-    plot_series=0; plot_video=0; plot_maps=1;
+    plot_series=0; plot_video=0; plot_maps=1;plot_hist=0;
     vnames=[ 'vcorr','sit'] 
     varrays=['siv'  ,'sit'] 
   elif serie_or_map==4: # smap
-    #expt=[exp]
-    plot_series=0; plot_video=0; plot_maps=0; plot_smap=1;
+    expt=[exp]
+    plot_series=0; plot_video=0; plot_maps=0; plot_smap=1;plot_hist=0;
     vnames=[ 'divergence','newice','ridge_ratio'] 
     varrays=['siv'       ,'newice','ridge_ratio'] 
+  elif serie_or_map==5: # hist
+    expt=[exp]
+    plot_series=0; plot_video=0; plot_maps=0; plot_smap=0; plot_hist=1;
+    vnames=[ 'divergence','newice','convergence','ridge_ratio'] 
+    varrays=['siv'       ,'newice','siv'        ,'ridge_ratio'] 
   else:
     vnames=[vname]; varrays=[varray]
   
@@ -312,13 +317,28 @@ for serie_or_map in serie_or_maps:
     vname=vnames[nvar]
     varray=varrays[nvar]
     # time will vary with type of variables
-    if my_dates==0: 
+    if my_dates==1: 
       if varray=='sic':
-        timedsdfsfdsf=1;
+        start_day  =1 # 6 vcorr serie initial day, if year 2013
+        start_month=1
+        start_year =2016
+        end_day    =27 # bsie 27/12/2021 = last day
+        end_month  =12  #8 sit
+        end_year   =2016#21
       elif varray=='sit':
-        timedsdfsfdsf=1;
+        start_day  =1 # 6 vcorr serie initial day, if year 2013
+        start_month=1
+        start_year =2015
+        end_day    =31 # bsie 27/12/2021 = last day
+        end_month  =8  #8 sit
+        end_year   =2015#21
       elif varray=='siv':
-        timedsdfsfdsf=1;
+        start_day  =1 # 6 vcorr serie initial day
+        start_month=1
+        start_year =2015
+        end_day    =31 # bsie 27/12/2021 = last day
+        end_month  =12  #8 sit
+        end_year   =2015#20
         # monthly sit
         #1/2013-8/2021
         #vcorr
@@ -998,8 +1018,8 @@ for serie_or_map in serie_or_maps:
               plt.plot(time, mean, obs_colors[ke-1])   
 
             if vname=='drift':
-              ll=['Obs: OSISAF-ease2']#+', mean='+format(np.nanmean(mean),".2f")]; 
-              #ll=['Obs: OSISAF-ease2'+', mean='+format(np.nanmean(mean),".2f")]; 
+              #ll=['Obs: OSISAF-ease2']#+', mean='+format(np.nanmean(mean),".2f")]; 
+              ll=['Obs: OSISAF-ease2'+', mean='+format(np.nanmean(mean),".2f")]; 
               #ll=['OSI-455 mean = '+format(np.nanmean(mean),'.2f')]
             else:
               ll=[]; 
@@ -1051,12 +1071,12 @@ for serie_or_map in serie_or_maps:
               #magc_mod=np.where(magc_mod<=80.0,magc_mod,np.nan)
               mean[t]=np.nanmean(magc_mod)
           if vname=='vcorr':
-            #ll.append(run+' - mean = '+format(np.nanmean(mean),".2f"))
+            ll.append(run+' - mean = '+format(np.nanmean(mean),".2f"))
             plt.ylabel('Complex correlation coef.'); plt.title('Complex correlation between modelled and obsverved sea ice drift')
             plt.ylim([0,1]) 
             figname='serie_vector_complex_correlation_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
           elif vname=='drift':
-            #ll.append(run+' - mean = '+format(np.nanmean(mean),".2f"))
+            ll.append(run+' - mean = '+format(np.nanmean(mean),".2f"))
             plt.ylabel('Drift speed (km/day)'); plt.title('Antarctic sea-ice average drift speed (km/day)') 
             #plt.ylim([0,1]) 
             figname='serie_velocity_speed_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
@@ -1098,6 +1118,7 @@ for serie_or_map in serie_or_maps:
           figname='cli_'+figname
           plt.plot(time, mean, colors[ke-1],linewidth=2)
         else:
+          #ll.append(run+' - mean = '+format(np.nanmean(mean),".2f"))
           plt.plot(time, mean, colors[ke-1])   
 
         plt.grid('on')
@@ -1126,13 +1147,15 @@ for serie_or_map in serie_or_maps:
 
       if plot_hist==1:
         print('Ploting histogram: '+vname+' '+run)
-        plt.rcParams.update({'font.size': 22})
+        plt.rcParams.update({'font.size': 12})
+        print('kmv='+str(kmv))
+        if kmv==0 and ex==expt[0]:
+          fig=plt.figure(figsize = (8,9)) 
         # Plotting time series
         # Ice divergence
-        if vname[0:10]=='divergence': # if first expt load obs
-          if ke==1:
-            #fig=plt.figure(figsize = (16,8)) 
-            fig, ax = plt.subplots(1, 3, figsize = (16,8)) # landscape
+        if vname[0:10]=='divergence' or vname=='convergence': # if first expt load obs
+          #if ke==1:
+            #fig, ax = plt.subplots(1, 3, figsize = (16,8)) # landscape
           time_obs=time_obsix
           u_mod = udatac*3.6*24;  v_mod = vdatac*3.6*24;
          
@@ -1187,50 +1210,56 @@ for serie_or_map in serie_or_maps:
           #a=norm.pdf(div_mod.flatten(), loc=np.nanmean(div_mod.flatten()), scale=np.nanstd(div_mod.flatten()))
           
           if ke==1:
+            ax = fig.add_subplot(2,2, kmv+1) # landscape
             ll=[]
 
-          if hist_norm==1: 
-            #ax[0].loglog(hdiv[1][0:-1],hdiv[0]/np.sum(hdiv[0][:]),#hdiv[0][0],
-            #ax[0].loglog(hdiv[1][0:-1],hdiv[0]/hdiv[0][0],
-            ax[0].loglog(hdiv[1][1::],hdiv[0]/np.max(hdiv[0][:]),
-            color=colors[ke-1])
-            #plt.ylim([0, 1])
-          else:
-            ax[0].loglog(hdiv[1][0:-1],hdiv[0],
-            color=colors[ke-1])
-          ax[0].set_title('Divergence')
-          ax[0].set_xlabel('(d-1)')
+          if vname[0:10]=='divergence': # if first expt load obs
+            if hist_norm==1: 
+              #ax[0].loglog(hdiv[1][0:-1],hdiv[0]/np.sum(hdiv[0][:]),#hdiv[0][0],
+              #ax[0].loglog(hdiv[1][0:-1],hdiv[0]/hdiv[0][0],
+              #ax.loglog(hdiv[1][1::],hdiv[0]/np.max(hdiv[0][:]),
+              ax.plot(hdiv[1][1::],hdiv[0]/np.max(hdiv[0][:]),
+              color=colors[ke-1])
+              #plt.ylim([0, 1])
+            else:
+              ax.semilogx(hdiv[1][0:-1],hdiv[0],
+              color=colors[ke-1])
+            ax.set_title('Divergence')
+            ax.set_xlabel('(1/day)')
           
-          if ke==1:
-            ll=[]
-          if hist_norm==1: 
-            ax[1].loglog(hcon[1][0:-1]*-1,hcon[0]/np.max(hcon[0][:]),
-            color=colors[ke-1])
-            #plt.ylim([0, 1])
-          else:
-            ax[1].loglog(hcon[1][0:-1]*-1,hcon[0],
-            color=colors[ke-1])
-          #plt.ylim([0, 1E2])
-          ax[1].set_title('Convergence')
-          ax[1].set_xlabel('(d-1)')
+          elif vname=='convergence': # if first expt load obs
+            #if ke==1:
+            #  ll=[]
+            if hist_norm==1: 
+              ax.loglog(hcon[1][0:-1]*-1,hcon[0]/np.max(hcon[0][:]),
+              color=colors[ke-1])
+              #plt.ylim([0, 1])
+            else:
+              ax.loglog(hcon[1][0:-1]*-1,hcon[0],
+              color=colors[ke-1])
+            #plt.ylim([0, 1E2])
+            ax.set_title('Convergence')
+            ax.set_xlabel('(i1/day)')
 
-          #ax[2].bar(hshe[1][0:-1],hshe[0]/hshe[0][0],
-          if hist_norm==1: 
-            ax[2].loglog(hshe[1][1::],hshe[0]/np.max(hshe[0][:]),
-            color=colors[ke-1])
-            #plt.ylim([0, 1])
-          else:
-            ax[2].loglog(hshe[1][0:-1],hshe[0],
-            color=colors[ke-1])
-            
-          #plt.ylim([0, 1E2])
-          ax[2].set_title('Shear')
-          ax[2].set_xlabel('(d-1)')
+          elif vname=='shear': # if first expt load obs
+            #ax[2].bar(hshe[1][0:-1],hshe[0]/hshe[0][0],
+            if hist_norm==1: 
+              ax.loglog(hshe[1][1::],hshe[0]/np.max(hshe[0][:]),
+              color=colors[ke-1])
+              #plt.ylim([0, 1])
+            else:
+              ax.loglog(hshe[1][0:-1],hshe[0],
+              color=colors[ke-1])
+              
+            #plt.ylim([0, 1E2])
+            ax.set_title('Shear')
+            ax.set_xlabel('(d-1)')
 
         if vname=='newice' or vname=='ridge_ratio': # if first expt load obs
-          if ke==1:
+          #if ke==1:
             #fig=plt.figure(figsize = (16,8)) 
-            fig, ax = plt.subplots(1, 3, figsize = (16,8)) # landscape
+            #fig, ax = plt.subplots(1, 3, figsize = (16,8)) # landscape
+            #ax = fig.add_subplot(int(len(vnames)/2), int(len(vnames)/2), kmv+1) # landscape
           time_obs=time_obsix
           model=vdatac
           if vname=='newice':# or vname=='ridge_ratio': # if first expt load obs
@@ -1246,33 +1275,38 @@ for serie_or_map in serie_or_maps:
           #a=norm.pdf(div_mod.flatten(), loc=np.nanmean(div_mod.flatten()), scale=np.nanstd(div_mod.flatten()))
           
           if ke==1:
+            ax = fig.add_subplot(2,2, kmv+1) # landscape
             #ax1=fig.add_subplot(1,3,1)
             ll=[]
           #ax[0].bar(hdiv[1][0:-1],hdiv[0]/hdiv[0][0],
 
           if vname=='ridge_ratio': # if first expt load obs
-            ax[0].semilogy(hdiv[1][0:-1],hdiv[0],#/hdiv[0][0],
+            ax.semilogy(hdiv[1][0:-1],hdiv[0],#/hdiv[0][0],
             color=colors[ke-1])
+            #ax.grid('on')
           else:
-            ax[0].loglog(hdiv[1][0:-1],hdiv[0],#/hdiv[0][0],
+            ax.loglog(hdiv[1][0:-1],hdiv[0],#/hdiv[0][0],
             color=colors[ke-1])
-          ax[0].grid('on')
+            #ax.grid('on')
           #plt.ylim([0, 1E2])
           if vname=='newice':# or vname=='ridge_ratio': # if first expt load obs
-            ax[0].set_title('Ice growth')
-            ax[0].set_xlabel('(m/day)')
+            ax.set_title('Ice growth')
+            ax.set_xlabel('(m/day)')
           elif vname=='ridge_ratio': # if first expt load obs
-            ax[0].set_title('Ridging ratio')
-            ax[0].set_xlabel('(Ridged ice) / (Total ice)')
+            ax.set_title('Ridging ratio')
+            ax.set_xlabel('(Ridged ice) / (Total ice)')
 
+        ax.set_ylabel('N. of occurrences')
         if ex==expt[-1]:
           for i in expt:
             ll.append(runs[i])
     
           #ax1=fig.add_subplot(1,3,1)
-          ax[0].legend(ll)
-          plt.tight_layout()
+          ax.legend(ll)
+          #plt.tight_layout()
 
+        #if kmv==len(vnames)-1:
+        #run=''
         figname=path_fig+run+'/histogram_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
         fig.tight_layout() 
         if ex==expt[-1]:
@@ -1352,6 +1386,7 @@ for serie_or_map in serie_or_maps:
           km=-1; tseason=['JFM','ASO','JAS','OND']
           for m in [1,4]:
             km+=1; 
+            kmm+=1; 
             print(run+': computing seasonal complex vector correlation starting in month '+str(m).zfill(2))
             if m==1:
               imonth1=time_obsd.month==1; imonth2=time_obsd.month==2; imonth3=time_obsd.month==3; 
@@ -1398,8 +1433,8 @@ for serie_or_map in serie_or_maps:
                   means=np.zeros((4,np.shape(mean)[0],np.shape(mean)[1]))
                 means[km,:,:]=mean
 
-            if ex==expt[-1]:
-              ax=fig.add_subplot(2,2,km+1)
+            if ex==ex:#pt[-1]:
+              ax=fig.add_subplot(2,2,kmm+1)
               bm = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l')#,ax=ax[km])
               bm.drawcoastlines()
               bm.fillcontinents(color='grey',lake_color='aqua')
@@ -1440,10 +1475,12 @@ for serie_or_map in serie_or_maps:
 
 
               # computing stats per subregion
-              text_fig=0
+              text_fig=1
               if text_fig==1:
-                lon_regions=[-150,-61,-20,34,90,160];
-                text_map_w_stats(mean,lon_obs,bm,lon_regions,'mean','','black')
+                lon_regions=[-150,-61,-20,34,90,160]; lat_regions=[ -77,-75,-73,-68.5,-67,-70];
+                #def text_map_w_stats(ax,data,lon_mod,bm,lon_regions,lat_regions,latn,oper,unit,colort):
+                print('writing stats on figure')
+                text_map_w_stats(ax,mean,lon_obs,bm,lon_regions,lat_regions,-60,'mean','','black')
                 plt.annotate('Total mean: '+format(np.nanmean(mean),'.2f')+'', xy=(.3,.56), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
                 dataf=np.where(h_etopod>=-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
                 plt.annotate('Coastal mean: '+dataf+'', xy=(.3,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',

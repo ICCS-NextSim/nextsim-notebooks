@@ -59,11 +59,11 @@ expt=[12,31,19,30] # final expts (bsose, mevp, mevp+, bbm)
 
 serie_or_maps=[0]#[1,2,3] # 1 for serie, 2 for video, and 3 for map, 0 for neither
 my_dates=1
-inc_obs=1
+inc_obs=0
 kmm=-1; # marker for seasonal maps 
 
 #Variables
-vname='sit' # 'divergence'  # sit_obs_remse_diff 
+vname='siv' # 'divergence'  # sit_obs_remse_diff 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_maps) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, vcorr, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
@@ -1070,6 +1070,7 @@ for serie_or_map in serie_or_maps:
           ax.xaxis.set_major_formatter(date_form)
           plt.tight_layout()
           if save_fig==1:
+            run='paper_1'
             if os.path.exists(path_fig+run)==False:
               os.mkdir(path_fig+run)
 

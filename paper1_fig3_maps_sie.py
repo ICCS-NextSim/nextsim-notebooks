@@ -44,7 +44,7 @@ end_year   =2016
 start_day  =1 # 6 vcorr serie initial day
 start_month=1
 start_year =2016
-end_day    =27 # bsie 27/12/2021 = last day
+end_day    =27 # bsie 27/12/2021 = last day possible
 end_month  =12  #8 sit
 end_year   =2021
 
@@ -54,7 +54,7 @@ exptc=[12,31,exp] # if serie_or_map!=0
 expt=exptc
 expt=[12,31,19,30,18] # final expts (bsose, mevp, mevp+, bbm, bbm+)
 expt=[31,30] # final expts (mevp, bbm)
-#expt=[12,31,19,30] # final expts (bsose, mevp, mevp+, bbm)
+expt=[12,31,30] # final expts (bsose, mevp, mevp+, bbm)
 #expt=[exp]
 
 serie_or_maps=[0]#[1,2,3] # 1 for serie, 2 for video, and 3 for map, 0 for neither
@@ -1240,7 +1240,7 @@ for serie_or_map in serie_or_maps:
         print('Ploting map: '+vname+' '+run)
         plt.rcParams.update({'font.size': 12})
         if ex==expt[0]:
-          fig=plt.figure(figsize = (9,8)) # square
+          fig=plt.figure(figsize = (10,12)) # portrait
         if vname[0:5]=='vcorr' or vname=='drift': 
           if ke==1 : # if first expt load obs
             ll=[]; k=0
@@ -1527,6 +1527,9 @@ for serie_or_map in serie_or_maps:
                 if iday!=iday2:
                   # interp to nextsim grid
                   siccz=func.interp_field(np.array(sicc_mo[iday]))#[0]
+                  # fixing gap due to interp method 
+                  for tt in range(0,150): #226,np.shape(sicc_mod)[1]):  
+                    siccz[tt][150]=siccz[tt][151] 
                   siccz[inan_mod]=np.nan
                   iday2=iday;
     
@@ -1601,7 +1604,8 @@ for serie_or_map in serie_or_maps:
 #zzz
             #exit()
             if ex==ex: # pt[-1]:
-              ax=fig.add_subplot(2,2,kmm+1)
+              lon_mod=lon_nex; lat_mod=lat_nex
+              ax=fig.add_subplot(len(expt),2,kmm+1)
               bm = Basemap(projection='splaea',boundinglat=-52,lon_0=180,resolution='l')#,ax=ax[km])
               bm.drawcoastlines(linewidth=.5)
               bm.fillcontinents(color='grey',lake_color='aqua')
@@ -1611,7 +1615,7 @@ for serie_or_map in serie_or_maps:
               bm.plot(longr,latgr,color='grey',linewidth=2)
               #bm.drawparallels(np.arange(-90,-30,5))
               #bm.drawmeridians(np.arange(0,360,30))
-              lonp, latp = bm(lon_mod,lat_mod)#,inverse=True)
+              lonp, latp = bm(lon_nex,lat_nex)#,inverse=True)
               ext=[np.nanmin(lonp),np.nanmax(lonp),np.nanmin(latp),np.nanmax(latp)]
               if vname=='sie' or vname=='sic':
                 plt.title(tseason[km]+' '+runs[ex]+' - Obs.',loc='center')
@@ -1633,7 +1637,8 @@ for serie_or_map in serie_or_maps:
                 mean=(mean*25.*25.)/1e6; mobs=(mobs*25.*25.)/1e6; mmod=(mmod*25.*25.)/1e6
                 mpos=(mpos*25.*25.)/1e6; mneg=(mneg*25.*25.)/1e6; #mmod=(mmod*25.*25.)/1e6
                 lon_regions=[-150,-61,-20,34,90,160]; lat_regions=[ -77,-75,-73,-68.5,-67,-70];
-                text_map_w_stats(mean,lon_mod,bm,lon_regions,lat_regions,'sum','M $km^2$','black')
+                #text_map_w_stats(ax,data,lon_mod,bm,lon_regions,lat_regions,latn,oper,unit,colort):
+                text_map_w_stats(ax,mean,lon_mod,bm,lon_regions,lat_regions,-60,'sum','M $km^2$','black')
                 plt.annotate('Total obs.: '+format(np.nansum(mobs),'.2f')+r' M $km^2$', xy=(.3,.56), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
                 plt.annotate('Total mod.: '+format(np.nansum(mmod),'.2f')+r' M $km^2$', xy=(.3,.51), xycoords='axes fraction',fontsize=9,fontweight='bold')#, textcoords='offset points',
                 dataf=np.where(h_etopoi>=-800,mean,np.nan); dataf=format(np.nanmean(dataf),'.2f')
@@ -1878,11 +1883,12 @@ for serie_or_map in serie_or_maps:
               cax = divider.append_axes('right', size='5%', pad=0.05)
               fig.colorbar(im1, cax=cax, orientation='vertical')
 
-          figname=path_fig+run+'/map_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
 
         fig.tight_layout() 
         if ex==expt[-1]:
           if save_fig==1:
+            run='paper_1'
+            figname=path_fig+run+'/map_'+vname+'_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
             if os.path.exists(path_fig+run)==False:
               os.mkdir(path_fig+run)
             print('Saving: '+figname)
