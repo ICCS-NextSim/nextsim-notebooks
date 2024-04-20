@@ -55,6 +55,7 @@ expt=exptc
 expt=[12,31,19,30,18] # final expts (bsose, mevp, mevp+, bbm, bbm+)
 expt=[31,30] # final expts (mevp, bbm)
 expt=[12,31,19,30] # final expts (bsose, mevp, mevp+, bbm)
+expt=[31,19,30] # final expts (mevp, mevp+, bbm)
 #expt=[exp]
 
 serie_or_maps=[0]#[1,2,3] # 1 for serie, 2 for video, and 3 for map, 0 for neither
@@ -99,7 +100,7 @@ runs=['50km_ocean_wind'      ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102',
 
 #Colors
 if expt[0]==31:
-  colors=['orange','c','pink','brown','g','r','k','yellow','orange','b','pink','brown','g','r','k','yellow']
+  colors=['orange','c','k','brown','g','r','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 elif expt[0]==12:
   colors=['pink','orange','c','black','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
   colors=['r','orange','c','k','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']

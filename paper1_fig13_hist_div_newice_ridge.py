@@ -86,7 +86,7 @@ plot_hist   =0
 plot_video  =0
 plot_vchoice=0 # not working yet. it will for my webpage
 plot_anim   =0 # solo video
-plot_maps   =1 # seasonal maps
+plot_maps   =0 # seasonal maps
 plot_mapo   =0 # maps with obs / based on plot_video and plot_smap
 plot_smap   =0 # solo map
 

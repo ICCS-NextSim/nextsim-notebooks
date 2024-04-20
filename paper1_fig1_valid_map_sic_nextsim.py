@@ -34,10 +34,10 @@ proj_info = projection_info.ProjectionInfo.sp_laea()
 proj      = proj_info.pyproj
 
 #Time
-start_day  =24 # 6 vcorr serie initial day
+start_day  =5 # 6 vcorr serie initial day
 start_month=7
 start_year =2016
-end_day    =25 #24 # bsie
+end_day    =6 #24 # bsie
 end_month  =7  #8 sit
 end_year   =2016
 
@@ -3264,12 +3264,12 @@ for serie_or_map in serie_or_maps:
                 #data_era=np.where(h_etopoe<=0,data_era,np.nan); #dataf=format(np.nanmean(dataf),'.2f')
                 lone, late = m(lon_eram,lat_eram)#,inverse=True)
                 ext=[np.nanmin(lone),np.nanmax(lone),np.nanmin(late),np.nanmax(late)]
-                clevels=np.linspace(900,1020,12,endpoint=False)
+                clevels=np.linspace(900,1020,6,endpoint=False)
                 ic=m.contour(lone,late,data_era,clevels,colors=('black'),linewidths=(.5,),origin='upper',linestyles='solid',extent=ext)
                 ic.clabel(clevels,fmt='%2.0f',colors='k',fontsize=10)
 
                 # circle around the storm
-                longr, latgr = m([-33.0],[-69.5])#,inverse=True)
+                longr, latgr = m([-32.0],[-67.0])#,inverse=True)
                 m.scatter(longr,latgr,s=20000,facecolors='none', edgecolors='magenta',linewidth=2)
 
 

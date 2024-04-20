@@ -34,10 +34,10 @@ proj_info = projection_info.ProjectionInfo.sp_laea()
 proj      = proj_info.pyproj
 
 #Time
-start_day  =24 # 6 vcorr serie initial day
+start_day  =5 # 6 vcorr serie initial day
 start_month=7
 start_year =2016
-end_day    =25 #24 # bsie
+end_day    =6 #24 # bsie
 end_month  =7  #8 sit
 end_year   =2016
 
@@ -3239,7 +3239,7 @@ for serie_or_map in serie_or_maps:
               if len(vnames)==1:
                 ax[ke].set_title(run+' '+vnamee,loc='left')
               else:
-                ax[kmv-1][ke].set_title(run+' '+vnamee,loc='left',fontsize=15,fontweight='bold')
+                ax[kmv-1][ke].set_title(run+' '+vnamee,loc='left',fontsize=15)# ,fontweight='bold')
 
               if len(vnames)==1:
                 m = Basemap(projection='splaea',boundinglat=-55,lon_0=180,resolution='l',ax=ax[ke])
@@ -3267,10 +3267,12 @@ for serie_or_map in serie_or_maps:
                   divider = make_axes_locatable(ax[kmv-1][ke])
 
                 cax = divider.append_axes('right', size='5%', pad=0.05)
-                fig.colorbar(im1, cax=cax, orientation='vertical')
-                # circle around the storm
-                longr, latgr = m([-33.0],[-69.5])#,inverse=True)
-                m.scatter(longr,latgr,s=5000,facecolors='none', edgecolors='magenta',linewidth=1)
+                cbar=fig.colorbar(im1, cax=cax, orientation='vertical')
+                cbar.ax.tick_params(labelsize=12)
+              # circle around the storm
+              #longr, latgr = m([-33.0],[-69.5])#,inverse=True)
+              longr, latgr = m([-32.0],[-67.0])#,inverse=True)
+              m.scatter(longr,latgr,s=5000,facecolors='none', edgecolors='magenta',linewidth=1)
 
 
 

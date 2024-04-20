@@ -62,7 +62,7 @@ exptc=[12,31,exp] # if serie_or_map!=0
 expt=exptc
 expt=[12,31,19,30,18] # final expts (bsose, mevp, mevp+, bbm, bbm+)
 expt=[31,30] # final expts (mevp, bbm)
-expt=[31,19] # final expts (mevp, bbm)
+expt=[12] # final expts (mevp, bbm)
 expt=[12,31,19,30] # final expts (bsose, mevp, mevp+, bbm)
 #expt=[12,31,19,30,24] # final expts (bsose, mevp, mevp+, bbm)
 #expt=[31,19,30,24,28] # final expts (bsose, mevp, mevp+, bbm)
@@ -645,7 +645,6 @@ for serie_or_map in serie_or_maps:
             if vname=='sit': 
               # masking mod where there is no obs
               sicc_diff=sicc_obs+(sicc_mod-sicc_obs)
-              #zzz
               #sicc_diff=sicc_mod
               mean=np.nanmean(sicc_diff,axis=1); mean=np.nanmean(mean,axis=1)
               print(run+' mean = '+format(np.nanmean(mean),".2f"))
@@ -956,7 +955,18 @@ for serie_or_map in serie_or_maps:
               ll=['CS2WFA','CS2WA-mean']
 
           elif inc_obs==0 and ke==1:
-            ll=[]
+            ll=['Kacimi and Kwok (2020)','Fons et al. (2022)']
+#zzz
+             
+            plt.plot([datetime.datetime(2019,4,30,0,0,0),datetime.datetime(2019,4,30,0,0,0),datetime.datetime(2019,4,30,0,0,0),datetime.datetime(2019,4,30,0,0,0),datetime.datetime(2019,5,30,0,0,0),
+                     datetime.datetime(2019,9,30,0,0,0),datetime.datetime(2019,9,30,0,0,0),datetime.datetime(2019,9,30,0,0,0),datetime.datetime(2019,9,30,0,0,0),datetime.datetime(2019,10,30,0,0,0)],
+                     [4500,7000,7500,8000,np.nan,10500,17200,19800,21500,np.nan],linestyle='-',marker='*',markersize=14,color='green')
+            #plt.plot([datetime.datetime(2019,9,30,0,0,0),datetime.datetime(2019,9,30,0,0,0)],[10500,21500], linestyle='-',marker='*',markersize=14,color='green')
+            #plt.plot([datetime.datetime(2019,9,30,0,0,0),datetime.datetime(2019,9,30,0,0,0)],[10500,21500], linestyle='-',marker='*',markersize=14,color='green')
+            #plt.plot([datetime.datetime(2019,4,30,0,0,0),datetime.datetime(2019,4,30,0,0,0)],[4500,8000],   linestyle='-',marker='*',markersize=14,color='green')
+ 
+            plt.plot([datetime.datetime(2019,3,1,0,0,0),datetime.datetime(2019,9,30,0,0,0)],[2000,18125.0], linestyle='none',marker='s',markersize=10,color='purple')
+            # plot randon points with colours for legend
 
           if run=='BSOSE':
             sit = vdatac;  #_output = datac.sit.to_masked_array() # Extract a given variable
@@ -971,11 +981,40 @@ for serie_or_map in serie_or_maps:
           #T = np.shape(sit)[0]
           #mean = np.zeros(T)
           time=time_mods
+
+          if ke==1:
+            for exx in range(0,len(expt)):
+              plt.plot([0,0],[0,0], colors[exx])   
+
+          plot_annual_mean=1
+          if plot_annual_mean==1:
+            #mean=uniform_filter1d(mean,10)
+            #atime,amean,astd=annual_mean(time_modd,mean)
+
+            time_obsd=time_modd
+            mean_cli=[]; std_cli=[]; time_cli=[]
+            #for t in range(time_obsd[0].year,time_obsd[-1].year+1,1):
+            for t in range(2015,2021+1,1):
+              iday=time_obsd.year==t
+              iym=np.where(iday==True)
+              mean_cli.append(np.nanmean(mean[iday],axis=0)) # annual average
+              std_cli.append(np.nanstd(mean[iday],axis=0)) 
+              time_cli.append(time_obsd[iym[0][int([np.round(np.shape(iym)[1]/2)][0])]]) 
+              #tc=dates.date2num(time_obsd[iym[0][0]])
+              #time_cli.append(tc) 
+
+            #ax2 = ax.twinx()
+            ax.plot(time_cli, mean_cli, colors[ke-1],linewidth=2,linestyle='--',marker='.',markersize=10)   
+            #ax.set_ylabel('Annual mean sea ice volume ($\mathrm{km^{3}}$)');
+            ax.set_ylim([000,25000])
+            #plt.plot(atime, amean, colors[ke-1],linewidth=2)   
+
+          ax.set_ylim([000,25000])
           #for t in range(T):
           #    mean[t] = np.sum((siv[t]*sic[t]))
           ll.append(run)#+' - mean = '+format(np.nanmean(mean),".2f"))
           plt.xlim([time_obs[0],time_obs[-1]])
-          plt.ylabel('S ice volume ($\mathrm{km^{3}}$)'); plt.title('Antarctic total sea ice volume ($\mathrm{km^{3}}$)')
+          ax.set_ylabel('Sea ice volume ($\mathrm{km^{3}}$)'); plt.title('Antarctic total sea ice volume ($\mathrm{km^{3}}$)')
           figname='serie_siv_total_'+str(start_year)+'-'+str(start_month)+'-'+str(start_day)+'_'+str(end_year)+'-'+str(end_month)+'-'+str(end_day)+'.png'
     
         elif vname=='vcorr' or vname=='drift':
@@ -1120,14 +1159,14 @@ for serie_or_map in serie_or_maps:
           plt.plot(time, mean, colors[ke-1],linewidth=2)
         else:
           #ll.append(run+' - mean = '+format(np.nanmean(mean),".2f"))
-          plt.plot(time, mean, colors[ke-1])   
+          ax.plot(time, mean, colors[ke-1])   
 
-        plt.grid('on')
+        ax.grid('on')
         if ex==expt[-1]:
           #if vname!='sit':
           #  for i in expt:
           #    ll.append(runs[i]+' - mean = '+str(np.nanmean(mean)))
-          plt.legend(ll)
+          ax.legend(ll, loc='lower left')
 
           if plot_cli==1:
             date_form = dates.DateFormatter("%b")
@@ -1135,7 +1174,7 @@ for serie_or_map in serie_or_maps:
             date_form = dates.DateFormatter("%b/%y")
 
           ax.xaxis.set_major_formatter(date_form)
-          plt.tight_layout()
+          fig.tight_layout()
           if save_fig==1:
             if os.path.exists(path_fig+run)==False:
               os.mkdir(path_fig+run)
@@ -3151,7 +3190,6 @@ for serie_or_map in serie_or_maps:
             #fig, ax = plt.subplots(1,1+len(expt), figsize = (16,8)) # landscape
             #fig, ax = plt.subplots(2,2, figsize = (9,8)) # landscape
             fig = plt.figure(figsize = (9,8)) # landscape
-#zzz
             for l in range(1+len(expt)):
  
               ax=fig.add_subplot(2,2,l+1)

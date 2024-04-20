@@ -11,6 +11,30 @@ from matplotlib import dates
 import pandas as pd
 import datetime
 
+def running_mean(x, N):
+    cumsum = np.nancumsum(np.insert(x, 0, 0)) 
+    return (cumsum[N:] - cumsum[:-N]) / float(N)
+
+def annual_mean(time_obsd,mean):
+
+  mean_cli=[]; std_cli=[]; time_cli=[]
+  for t in range(time_obsd[0].year,time_obsd[-1].year+1,1):
+    iday=time_obsd.year==t
+    iym=np.where(iday==True)
+    mean_cli.append(np.nanmean(mean[iday],axis=0)) # annual average
+    std_cli.append(np.nanstd(mean[iday],axis=0)) 
+    time_cli.append(time_obsd[iym[0][0]]) 
+    #tc=dates.date2num(time_obsd[iym[0][0]])
+    #  time_cli.append(tc)            
+
+
+  mean_cli=np.array(mean_cli)  
+  std_cli=np.array(std_cli)  
+  time_cli=np.array(time_cli)  
+  time_cli=dates.num2date(time_cli)
+
+  return time_cli, mean_cli, std_cli
+
 def daily_clim(time_obsd,mean):
 
   # climatological time

@@ -34,10 +34,10 @@ proj_info = projection_info.ProjectionInfo.sp_laea()
 proj      = proj_info.pyproj
 
 #Time
-start_day  =24 # 6 vcorr serie initial day
+start_day  =5 # 6 vcorr serie initial day
 start_month=7
 start_year =2016
-end_day    =25 #24 # bsie
+end_day    =6 #24 # bsie
 end_month  =7  #8 sit
 end_year   =2016
 
@@ -3156,7 +3156,8 @@ for serie_or_map in serie_or_maps:
               qk=plt.quiverkey(im11,.5,.5,10,'10 km/day',labelpos='S',fontproperties={'size':8})
   
               # circle around the storm
-              longr, latgr = m([-33.0],[-69.5])#,inverse=True)
+              #longr, latgr = m([-33.0],[-69.5])#,inverse=True)
+              longr, latgr = m([-32.0],[-67.0])#,inverse=True)
               m.scatter(longr,latgr,s=5000,facecolors='none', edgecolors='magenta',linewidth=2)
 
 
