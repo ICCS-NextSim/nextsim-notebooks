@@ -103,7 +103,7 @@ if expt[0]==31:
   colors=['orange','c','pink','brown','g','r','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 elif expt[0]==12:
   colors=['red','orange','c','black','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
-  #colors=['red','orange','b','k','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
+  colors=['red','orange','b','black','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 else:
   colors=['k','orange','r','c','pink','brown','g','r','b','k','yellow','orange','b','pink','brown','g','r','k','yellow']
 
@@ -476,10 +476,10 @@ for serie_or_map in serie_or_maps:
               mean=mean/1E6	
               if plot_cli==1:
                 time,mean,std=daily_clim(time_obsd,mean)
-                # for legend
-                plt.plot(time, mean, color=obs_colors[kc-1])#,lw=2,alpha=0.5)   
+                # for legend zzz
+                plt.plot(time,np.full(shape=len(mean),fill_value=np.nan), color=obs_colors[kc-1],lw=4)#,alpha=0.5)   
                 for exx in range(0,len(expt)):
-                  plt.plot(time, mean, colors[exx])   
+                  plt.plot(time, np.full(shape=len(mean),fill_value=np.nan), colors[exx],lw=4)   
                 plt.fill_between(time,mean-std,mean+std,facecolor=obs_colors[kc-1],alpha=0.5,lw=2)
 
               plt.plot(time, mean, color=obs_colors[kc-1])   

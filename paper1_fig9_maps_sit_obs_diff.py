@@ -1720,13 +1720,13 @@ for serie_or_map in serie_or_maps:
               imonth1o=time_obsd.month==1; imonth2o=time_obsd.month==2; imonth3o=time_obsd.month==3; 
               imonth1=time_modd.month==1; imonth2=time_modd.month==2; imonth3=time_modd.month==3; 
             if m==4: 
-              imonth1o=time_obsd.month==8; month2o=time_obsd.month==9; imonth3o=time_obsd.month==10; 
+              imonth1o=time_obsd.month==8; imonth2o=time_obsd.month==9; imonth3o=time_obsd.month==10; 
               imonth1=time_modd.month==8; imonth2=time_modd.month==9; imonth3=time_modd.month==10; 
             if m==7: 
-              imonth1o=time_obsd.month==7; month2o=time_obsd.month==8; imonth3o=time_obsd.month==9; 
+              imonth1o=time_obsd.month==7; imonth2o=time_obsd.month==8; imonth3o=time_obsd.month==9; 
               imonth1=time_modd.month==7; imonth2=time_modd.month==8; imonth3=time_modd.month==9; 
             if m==10: 
-              imonth1o=time_obsd.month==10; month2o=time_obsd.month==11; imonth3o=time_obsd.month==12; 
+              imonth1o=time_obsd.month==10; imonth2o=time_obsd.month==11; imonth3o=time_obsd.month==12; 
               imonth1=time_modd.month==10; imonth2=time_modd.month==11; imonth3=time_modd.month==12; 
 
             sit_obss=np.concatenate((sit_obs[imonth1o],sit_obs[imonth2o],sit_obs[imonth3o]),0)
