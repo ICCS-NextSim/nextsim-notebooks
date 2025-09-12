@@ -45,7 +45,7 @@ varim =''; % unused 'sit' for model solo videos  % video
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % after 'BSOSE' run (ocean boundary cond), runs are all mEVP
 runs={'50km_ocean_wind'      ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',...       # 5
-      '50km_20Clab_20180102' ,'50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',...    # 10
+      '50km_20Clab_20180102' ,'50km_P14C20_20180102'  ,'50km_P14C20g2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',...    # 10
       '50km_glorys_20180102' ,'BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',    ...       # 15
       '50km_hyle_20130102'   ,'50km_ckFFalse_20130102','50km_bWd020_20130102'  ,'mEVP+'                 ,'25km_bbm_20130102',   ...        # 20
       '25km_mevp_20130102'   ,'12km_bbm_20130102'     ,'12km_mEVP_20130102'    ,'50km_bWd016_20130102'  ,'50km_mCd01_20130102', ...        # 25
