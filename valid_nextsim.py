@@ -52,10 +52,10 @@ end_year   =2016
 
 start_day  =1 # 6 vcorr serie initial day
 start_month=1
-start_year =2013
-end_day    =1 # bsie 27/12/2021 = last day
-end_month  =7  # 7  #8 sit
-end_year   =2013 # 2016
+start_year =2016
+end_day    =28 # bsie 27/12/2021 = last day
+end_month  =1  # 7  #8 sit
+end_year   =2016 # 2016
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=12
@@ -66,7 +66,7 @@ expt=[12,31,19,30] # final expts (bsose, mevp, mevp+, bbm)
 expt=[31,19,30] # final expts (bsose, mevp, mevp+, bbm)
 expt=[31,30] # final expts (bsose, mevp, mevp+, bbm)
 expt=[31,39,30,38] # final expts (bsose, mevp, mevp+, bbm)
-expt=[30,42] # final expts (bsose, mevp, mevp+, bbm)
+#expt=[31,30,40] # final expts (bsose, mevp, mevp+, bbm)
 #expt=[31,30,40,41] # final expts (bsose, mevp, mevp+, bbm)
 #expt=[31,30,21,20] # final expts (bsose, mevp, mevp+, bbm)
 #exptc=expt
@@ -74,7 +74,7 @@ expt=[30,42] # final expts (bsose, mevp, mevp+, bbm)
 
 #Variables
 vname='drift'  # sit_obs_rmse_diff 
-vname='sit'  # sit_obs_rmse_diff 
+vname='siv'  # sit_obs_rmse_diff 
 #vname='vcorr'  # sit_obs_rmse_diff 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_maps) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
@@ -83,7 +83,7 @@ vname='sit'  # sit_obs_rmse_diff
 
 serie_or_maps=[0]#[1:4] # 1=serie, 2=video, and 3=map, 4=smap, 5=hist; 0 for neither
 my_dates=0
-inc_obs=0
+inc_obs=1
 kmm=-1; # marker for seasonal maps 
 kmv=-1
 
@@ -122,7 +122,7 @@ runs=['50km_ocean_wind'      ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102',
       '50km_bCd01_20130102'  ,'50km_mWd016_20130102'  ,'50km_10kPcom_20130102' ,'50km_mevp10kP_20130102','BBM', # '50km_b10kP2h_20130102',   # 30
       'mEVP'                 ,'50km_b14kP1h_20130102' ,'50km_m14kP1h_20130102' ,'50km_b14kP2h_20130102' ,'50km_m14kP2h_20130102',       # 35
       '50km_mWd022_20130102' ,'50km_mWd024_20130102'  ,'BBM-25km'              ,'mEVP-25km'             ,'25km_b10kP2h_20130102',       # 40
-      '25km_mWd016_20130102' ,'50km_BBM_20130102'     ]#,'50km_mWd024_20130102'  ,'BBM-25km'              ,'mEVP-25km'             ,'25km_b10kP2h_20130102']     # 45
+      '25km_mWd016_20130102' ]#,'50km_mWd024_20130102'  ,'BBM-25km'              ,'mEVP-25km'             ,'25km_b10kP2h_20130102']     # 45
 
 #Colors
 if expt[0]==31:
