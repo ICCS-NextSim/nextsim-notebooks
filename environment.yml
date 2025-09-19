@@ -1,0 +1,21 @@
+name: nextcamtools
+channels:
+  - conda-forge
+dependencies:
+  - cartopy
+  - cython
+  - pip
+  - pip:
+    - cmocean
+    - gdown
+    - h5netcdf
+    - matplotlib
+    - mock
+    - netcdf4
+    - netcdftime
+    - numpy
+    - pyproj
+    - pytest
+    - pyyaml
+    - scipy
+    - xarray
