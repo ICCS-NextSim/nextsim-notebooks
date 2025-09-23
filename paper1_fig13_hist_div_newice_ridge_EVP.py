@@ -52,7 +52,7 @@ start_day  =1 # 6 vcorr serie initial day
 start_month=1
 start_year =2016
 end_day    =31 # bsie 27/12/2021 = last day
-end_month  =1  #8 sit
+end_month  =12  #8 sit
 end_year   =2016
 
 
@@ -95,7 +95,7 @@ save_fig    =1
 plt_show    =1
 interp_obs  =1 # only for SIE maps obs has 2x the model resolution
 hist_norm   =0
-plot_atm    =1
+plot_atm    =0
 eraname='msl' 
 # msl = air pressure at mea sea level
 
@@ -181,8 +181,8 @@ else:
   exit()
   
 #Grid information
-run=runs[8]#expt[0]] # 'data_glorys'
-data = xr.open_dataset(path_runs+run+'/output/Moorings_2018m01.nc')
+run=runs[30]#expt[0]] # 'data_glorys'
+data = xr.open_dataset(path_runs+run+'/output/Moorings_2013m01.nc')
 lon_mod = data.longitude #sit.to_masked_array() # Extract a given variable
 lat_mod = data.latitude #sit.to_masked_array() # Extract a given variable
 #lon_mod=np.where(lon_mod!=np.max(lon_mod),lon_mod,179.99999999999)#180.01)
