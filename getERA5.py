@@ -1,4 +1,4 @@
-#!/scale_wlg_persistent/filesets/project/uoa03669/rsan613/conda/envs/era5/bin/python
+#!/nesi/project/uoa03669/rsan613/envs/era5/bin/python
 
 
 # Script for downloading the ERA5 reanalysis and making it neXtSIM friendly.
@@ -25,6 +25,7 @@ temporal_frequency = 1
 cdo = Cdo()
 client = cdsapi.Client()
 
+
 #sys.exit()
 
 # Loop parameters
@@ -32,21 +33,23 @@ client = cdsapi.Client()
 #    print('Usage: ' + sys.argv[0] + ' firstYear lastYear')
 #    sys.exit(1)
 
-firstYear = 2013 # int(sys.argv[1])
-lastYear  = 2013 # int(sys.argv[2])
+firstYear = 2018 # int(sys.argv[1])
+lastYear  = 2018 # int(sys.argv[2])
 
 # Request parameters
 product = 'reanalysis-era5-single-levels'
 
-variable = ['2m_dewpoint_temperature',
-            '2m_temperature',
-            'mean_sea_level_pressure',
-            'mean_total_precipitation_rate',
-            'mean_surface_downward_short_wave_radiation_flux',
+variable = [
+##             '2m_dewpoint_temperature'],
+##            '2m_temperature',
+##            'mean_sea_level_pressure',
+##            'mean_total_precipitation_rate',
+#            'mean_surface_downward_short_wave_radiation_flux',
             'mean_surface_downward_long_wave_radiation_flux',
-            'mean_snowfall_rate',
-            '10m_u_component_of_wind', 
-            '10m_v_component_of_wind']
+##            'mean_snowfall_rate',
+##            '10m_u_component_of_wind', 
+#            '10m_v_component_of_wind'
+]
 
 #            'surface_solar_radiation_downwards',   # not necessary
 #            'surface_thermal_radiation_downwards'] # not necessary
@@ -106,4 +109,26 @@ for year in range(firstYear,lastYear+1):
         os.unlink(temp_file)
 
         print('\nOutput written to '+filename.format(short_name[0],year)+'\n')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
