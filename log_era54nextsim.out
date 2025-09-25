@@ -1,0 +1,20 @@
+You need to close the ncfile "ncfile.close()" before opening it. 
+Hostname: ml12.hpc.nesi.org.nz
+
+Processing file /nesi/project/uoa03669/data/ERA5/new_files/ERA5_avg_tprate_y2018.nc
+
+Creating file /nesi/project/uoa03669/data/ERA5/proc/ERA5_mtpr_y2018.nc
+<class 'netCDF4.Dataset'>
+root group (NETCDF4_CLASSIC data model, file format HDF5):
+    dimensions(sizes): 
+    variables(dimensions): 
+    groups: 
+('longitude', "<class 'netCDF4.Dimension'>": name = 'longitude', size = 1440)
+('latitude', "<class 'netCDF4.Dimension'>": name = 'latitude', size = 241)
+('time', "<class 'netCDF4.Dimension'>": name = 'time', size = 8760)
+  
+Compress netcdf with:
+ml NCO
+load-miniforge
+conda activate /nesi/project/uoa03669/rsan613/envs/era5
+nccopy -d9 -s ERA5_msdwlwrf_y2018.nc ERA5_msdwlwrf_y2018.nc4
