@@ -22,31 +22,30 @@ import os
 #plt.ion()
 #plt.close('all')
 
-
-firstYear = 2018 # int(sys.argv[1])
-lastYear  = 2018 # int(sys.argv[2])
+firstYear = 2013 # int(sys.argv[1])
+lastYear  = 2013 # int(sys.argv[2])
 
 files_in=[
-##'d2m',
-##'avg_sdlwrf',
-##'avg_sdswrf',
+#'d2m',
+#'avg_sdlwrf',
+#'avg_sdswrf',
 #'msl',
 #'avg_tsrwe',
-'avg_tprate',
-##'t2m', 
-##'u10', 
+#'avg_tprate',
+'t2m', 
+'u10', 
 #'v10'
 ] 
 
 files_out=[
-##'d2m',
-##'msdwlwrf',
-##'msdwswrf',
+#'d2m',
+#'msdwlwrf',
+#'msdwswrf',
 #'msl',
 #'msr',
-'mtpr',
-##'t2m',
-##'u10',
+#'mtpr',
+'t2m',
+'u10',
 #'v10',
 ]
 
@@ -54,9 +53,9 @@ print('Hostname: '+socket.gethostname())
 if socket.gethostname()[-11::]=='nesi.org.nz':
   path_in='/nesi/project/uoa03669/data/ERA5/new_files/' 
   path_out='/nesi/project/uoa03669/data/ERA5/proc/' 
-#elif socket.gethostname()[-11::]=='nesi.org.nz': # oscar
-  #path_in='/oscar/data/deeps/private/chorvat/nextsim/ERA5/'
-  #path_out='/oscar/data/deeps/private/chorvat/nextsim/ERA5/proc/'
+elif socket.gethostname()[-9::]=='brown.edu' or socket.gethostname()[0:5]=='login': # oscar
+  path_in='/oscar/data/deeps/private/chorvat/nextsim/ERA5/'
+  path_out='/oscar/data/deeps/private/chorvat/data/ERA5/proc/'
 else:
   print("Your input and output paths haven't been set for your computing enviroment")
   exit()
@@ -239,11 +238,14 @@ for year in range(firstYear,lastYear+1):
         #zos=np.ma.filled(zos.astype(float), -0.860163)
 
 print('  ')
+print('  ')
 print('Compress netcdf with:')
+print('### on NeSI ###')
 print('ml NCO')
 print('load-miniforge')
 print('conda activate /nesi/project/uoa03669/rsan613/envs/era5')
 print('nccopy -d9 -s ERA5_msdwlwrf_y2018.nc ERA5_msdwlwrf_y2018.nc4')
 
 exit()
+
 

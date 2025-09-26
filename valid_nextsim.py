@@ -1,7 +1,5 @@
 #conda install -c conda-forge xarray pandas numpy matplotlib basemap scipy
 #conda install -c conda-forge cmocean netCDF4
-#conda config --add channels conda-forge
-#conda config --set channel_priority strict
 import xarray as xr
 import pandas as pd
 import numpy as np
