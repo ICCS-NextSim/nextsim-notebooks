@@ -207,10 +207,10 @@ for year in range(firstYear,lastYear+1):
 
         elif f_out=='t2m':
             t2m = ncfile.createVariable(f_out,np.float64,('time','latitude','longitude'))#,fill_value=-32767) # note: unlimited dimension is leftmost
-            t2m:long_name = "2 metre temperature" ;
-            t2m:units = "K" ;
-            t2m:add_offset = 258.443991925885 ;
-            t2m:scale_factor = 0.00201553787823561 ;
+            t2m.long_name = "2 metre temperature" ;
+            t2m.units = "K" ;
+            t2m.add_offset = 258.443991925885 ;
+            t2m.scale_factor = 0.00201553787823561 ;
             t2m[:,:,:]=data_in
             ncfile.set_fill_off()
 
