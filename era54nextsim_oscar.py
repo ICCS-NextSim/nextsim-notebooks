@@ -1,15 +1,7 @@
-# processes BSOSE 5 day averages of SSH, ICE conc and thick, MLD, and sliced U,V,T,S
-# download BSOSE files on http://sose.ucsd.edu/SO6/ITER139/  , using: 
-# curl -C - -O http://sose.ucsd.edu/SO6/ITER139/SeaIceArea_bsoseI139_2013to2021_5dy.nc
-# slice with ncea, e.g.:
-# ncea -O -F -d Z,5 Uvel_bsoseI139_2013to2021_5dy.nc Uvel_bsoseI139_2013to2021_5dy.nc_26m
-
-#Input
-#########################################################################
-#file_type = '3m'  # file_type='3m' or '30m'
-#ini_lat   = -81.00003 # initial glorys latitude
-#########################################################################
-
+#script to convert new ERA5 files to readable nextsim ERA5 files 
+# main chage: convert `valid_time` into `time` and a few file and variable names
+ 
+print('On nesi use with: load-python-nextsim')
 print('You need to close the ncfile "ncfile.close()" before opening it. ')
 
 import xarray as xr
