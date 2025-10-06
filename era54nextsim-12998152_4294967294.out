@@ -7,3 +7,5 @@
 ## Directory : /oscar/data/deeps/private/chorvat/santanarc/scripts/uo/nextsim-notebooks
 ##   Job Started : Fri Sep 26 12:05:30 AM EDT 2025
 ###############################################################################
+/var/spool/slurmd/job12998152/slurm_script: line 30: 3045588 Killed                  python era54nextsim.py
+slurmstepd: error: Detected 1 oom_kill event in StepId=12998152.batch. Some of the step tasks have been OOM Killed.

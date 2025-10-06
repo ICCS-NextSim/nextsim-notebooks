@@ -27,25 +27,25 @@ lastYear  = 2013 # int(sys.argv[2])
 
 files_in=[
 #'d2m',
-#'avg_sdlwrf',
-#'avg_sdswrf',
-#'msl',
-#'avg_tsrwe',
-#'avg_tprate',
-'t2m', 
-'u10', 
+'avg_sdlwrf',
+'avg_sdswrf',
+'msl',
+'avg_tsrwe',
+'avg_tprate',
+#'t2m', 
+#'u10', 
 #'v10'
 ] 
 
 files_out=[
 #'d2m',
-#'msdwlwrf',
-#'msdwswrf',
-#'msl',
-#'msr',
-#'mtpr',
-'t2m',
-'u10',
+'msdwlwrf',
+'msdwswrf',
+'msl',
+'msr',
+'mtpr',
+#'t2m',
+#'u10',
 #'v10',
 ]
 
