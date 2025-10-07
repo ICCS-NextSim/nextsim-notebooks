@@ -1,11 +1,12 @@
 #!/bin/bash
 
 # Resource request
-#SBATCH --time=168:00:00
+#SBATCH --time=8:00:00
+####SBATCH --time=168:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem-per-cpu=80G
+#SBATCH --mem-per-cpu=100G
 
 # Partition
 ######SBATCH --partition=batch
@@ -15,7 +16,8 @@
 
 # Job handling
 #SBATCH -J era54nextsim
-#SBATCH -o %x-%A_%a.out
+#SBATCH -o era54nextsim.out
+#####SBATCH -o %x-%A_%a.out
 
 # Use the $SLURM_ARRAY_TASK_ID variable to provide different inputs for each job
 #module load hpcx-mpi

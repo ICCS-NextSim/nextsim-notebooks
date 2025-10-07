@@ -1,0 +1,9 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 13170625
+##  Job Name : era54nextsim
+##  Nodelist : node1911
+##      CPUs : 1
+##   Mem/CPU : 102400 MB
+## Directory : /oscar/data/deeps/private/chorvat/santanarc/scripts/uo/nextsim-notebooks
+##   Job Started : Mon Oct  6 09:36:51 PM EDT 2025
+###############################################################################
