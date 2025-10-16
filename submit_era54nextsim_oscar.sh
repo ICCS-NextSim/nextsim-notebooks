@@ -16,7 +16,7 @@
 
 # Job handling
 #SBATCH -J era54nextsim
-#SBATCH -o era54nextsim.out
+#SBATCH -o log_era54nextsim.out
 #####SBATCH -o %x-%A_%a.out
 
 # Use the $SLURM_ARRAY_TASK_ID variable to provide different inputs for each job

@@ -1,9 +1,20 @@
+## SLURM PROLOG ###############################################################
+##    Job ID : 13345928
+##  Job Name : era54nextsim
+##  Nodelist : node2312
+##      CPUs : 1
+##   Mem/CPU : 102400 MB
+## Directory : /oscar/data/deeps/private/chorvat/santanarc/scripts/uo/nextsim-notebooks
+##   Job Started : Tue Oct 14 10:02:10 PM EDT 2025
+###############################################################################
+On nesi use with: load-python-nextsim
 You need to close the ncfile "ncfile.close()" before opening it. 
-Hostname: ml12.hpc.nesi.org.nz
+Hostname: node2312.oscar.ccv.brown.edu
 
-Processing file /nesi/project/uoa03669/data/ERA5/new_files/ERA5_avg_tprate_y2018.nc
+Processing file /oscar/data/deeps/private/chorvat/nextsim/ERA5/ERA5_avg_tprate_y2013.nc
+Deleted old file: /oscar/data/deeps/private/chorvat/data/ERA5/proc/ERA5_mtpr_y2013.nc
 
-Creating file /nesi/project/uoa03669/data/ERA5/proc/ERA5_mtpr_y2018.nc
+Creating file /oscar/data/deeps/private/chorvat/data/ERA5/proc/ERA5_mtpr_y2013.nc
 <class 'netCDF4.Dataset'>
 root group (NETCDF4_CLASSIC data model, file format HDF5):
     dimensions(sizes): 
@@ -13,8 +24,82 @@ root group (NETCDF4_CLASSIC data model, file format HDF5):
 ('latitude', "<class 'netCDF4.Dimension'>": name = 'latitude', size = 241)
 ('time', "<class 'netCDF4.Dimension'>": name = 'time', size = 8760)
   
+  
 Compress netcdf with:
+### on NeSI ###
 ml NCO
 load-miniforge
 conda activate /nesi/project/uoa03669/rsan613/envs/era5
 nccopy -d9 -s ERA5_msdwlwrf_y2018.nc ERA5_msdwlwrf_y2018.nc4
+On nesi use with: load-python-nextsim
+You need to close the ncfile "ncfile.close()" before opening it. 
+Hostname: node2323.oscar.ccv.brown.edu
+
+Processing file /oscar/data/deeps/private/chorvat/nextsim/ERA5/ERA5_avg_sdswrf_y2013.nc
+Deleted old file: /oscar/data/deeps/private/chorvat/data/ERA5/proc/ERA5_msdwswrf_y2013.nc
+
+Creating file /oscar/data/deeps/private/chorvat/data/ERA5/proc/ERA5_msdwswrf_y2013.nc
+<class 'netCDF4.Dataset'>
+root group (NETCDF4_CLASSIC data model, file format HDF5):
+    dimensions(sizes): 
+    variables(dimensions): 
+    groups: 
+('longitude', "<class 'netCDF4.Dimension'>": name = 'longitude', size = 1440)
+('latitude', "<class 'netCDF4.Dimension'>": name = 'latitude', size = 241)
+('time', "<class 'netCDF4.Dimension'>": name = 'time', size = 8760)
+  
+  
+Compress netcdf with:
+### on NeSI ###
+ml NCO
+load-miniforge
+conda activate /nesi/project/uoa03669/rsan613/envs/era5
+nccopy -d9 -s ERA5_msdwlwrf_y2018.nc ERA5_msdwlwrf_y2018.nc4
+On nesi use with: load-python-nextsim
+You need to close the ncfile "ncfile.close()" before opening it. 
+Hostname: node2323.oscar.ccv.brown.edu
+
+Processing file /oscar/data/deeps/private/chorvat/nextsim/ERA5/ERA5_msl_y2013.nc
+Deleted old file: /oscar/data/deeps/private/chorvat/data/ERA5/proc/ERA5_msl_y2013.nc
+
+Creating file /oscar/data/deeps/private/chorvat/data/ERA5/proc/ERA5_msl_y2013.nc
+<class 'netCDF4.Dataset'>
+root group (NETCDF4_CLASSIC data model, file format HDF5):
+    dimensions(sizes): 
+    variables(dimensions): 
+    groups: 
+('longitude', "<class 'netCDF4.Dimension'>": name = 'longitude', size = 1440)
+('latitude', "<class 'netCDF4.Dimension'>": name = 'latitude', size = 241)
+('time', "<class 'netCDF4.Dimension'>": name = 'time', size = 8760)
+  
+  
+Compress netcdf with:
+### on NeSI ###
+ml NCO
+load-miniforge
+conda activate /nesi/project/uoa03669/rsan613/envs/era5
+nccopy -d9 -s ERA5_msdwlwrf_y2018.nc ERA5_msdwlwrf_y2018.nc4
+On nesi use with: load-python-nextsim
+You need to close the ncfile "ncfile.close()" before opening it. 
+Hostname: node2352.oscar.ccv.brown.edu
+
+Processing file /oscar/data/deeps/private/chorvat/nextsim/ERA5/ERA5_v10_y2013.nc
+Deleted old file: /oscar/data/deeps/private/chorvat/data/ERA5/proc/ERA5_v10_y2013.nc
+
+Creating file /oscar/data/deeps/private/chorvat/data/ERA5/proc/ERA5_v10_y2013.nc
+<class 'netCDF4.Dataset'>
+root group (NETCDF4_CLASSIC data model, file format HDF5):
+    dimensions(sizes): 
+    variables(dimensions): 
+    groups: 
+('longitude', "<class 'netCDF4.Dimension'>": name = 'longitude', size = 1440)
+('latitude', "<class 'netCDF4.Dimension'>": name = 'latitude', size = 241)
+('time', "<class 'netCDF4.Dimension'>": name = 'time', size = 8760)
+Traceback (most recent call last):
+  File "/oscar/data/deeps/private/chorvat/santanarc/scripts/uo/nextsim-notebooks/era54nextsim.py", line 239, in <module>
+    v10[:,:,:]=data_in
+    ~~~^^^^^^^
+  File "src/netCDF4/_netCDF4.pyx", line 5630, in netCDF4._netCDF4.Variable.__setitem__
+  File "src/netCDF4/_netCDF4.pyx", line 5917, in netCDF4._netCDF4.Variable._put
+  File "src/netCDF4/_netCDF4.pyx", line 2164, in netCDF4._netCDF4._ensure_nc_success
+RuntimeError: NetCDF: HDF error

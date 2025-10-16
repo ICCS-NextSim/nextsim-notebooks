@@ -26,24 +26,24 @@ firstYear = 2013 # int(sys.argv[1])
 lastYear  = 2013 # int(sys.argv[2])
 
 files_in=[
-'d2m',
+#'d2m',
 #'avg_sdlwrf',
 #'avg_sdswrf',
 #'msl',
 #'avg_tsrwe',
-#'avg_tprate',
+'avg_tprate',
 #'t2m', 
 #'u10', 
 #'v10'
 ] 
 
 files_out=[
-'d2m',
+#'d2m',
 #'msdwlwrf',
 #'msdwswrf',
 #'msl',
 #'msr',
-#'mtpr',
+'mtpr',
 #'t2m',
 #'u10',
 #'v10',
@@ -111,7 +111,8 @@ for year in range(firstYear,lastYear+1):
         #depth.units = "m"
         #depth.long_name = 'Depth'
         time = ncfile.createVariable('time', np.float64, ('time',))
-        time.units = "seconds since 1970-01-01"
+        time.units = "hours since 1900-01-01 00:00:00.0"
+        #time.units = "seconds since 1970-01-01 00:00:00"
         #time.units = "hours since 1950-01-01 00:00:00"
         time.long_name = 'time'
         
@@ -123,7 +124,13 @@ for year in range(firstYear,lastYear+1):
         #latitude[li:ll] = lat_sose # -90. + (180./nlats)*np.arange(nlats) # south pole to north pole
         latitude[:] = lat_in # (180./nlats)*np.arange(nlons) # Greenwich meridian eastward
         longitude[:] = lon_in # (180./nlats)*np.arange(nlons) # Greenwich meridian eastward
-        time[:] = time_in #
+
+        #time_diff = dates.date2num(datetime.datetime()-)
+        #modifying time
+        time_date=num2date(time_in,"seconds since 1970-01-01 00:00:00")
+        time_out=date2num(time_date,"hours since 1900-01-01 00:00:00.0") 
+ 
+        time[:] = time_out # from seconds to hours and from starting 1900 rather than 1970
 
         #exit()
 

@@ -14,19 +14,19 @@ print('You need to close the ncfile "ncfile.close()" before opening it. ')
 
 import xarray as xr
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import numpy.ma as ma
-import cmocean
-from matplotlib.animation import FuncAnimation
-from matplotlib import animation, rc
-from mpl_toolkits.axes_grid1 import make_axes_locatable
+#import cmocean
+#from matplotlib.animation import FuncAnimation
+#from matplotlib import animation, rc
+#from mpl_toolkits.axes_grid1 import make_axes_locatable
 import netCDF4 as nc
 from netCDF4 import Dataset
 import datetime as dt
 from netCDF4 import date2num,num2date
 from sys import exit
-plt.ion()
-plt.close('all')
+#plt.ion()
+#plt.close('all')
 
 # reading sose lon,lat,time
 path='/Users/rsan613/Library/CloudStorage/OneDrive-TheUniversityofAuckland/001_WORK/nextsim/southern/BSOSE/'
