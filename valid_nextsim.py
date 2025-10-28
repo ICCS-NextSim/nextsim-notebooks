@@ -58,7 +58,7 @@ start_day  =1 # 6 vcorr serie initial day
 start_month=1
 start_year =2016
 end_day    =30 # bsie 27/12/2021 = last day
-end_month  =12  # 7  #8 sit
+end_month  =1  # 7  #8 sit
 end_year   =2016 # 2016
 
 #Runs (names) or experiments (numbers - starts with 1)
@@ -80,14 +80,14 @@ exptc=expt
 
 #Variables
 vname='drift'  # sit_obs_rmse_diff 
-#vname='sic'  # sit_obs_rmse_diff 
+vname='siv'  # sit_obs_rmse_diff 
 #vname='vcorr'  # sit_obs_rmse_diff 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_maps) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
 # siv, drift, driftp90, vcorr, vcorr_pack, vcorr_diff, divergence, shear, processed variable e.g. 'bsie=(confusion matrix)', 'sit' 
 # newice, newice_diff 'ridge_ratio' 'divergence' 
 
-serie_or_maps=[5]#[1:4] # 1=serie, 2=video, and 3=map, 4=smap, 5=hist; 0 for neither
+serie_or_maps=[0]#[1:4] # 1=serie, 2=video, and 3=map, 4=smap, 5=hist; 0 for neither
 my_dates=0
 inc_obs=0
 kmm=-1; # marker for seasonal maps 
@@ -95,13 +95,13 @@ kmv=-1
 
 # Plot types
 plot_scatter=0
-plot_series =0
+plot_series =1
 plot_hist   =0
 plot_video  =0
 plot_vchoice=0 # not working yet. it will for my webpage
 plot_anim   =0 # solo video
 plot_maps   =0 # seasonal maps
-plot_mapo   =1 # maps with obs / based on plot_video and plot_smap
+plot_mapo   =0 # maps with obs / based on plot_video and plot_smap
 plot_smap   =0 # solo map
 
 plot_cli    =0
