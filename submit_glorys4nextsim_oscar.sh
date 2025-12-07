@@ -32,7 +32,7 @@ dir_out="/oscar/data/deeps/private/chorvat/data/GLORYS/proc/"
 prefix="cmems_mod_glo_phy_my_0.083deg_P1D-m_multi-vars_180.00W-179.92E_80.00S-30.00S_1.54m_"
 #prefix="cmems_mod_glo_phy_my_0.083deg_P1D-m_uo-vo-zos_180.00W-179.92E_80.00S-30.00S_29.44m_"
 
-for year in {2014..2024}; do
+for year in {2013..2024}; do
   yearp1=$((year+1))
 
   file_in=${dir_in}${prefix}${year}"-01-01-"${yearp1}"-01-01.nc"
