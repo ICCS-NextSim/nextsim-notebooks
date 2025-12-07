@@ -56,10 +56,10 @@ end_year   =2016
 
 start_day  =1 # 6 vcorr serie initial day
 start_month=1
-start_year =2016
+start_year =2013
 end_day    =30 # bsie 27/12/2021 = last day
-end_month  =1  # 7  #8 sit
-end_year   =2016 # 2016
+end_month  =12  # 7  #8 sit
+end_year   =2018 # 2016
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=12
@@ -179,7 +179,7 @@ elif socket.gethostname()[0]=='w' or socket.gethostname()=='mahuika01' or socket
   path_fig='/scale_wlg_persistent/filesets/home/rsan613/figure/'
   path_data ='/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/'
   path_bsose='/scale_wlg_nobackup/filesets/nobackup/uoa03669/data/bsose/'
-elif socket.gethostname()=='login03.hpc.nesi.org.nz':
+elif socket.gethostname()[-11::]=='nesi.org.nz':
   path_runs='/nesi/project/uoa03669/rsan613/n/southern/runs/' # ''~/'
   #path_fig ='/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/figures/' 
   path_fig='/nesi/project/uoa03669/rsan613/n/southern/runs/figures/'
