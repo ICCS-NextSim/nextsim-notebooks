@@ -69,7 +69,7 @@ class MakeGlorys12Cyclic:
             if vname == "thetao" and "latitude" in src_ds.variables:
                 lat = src_ds.variables["latitude"][:]
                 lat_mask = lat < -74
-                v[..., lat_mask, :] = -1.0
+                v[..., lat_mask, :] = -2.0
                 print("Set thetao south of -70° latitude to -2°C")
             # ---------------------------------------------
 

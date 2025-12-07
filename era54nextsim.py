@@ -22,8 +22,10 @@ import os
 #plt.ion()
 #plt.close('all')
 
-firstYear = 2013 # int(sys.argv[1])
-lastYear  = 2013 # int(sys.argv[2])
+firstYear = 2014 # int(sys.argv[1])
+lastYear  = 2019 # int(sys.argv[2])
+firstYear = 2020 # int(sys.argv[1])
+lastYear  = 2024 # int(sys.argv[2])
 
 files_in=[
 #'d2m',
@@ -31,9 +33,9 @@ files_in=[
 #'avg_sdswrf',
 #'msl',
 #'avg_tsrwe',
-'avg_tprate',
+#'avg_tprate',
 #'t2m', 
-#'u10', 
+'u10', 
 #'v10'
 ] 
 
@@ -43,9 +45,9 @@ files_out=[
 #'msdwswrf',
 #'msl',
 #'msr',
-'mtpr',
+#'mtpr',
 #'t2m',
-#'u10',
+'u10',
 #'v10',
 ]
 
