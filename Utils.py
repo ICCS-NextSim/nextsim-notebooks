@@ -3,8 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import numpy.ma as ma
 import cmocean
-import cartopy
-import cartopy.crs as ccrs
+#import cartopy
+#import cartopy.crs as ccrs
 from matplotlib.animation import FuncAnimation
 from matplotlib import animation, rc
 from matplotlib import dates

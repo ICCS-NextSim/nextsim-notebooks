@@ -59,7 +59,7 @@ start_month=1
 start_year =2013
 end_day    =30 # bsie 27/12/2021 = last day
 end_month  =12  # 7  #8 sit
-end_year   =2018 # 2016
+end_year   =2021 # 2016
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=12
@@ -74,13 +74,13 @@ expt=[30,31,42] # final expts (bsose, mevp, mevp+, bbm)
 #expt=[30,42] # final expts (bsose, mevp, mevp+, bbm)
 #expt=[31,30,40] # final expts (bsose, mevp, mevp+, bbm)
 #expt=[31,30,40,41] # final expts (bsose, mevp, mevp+, bbm)
-#expt=[31,30,21,20] # final expts (bsose, mevp, mevp+, bbm)
-exptc=expt
+expt=[46] 
+#exptc=expt
 #expt=[exp]
 
 #Variables
 vname='drift'  # sit_obs_rmse_diff 
-vname='siv'  # sit_obs_rmse_diff 
+vname='sie'  # sit_obs_rmse_diff 
 #vname='vcorr'  # sit_obs_rmse_diff 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_maps) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
@@ -120,15 +120,17 @@ plt_show    =0
 ####################################################################
 # after BSOSE run (ocean boundary cond), m = mEVP, b = BBM
 print(expt)
-runs=['50km_ocean_wind'      ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',       # 5
-      '50km_20Clab_20180102' ,'50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',     # 10
-      '50km_glorys_20180102' ,'BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',           # 15
-      '50km_hyle_20130102'   ,'50km_ckFFalse_20130102','50km_bWd020_20130102'  ,'mEVP+'                 ,'25km_bbm_20130102',           # 20
-      '25km_mevp_20130102'   ,'12km_bbm_20130102'     ,'12km_mEVP_20130102'    ,'50km_bWd016_20130102'  ,'50km_mCd01_20130102',         # 25
-      '50km_bCd01_20130102'  ,'50km_mWd016_20130102'  ,'50km_10kPcom_20130102' ,'50km_mevp10kP_20130102','BBM', # '50km_b10kP2h_20130102',   # 30
-      'mEVP'                 ,'50km_b14kP1h_20130102' ,'50km_m14kP1h_20130102' ,'50km_b14kP2h_20130102' ,'50km_m14kP2h_20130102',       # 35
-      '50km_mWd022_20130102' ,'50km_mWd024_20130102'  ,'BBM-25km'              ,'mEVP-25km'             ,'25km_b10kP2h_20130102',       # 40
-      '25km_mWd016_20130102' ,'EVP'                   ,'BBM-25km'              ,'mEVP-25km'             ,'25km_b10kP2h_20130102']     # 45
+runs=['50km_ocean_wind'       ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',       # 5
+      '50km_20Clab_20180102'  ,'50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',     # 10
+      '50km_glorys_20180102'  ,'BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',           # 15
+      '50km_hyle_20130102'    ,'50km_ckFFalse_20130102','50km_bWd020_20130102'  ,'mEVP+'                 ,'25km_bbm_20130102',           # 20
+      '25km_mevp_20130102'    ,'12km_bbm_20130102'     ,'12km_mEVP_20130102'    ,'50km_bWd016_20130102'  ,'50km_mCd01_20130102',         # 25
+      '50km_bCd01_20130102'   ,'50km_mWd016_20130102'  ,'50km_10kPcom_20130102' ,'50km_mevp10kP_20130102','BBM', # '50km_b10kP2h_20130102',   # 30
+      'mEVP'                  ,'50km_b14kP1h_20130102' ,'50km_m14kP1h_20130102' ,'50km_b14kP2h_20130102' ,'50km_m14kP2h_20130102',       # 35
+      '50km_mWd022_20130102'  ,'50km_mWd024_20130102'  ,'BBM-25km'              ,'mEVP-25km'             ,'25km_b10kP2h_20130102',       # 40
+      '25km_mWd016_20130102'  ,'EVP'                   ,'BBM-25km'              ,'mEVP-25km'             ,'25km_b10kP2h_20130102',     # 45
+      '50km_bbm4roms_20130101'
+      ]
 
 #Colors
 if expt[0]==31:
@@ -185,12 +187,19 @@ elif socket.gethostname()[-11::]=='nesi.org.nz':
   path_fig='/nesi/project/uoa03669/rsan613/n/southern/runs/figures/'
   path_data ='/nesi/project/uoa03669/data/'
   path_bsose='/nesi/project/uoa03669/data/bsose/'
+elif socket.gethostname()[-9::]=='brown.edu':
+  path_runs='/oscar/data/deeps/private/chorvat/santanarc/n/southern/runs/' # ''~/'
+  #path_fig ='/scale_wlg_persistent/filesets/project/uoa03669/rsan613/n/southern/figures/' 
+  path_fig='/oscar/data/deeps/private/chorvat/santanarc/n/southern/figures/'
+  path_data ='/oscar/data/deeps/private/chorvat/data/'
+  path_bsose=path_data+'bsose/'
+
 else:
   print("Your data, runs and figures' paths haven't been set")
   exit()
   
 #Grid information
-run=runs[30]#expt[0]] # 'data_glorys'
+run=runs[expt[0]-1] # 'data_glorys'
 data = xr.open_dataset(path_runs+run+'/output/Moorings_2015m01.nc')
 lon_mod = data.longitude #sit.to_masked_array() # Extract a given variable
 lat_mod = data.latitude #sit.to_masked_array() # Extract a given variable
@@ -305,7 +314,7 @@ if save_etopoe==1:
   print('Saving: '+filename)
   h.to_netcdf(filename)
   exit()
-else:
+elif save_etopoe==2: 
   filename=path_data+'etopo/ETOPO_Antarctic_ERA5.nc'
   print('Loading: '+filename)
   ds=xr.open_dataset(filename)
@@ -323,7 +332,7 @@ if save_etopoi==1:
   filename=path_data+'etopo/ETOPO_Antarctic_50km_nextsim.nc'
   print('Saving: '+filename)
   h.to_netcdf(filename)
-else:
+elif save_etopoi==2: 
   filename=path_data+'etopo/ETOPO_Antarctic_50km_nextsim.nc'
   print('Loading: '+filename)
   ds=xr.open_dataset(filename)
@@ -344,7 +353,7 @@ if save_etopod==1:
   print('Saving: '+filename)
   h.to_netcdf(filename)
   exit()
-else:
+elif save_etopod==2: 
   filename=path_data+'etopo/ETOPO_Antarctic_drift.nc'
   print('Loading: '+filename)
   ds=xr.open_dataset(filename)
