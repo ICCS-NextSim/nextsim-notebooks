@@ -80,7 +80,7 @@ expt=[46]
 
 #Variables
 vname='drift'  # sit_obs_rmse_diff 
-vname='sie'  # sit_obs_rmse_diff 
+vname='sit'  # sit_obs_rmse_diff 
 #vname='vcorr'  # sit_obs_rmse_diff 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_maps) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
