@@ -51,15 +51,8 @@ start_day  =1 # 6 vcorr serie initial day
 start_month=1
 start_year =2013
 end_day    =30 # bsie 27/12/2021 = last day
-end_month  =12  #8 sit
-end_year   =2013
-
-#start_day  =1 # 6 vcorr serie initial day
-#start_month=1
-#start_year =2013
-#end_day    =30 # bsie 27/12/2021 = last day
-#end_month  =12  # 7  #8 sit
-#end_year   =2021 # 2016
+end_month  =12  # 7  #8 sit
+end_year   =2021 # 2016
 
 #Runs (names) or experiments (numbers - starts with 1)
 exp=12
@@ -203,8 +196,6 @@ elif socket.gethostname()[0:5]=='login':
   path_fig='/oscar/data/deeps/private/chorvat/santanarc/n/southern/figures/'
   path_data ='/oscar/data/deeps/private/chorvat/data/'
   path_bsose=path_data+'bsose/'
-
-  #exit()
 
 else:
   print("Your data, runs and figures' paths haven't been set")
