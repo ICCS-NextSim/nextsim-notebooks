@@ -31,7 +31,7 @@ class MakeGlorys12Cyclic:
 
         # Dictionary: desired replacement for missing values (per variable)
         fill_values = {
-            "thetao": 0.0,
+            "thetao": -2.0,
             "so": 33.9758, # 34.0,
             "uo": 0.0,
             "vo": 0.0,

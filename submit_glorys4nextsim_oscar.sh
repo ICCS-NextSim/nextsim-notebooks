@@ -9,14 +9,14 @@
 #SBATCH --mem-per-cpu=100G
 
 # Partition
-######SBATCH --partition=batch
+#SBATCH --partition=batch
 
 # Provide index values (TASK IDs)
 #####SBATCH --array=13
 
 # Job handling
-#SBATCH -J era54nextsim
-#SBATCH -o log_era54nextsim.out
+#SBATCH -J glorys4nextsim
+#SBATCH -o log_glorys4nextsim.out
 #####SBATCH -o %x-%A_%a.out
 
 # Use the $SLURM_ARRAY_TASK_ID variable to provide different inputs for each job
@@ -29,10 +29,11 @@ dir_in="/oscar/data/deeps/private/chorvat/data/GLORYS/"
 
 dir_out="/oscar/data/deeps/private/chorvat/data/GLORYS/proc/"
 
-prefix="cmems_mod_glo_phy_my_0.083deg_P1D-m_multi-vars_180.00W-179.92E_80.00S-30.00S_1.54m_"
+#prefix="cmems_mod_glo_phy_my_0.083deg_P1D-m_multi-vars_180.00W-179.92E_80.00S-30.00S_1.54m_"
+prefix="cmems_mod_glo_phy_my_0.083deg_P1D-m_multi-vars_180.00W-179.92E_80.00S-30.00S_2.65m_"
 #prefix="cmems_mod_glo_phy_my_0.083deg_P1D-m_uo-vo-zos_180.00W-179.92E_80.00S-30.00S_29.44m_"
 
-for year in {2013..2024}; do
+for year in {2022..2024}; do
   yearp1=$((year+1))
 
   file_in=${dir_in}${prefix}${year}"-01-01-"${yearp1}"-01-01.nc"

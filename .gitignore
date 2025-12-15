@@ -1,0 +1,6 @@
+
+# Large local files
+*.nc
+*.out
+*.log
+
