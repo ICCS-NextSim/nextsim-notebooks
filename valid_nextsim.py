@@ -58,22 +58,17 @@ end_year   =2021 # 2016
 exp=12
 exptc=[12,31,exp] # if serie_or_map!=0
 expt=exptc
-expt=[12,31,19,30,18] # final expts (bsose, mevp, mevp+, bbm, bbm+)
-expt=[12,31,19,30] # final expts (bsose, mevp, mevp+, bbm)
-expt=[31,19,30] # final expts (bsose, mevp, mevp+, bbm)
-expt=[31,30] # final expts (bsose, mevp, mevp+, bbm)
 expt=[31,39,30,38] # final expts (bsose, mevp, mevp+, bbm)
 expt=[30,31,42] # final expts (bsose, mevp, mevp+, bbm)
-#expt=[30,42] # final expts (bsose, mevp, mevp+, bbm)
-#expt=[31,30,40] # final expts (bsose, mevp, mevp+, bbm)
 #expt=[31,30,40,41] # final expts (bsose, mevp, mevp+, bbm)
-expt=[47] 
+expt=[42,47] 
+expt=[30,47] 
 #exptc=expt
 #expt=[exp]
 
 #Variables
 vname='drift'  # sit_obs_rmse_diff 
-vname='sic'  # sit_obs_rmse_diff 
+vname='siv'  # sit_obs_rmse_diff 
 #vname='vcorr'  # sit_obs_rmse_diff 
 # sie, bsie,
 # sit, siv, sit_rmse, (plot_maps) sit_obs_rmse, sit_obs_diff, sit_obs_rmse_diff
@@ -88,11 +83,11 @@ kmv=-1
 
 # Plot types
 plot_scatter=0
-plot_series =0
+plot_series =1
 plot_hist   =0
 plot_video  =0
 plot_vchoice=0 # not working yet. it will for my webpage
-plot_anim   =1 # solo video
+plot_anim   =0 # solo video
 plot_maps   =0 # seasonal maps
 plot_mapo   =0 # maps with obs / based on plot_video and plot_smap
 plot_smap   =0 # solo map
@@ -113,15 +108,15 @@ plt_show    =0
 ####################################################################
 # after BSOSE run (ocean boundary cond), m = mEVP, b = BBM
 print(expt)
-runs=['50km_ocean_wind'       ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',       # 5
-      '50km_20Clab_20180102'  ,'50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',     # 10
-      '50km_glorys_20180102'  ,'BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',           # 15
-      '50km_hyle_20130102'    ,'50km_ckFFalse_20130102','50km_bWd020_20130102'  ,'mEVP+'                 ,'25km_bbm_20130102',           # 20
-      '25km_mevp_20130102'    ,'12km_bbm_20130102'     ,'12km_mEVP_20130102'    ,'50km_bWd016_20130102'  ,'50km_mCd01_20130102',         # 25
-      '50km_bCd01_20130102'   ,'50km_mWd016_20130102'  ,'50km_10kPcom_20130102' ,'50km_mevp10kP_20130102','BBM', # '50km_b10kP2h_20130102',   # 30
-      'mEVP'                  ,'50km_b14kP1h_20130102' ,'50km_m14kP1h_20130102' ,'50km_b14kP2h_20130102' ,'50km_m14kP2h_20130102',       # 35
-      '50km_mWd022_20130102'  ,'50km_mWd024_20130102'  ,'BBM-25km'              ,'mEVP-25km'             ,'25km_b10kP2h_20130102',       # 40
-      '25km_mWd016_20130102'  ,'EVP'                   ,'BBM-25km'              ,'mEVP-25km'             ,'25km_b10kP2h_20130102',     # 45
+runs=['50km_ocean_wind'            ,'50km_bsose_20180102'   ,'50km_hSnowAlb_20180102','50km_61IceAlb_20180102','50km_14kPmax_20180102',       # 5
+      '50km_20Clab_20180102'       ,'50km_P14C20_20180102'  ,'50km_LandNeg2_20180102','50km_bsose_20130102'   ,'50km_dragWat01_20180102',     # 10
+      '50km_glorys_20180102'       ,'BSOSE'                 ,'50km_mevp_20130102'    ,'50km_lemieux_20130102' ,'50km_h50_20130102',           # 15
+      '50km_hyle_20130102'         ,'50km_ckFFalse_20130102','50km_bWd020_20130102'  ,'mEVP+'                 ,'25km_bbm_20130102',           # 20
+      '25km_mevp_20130102'         ,'12km_bbm_20130102'     ,'12km_mEVP_20130102'    ,'50km_bWd016_20130102'  ,'50km_mCd01_20130102',         # 25
+      '50km_bCd01_20130102'        ,'50km_mWd016_20130102'  ,'50km_10kPcom_20130102' ,'50km_mevp10kP_20130102','BBM_OSCAR', # '50km_b10kP2h_20130102',   # 30
+      'mEVP'                       ,'50km_b14kP1h_20130102' ,'50km_m14kP1h_20130102' ,'50km_b14kP2h_20130102' ,'50km_m14kP2h_20130102',       # 35
+      '50km_mWd022_20130102'       ,'50km_mWd024_20130102'  ,'BBM-25km'              ,'mEVP-25km'             ,'25km_b10kP2h_20130102',       # 40
+      '25km_mWd016_20130102'       ,'EVP'                   ,'BBM-25km'              ,'mEVP-25km'             ,'25km_b10kP2h_20130102',     # 45
       '50km_bbmGlorys1.5m_20130101','EVP_OSCAR'
       ]
 
@@ -203,7 +198,7 @@ else:
   
 #Grid information
 run=runs[expt[0]-1] # 'data_glorys'
-data = xr.open_dataset(path_runs+run+'/output/Moorings_2013m01.nc')
+data = xr.open_dataset(path_runs+run+'/output/Moorings_'+str(start_year)+'m'+str(start_month).zfill(2)+'.nc')
 lon_mod = data.longitude #sit.to_masked_array() # Extract a given variable
 lat_mod = data.latitude #sit.to_masked_array() # Extract a given variable
 #lon_mod=np.where(lon_mod!=np.max(lon_mod),lon_mod,179.99999999999)#180.01)
