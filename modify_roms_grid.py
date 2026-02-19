@@ -10,7 +10,7 @@ bkpfile = filepath+"roms_grid_33km_lo90_la89_with_iceshelves.nc.bkp"
 origfile = filepath+"roms_grid_33km_lo90_la89_with_iceshelves.nc"
 extrafile = filepath+"roms_grid_33km_lo90_la89.nc"
 
-fname="roms_etopo_grid_29km_lo90_la90_nx392_size_x11600"
+fname="roms_etopo_grid_26km_lo90_la90_nx378_size_x10000"
 
 bkpfile = filepath+fname+"_with_iceshelves.nc.bkp"
 origfile = filepath+fname+"_with_iceshelves.nc"

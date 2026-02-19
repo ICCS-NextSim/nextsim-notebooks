@@ -6,11 +6,11 @@ from roms_tools import Grid
 from sys import exit
 import os
 
-Grid.N=75
-Grid.hmin=20
-Grid.hc=300 #  width of surface or bottom boundary layer in which higher vertical resolution (levels) is required during stretching.
-Grid.theta_s=5 
-Grid.theta_b=2
+#Grid.N=75
+#Grid.hmin=20
+#Grid.hc=100 #  width of surface or bottom boundary layer in which higher vertical resolution (levels) is required during stretching.
+#Grid.theta_s=5 
+#Grid.theta_b=2
 
 # SRTM15
 nx=260
@@ -19,12 +19,13 @@ lo=90 # 0, -90, -180, 180,
 la=89
 
 # etopo5
-nx=392 # 370
-size_x=11600
+nx=378 # 370
+size_x=10000
 lo=90 # 0, -90, -180, 180, 
 la=90
 
-fileout=f'/oscar/data/deeps/private/chorvat/santanarc/n/southern/roms_sim/input/roms_etopo_grid_{int(size_x/nx)}km_lo{lo}_la{la}_nx{nx}_size_x{size_x}_with_iceshelves.nc'
+fileout=f'/oscar/data/deeps/private/chorvat/santanarc/n/southern/roms_sim/input/roms_etopo_grid_{int(size_x/nx)}km_lo{lo}_la{la}_nx{nx}_size_x{size_x}.nc'
+#fileout=f'/oscar/data/deeps/private/chorvat/santanarc/n/southern/roms_sim/input/roms_etopo_grid_{int(size_x/nx)}km_lo{lo}_la{la}_nx{nx}_size_x{size_x}_with_iceshelves.nc'
 
 print(fileout)
 
@@ -40,7 +41,7 @@ grid = Grid(
     #    "name": "SRTM15",
     #    "path": "/oscar/data/deeps/private/chorvat/data/SRTM15/SRTM15_V2.6.nc",
     #},
-    mask_shapefile="/oscar/data/deeps/private/chorvat/data/GSHHG/GSHHS_shp/h/GSHHS_h_L5.shp", # Antarctic shapefile, used to include iceshelf. Run with and without and merge masks later with modify_roms_grid.py
+    #mask_shapefile="/oscar/data/deeps/private/chorvat/data/GSHHG/GSHHS_shp/h/GSHHS_h_L5.shp", # Antarctic shapefile, used to include iceshelf. Run with and without it (comment) and merge masks later with modify_roms_grid.py
     verbose=True,
     N=75,  # number of vertical layers
     hmin = 20.,
